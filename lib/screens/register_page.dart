@@ -23,13 +23,13 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           TextField(
             controller: _emailController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Email",
             ),
           ),
           TextField(
             controller: _passwordController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Password",
             ),
           ),
@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
               );
               Navigator.pop(context);
             },
-            child: Text("Register"),
+            child: const Text("Register"),
           )
         ],
       ),

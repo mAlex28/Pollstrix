@@ -3,6 +3,8 @@ import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,12 +12,12 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("HOME"),
+            const Text("HOME"),
             ElevatedButton(
               onPressed: () async {
                 await context.read<AuthenticationService>().signOut();
               },
-              child: Text("Sign out"),
+              child: const Text("Sign out"),
             ),
           ],
         ),

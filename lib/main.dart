@@ -6,6 +6,7 @@ import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pollstrix/models/user_model.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,17 +25,20 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
       ],
-      child: MaterialApp(
-        title: 'Login',
+      child: NeumorphicApp(
+        title: 'Pollstrix',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+        themeMode: ThemeMode.light,
+        theme: NeumorphicThemeData(
+          baseColor: Color(0xFFFFFFFF),
+          lightSource: LightSource.topLeft,
+          depth: 10,
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => AuthenticationWrapper(),
-          '/login': (context) => LoginPage(),
-          '/register': (context) => RegisterPage()
+          '/': (context) => const AuthenticationWrapper(),
+          '/login': (context) => const LoginPage(),
+          '/register': (context) => const RegisterPage()
         },
       ),
     );
@@ -53,7 +57,7 @@ class AuthenticationWrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final User? user = snapshot.data;
 
-            return user == null ? const LoginPage() : HomePage();
+            return user == null ? const LoginPage() : const HomePage();
           } else {
             return const Scaffold(
               body: Center(
