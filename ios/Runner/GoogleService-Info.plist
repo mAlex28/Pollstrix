@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>630918106032-qs9hk3j3nc65avs6kaf2hl4ln65dgjji.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.630918106032-qs9hk3j3nc65avs6kaf2hl4ln65dgjji</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>630918106032-iscuc0gg9rb41d1gp6rcq6fg5u8b8c9i.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCiK1V5Mhge5M29ZrBuyAiSAfSm9MVAiJM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>630918106032</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>site.alexthedev.pollstrix</string>
+	<key>PROJECT_ID</key>
+	<string>pollstrix-ec795</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pollstrix-ec795.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:630918106032:ios:2d165015bcb0b91c4d2475</string>
+</dict>
+</plist>
