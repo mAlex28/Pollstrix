@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_widgets.dart';
@@ -84,12 +85,29 @@ class AuthenticationService {
     }
   }
 
-  Future<User?> createUserWithEmailAndPassword(
-      String email, String password) async {
-    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+  Future createUserWithEmailAndPassword(
+      {required String fname,
+      required String lname,
+      required String username,
+      required String email,
+      required String password,
+      required BuildContext context}) async {
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-    return _userFromFirebase(credential.user);
+      await FirebaseFirestore.instance.collection('users').add({
+        'first_name': fname,
+        'last_name': lname,
+        'usernmae': username,
+        'email': email,
+        'password': password,
+      });
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: 'Error creating account.'));
+    }
   }
 
   Future<void> signOut({required BuildContext context}) async {
