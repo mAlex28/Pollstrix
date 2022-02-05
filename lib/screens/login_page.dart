@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pollstrix/custom/google_signin_button.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -24,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final authService = Provider.of<AuthenticationService>(context);
     return Scaffold(
         backgroundColor: NeumorphicTheme.baseColor(context),
@@ -31,7 +33,29 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            verticalDirection: VerticalDirection.down,
             children: <Widget>[
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  width: size.width * 0.28,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                'Pollstrix',
+                style: TextStyle(
+                    fontSize: 25,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -107,23 +131,82 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 15,
               ),
-              //  ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.pushNamed(context, '/register');
-              //   },
-              //   child: const Text("New Account"),
-              // )
+              Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 18),
+                              child: TextButton(
+                                  onPressed: () => {},
+                                  child: const Text(
+                                    'Forgot password',
+                                  )))
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 18),
+                              child: TextButton(
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, '/register'),
+                                  child: const Text(
+                                    'Create a new account',
+                                  )))
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: size.height * 0.02),
+                width: size.width * 0.8,
+                child: Row(
+                  children: <Widget>[
+                    buildDivider(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        "OR",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    buildDivider(),
+                  ],
+                ),
+              ),
+              GoogleSignInButton(),
+              const SizedBox(
+                height: 50,
+              ),
+              const Text(
+                'developed by alex',
+                style: TextStyle(fontSize: 12),
+              )
             ],
           ),
         ));
   }
-}
 
-// Positioned(
-//     top: 0,
-//     left: 0,
-//     child: Image.asset(
-//       "assets/images/signup_top.png",
-//       width: size.width * 0.35,
-//     ),
-//   ),
+  Expanded buildDivider() {
+    return const Expanded(
+      child: Divider(
+        color: Color(0xFFD9D9D9),
+        height: 1.5,
+      ),
+    );
+  }
+}

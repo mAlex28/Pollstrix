@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         title: 'Pollstrix',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.light,
-        theme: NeumorphicThemeData(
+        theme: const NeumorphicThemeData(
           baseColor: Color(0xFFFFFFFF),
           lightSource: LightSource.topLeft,
           depth: 10,
@@ -57,7 +57,7 @@ class AuthenticationWrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final User? user = snapshot.data;
 
-            return user == null ? const LoginPage() : const HomePage();
+            return user == null ? const LoginPage() : HomePage();
           } else {
             return const Scaffold(
               body: Center(
