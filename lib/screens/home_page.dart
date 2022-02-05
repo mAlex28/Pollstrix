@@ -31,7 +31,10 @@ class _HomePageState extends State<HomePage> {
             const Text("HOME"),
             ElevatedButton(
               onPressed: () async {
-                await context.read<AuthenticationService>().signOut();
+                await context
+                    .read<AuthenticationService>()
+                    .signOut(context: context);
+                // Naviga
               },
               child: const Text("Sign out"),
             ),

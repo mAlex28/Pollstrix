@@ -92,11 +92,15 @@ class AuthenticationService {
     return _userFromFirebase(credential.user);
   }
 
-  Future<void> signOut() async {
-    return await _firebaseAuth.signOut();
+  Future<void> signOut({required BuildContext context}) async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error Signing out. Try again.'));
+    }
   }
 }
-
 
 //  static Future<void> signOut({required BuildContext context}) async {
 //     final GoogleSignIn googleSignIn = GoogleSignIn();
