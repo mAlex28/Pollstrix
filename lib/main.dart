@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
+import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pollstrix/models/user_model.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => const AuthenticationWrapper(),
           '/login': (context) => const LoginPage(),
           '/register': (context) => const RegisterPage(),
-          '/home': (context) => const HomePage()
+          '/reset-password': (context) => const ResetPasswordPage()
         },
       ),
     );

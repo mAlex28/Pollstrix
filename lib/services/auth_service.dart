@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthenticationService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   User? _userFromFirebase(auth.User? user) {
     if (user == null) {
@@ -20,19 +21,25 @@ class AuthenticationService {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
-  Future<dynamic> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(
+      {required String email,
+      required String password,
+      required BuildContext context}) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
 
       return _userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
-      print(e.message);
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: 'Error loging in. Try again'));
     }
   }
 
-  Future<auth.User?> signInWithGoogle({required BuildContext context}) async {
+  Future<User?> signInWithGoogle({required BuildContext context}) async {
     auth.User? user;
 
     if (kIsWeb) {
@@ -48,7 +55,6 @@ class AuthenticationService {
       }
     }
 
-    final GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();
 
@@ -80,12 +86,11 @@ class AuthenticationService {
         ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
             content: 'Error occurred using Google Sign-In. Try again.'));
       }
-
-      return user;
+      return _userFromFirebase(user);
     }
   }
 
-  Future createUserWithEmailAndPassword(
+  Future<User?> createUserWithEmailAndPassword(
       {required String fname,
       required String lname,
       required String username,
@@ -93,7 +98,7 @@ class AuthenticationService {
       required String password,
       required BuildContext context}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
       await FirebaseFirestore.instance.collection('users').add({
@@ -103,8 +108,12 @@ class AuthenticationService {
         'email': email,
         'password': password,
       });
+
+      return _userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
-      print(e.message);
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: 'Error creating account.'));
     }
@@ -112,26 +121,47 @@ class AuthenticationService {
 
   Future<void> signOut({required BuildContext context}) async {
     try {
+      if (!kIsWeb) {
+        // android and ios google sign out
+        googleSignIn.isSignedIn().then((value) async {
+          if (value) {
+            await googleSignIn.signOut();
+          }
+        });
+      }
+      // other sign out methods
       await _firebaseAuth.signOut();
+    } on auth.FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           content: 'Error Signing out. Try again.'));
     }
   }
+
+  Future<void> resetPassword(
+      {required String email, required BuildContext context}) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text('Email sent'),
+          content: Text('Please check your inbox to reset the password'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context), child: Text("OK"))
+          ],
+        ),
+      );
+    } on auth.FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error sending email. Try again.'));
+    }
+  }
 }
-
-//  static Future<void> signOut({required BuildContext context}) async {
-//     final GoogleSignIn googleSignIn = GoogleSignIn();
-
-//     try {
-//       if (!kIsWeb) {
-//         await googleSignIn.signOut();
-//       }
-//       await FirebaseAuth.instance.signOut();
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         Authentication.customSnackBar(
-//           content: 'Error signing out. Try again.',
-//         ),
-//       );
-//     }}

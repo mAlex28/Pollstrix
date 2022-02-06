@@ -4,16 +4,15 @@ import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   Color _textColor(BuildContext context) {
     if (NeumorphicTheme.isUsingDark(context)) {
@@ -67,36 +66,13 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       controller: _emailController,
                       decoration: const InputDecoration.collapsed(
-                          hintText: "Enter your email"),
+                          hintText: "Enter your email address here"),
                     ),
                   )
                 ],
               ),
               const SizedBox(
-                height: 15,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Neumorphic(
-                    margin: const EdgeInsets.only(
-                        left: 8, right: 8, top: 2, bottom: 4),
-                    style: NeumorphicStyle(
-                      depth: NeumorphicTheme.embossDepth(context),
-                      boxShape: const NeumorphicBoxShape.stadium(),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14, horizontal: 18),
-                    child: TextField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration.collapsed(
-                          hintText: "Enter your password"),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 15,
+                height: 20,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,9 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                       margin: const EdgeInsets.only(
                           left: 8, right: 8, top: 2, bottom: 4),
                       onPressed: () {
-                        authService.signInWithEmailAndPassword(
+                        authService.resetPassword(
                             email: _emailController.text.trim(),
-                            password: _passwordController.text.trim(),
                             context: context);
                       },
                       style: NeumorphicStyle(
@@ -119,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15, horizontal: 50),
                       child: Text(
-                        "Login",
+                        "Send Email",
                         style: TextStyle(color: _textColor(context)),
                       )),
                 ],
@@ -139,10 +114,10 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 14, horizontal: 18),
                               child: TextButton(
-                                  onPressed: () => Navigator.pushNamed(
-                                      context, '/reset-password'),
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, '/login'),
                                   child: const Text(
-                                    'Forgot password',
+                                    'Login here',
                                   )))
                         ],
                       ),
@@ -163,36 +138,6 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: size.height * 0.02),
-                width: size.width * 0.8,
-                child: Row(
-                  children: <Widget>[
-                    buildDivider(),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        "OR",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    buildDivider(),
-                  ],
-                ),
-              ),
-              GoogleSignInButton(),
-              const SizedBox(
-                height: 50,
-              ),
-              const Text(
-                'developed by alex',
-                style: TextStyle(fontSize: 12),
-              )
             ],
           ),
         ));

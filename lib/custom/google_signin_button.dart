@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   @override
@@ -14,6 +15,8 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthenticationService>(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: _isSigningIn
@@ -34,18 +37,17 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   _isSigningIn = true;
                 });
 
-                auth.User? user = await AuthenticationService()
-                    .signInWithGoogle(context: context);
+                authService.signInWithGoogle(context: context);
 
                 setState(() {
                   _isSigningIn = false;
                 });
 
-                if (user != null) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ));
-                }
+                // if (user != null) {
+                //   Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //     builder: (context) => const HomePage(),
+                //   ));
+                // }
               },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -75,16 +77,3 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     );
   }
 }
-
-
-// OutlinedButton(
-//                 onPressed: () {},
-//                 child: Positioned(
-//                   top: 0,
-//                   left: 0,
-//                   child: Image.asset(
-//                     "assets/images/google_logo.png",
-//                     width: size.width * 0.08,
-//                   ),
-//                 ),
-//               ),

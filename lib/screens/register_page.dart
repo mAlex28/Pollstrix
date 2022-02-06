@@ -37,6 +37,34 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  String? _emailFieldValidator(String? text) {
+    String pattern =
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+    RegExp regExp = RegExp(pattern);
+
+    if (text == null || text.trim().isEmpty) {
+      return 'This field is required';
+    } else if (!regExp.hasMatch(text.trim())) {
+      return 'Invalid email address';
+    }
+
+    return null;
+  }
+
+  String? _passwordFieldValidator(String? text) {
+    String pattern =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+    RegExp regExp = RegExp(pattern);
+
+    if (text == null || text.trim().isEmpty) {
+      return 'This field is required';
+    } else if (!regExp.hasMatch(text.trim())) {
+      return 'Password should be 8 characters with mix of 1 uppercase, 1 lower case, 1 digit and 1 special character';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -103,14 +131,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         height: 20,
                       ),
                       CustomTextField(
-                          fieldValidator: _formFieldsValidator,
+                          fieldValidator: _emailFieldValidator,
                           textEditingController: _emailController,
                           label: 'Enter your email'),
                       const SizedBox(
                         height: 20,
                       ),
                       CustomTextField(
-                          fieldValidator: _formFieldsValidator,
+                          fieldValidator: _passwordFieldValidator,
                           password: true,
                           textEditingController: _passwordController,
                           label: 'Enter your password'),
@@ -130,18 +158,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                     _loading = true;
                                   });
 
-                                  authService
-                                      .createUserWithEmailAndPassword(
-                                          fname: _fnameController.text.trim(),
-                                          lname: _lnameController.text.trim(),
-                                          username:
-                                              _usernameController.text.trim(),
-                                          email: _emailController.text.trim(),
-                                          password:
-                                              _passwordController.text.trim(),
-                                          context: context)
-                                      .then((value) => Navigator.pushNamed(
-                                          context, '/home'));
+                                  authService.createUserWithEmailAndPassword(
+                                      fname: _fnameController.text.trim(),
+                                      lname: _lnameController.text.trim(),
+                                      username: _usernameController.text.trim(),
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text.trim(),
+                                      context: context);
+
+                                  Navigator.pop(context);
                                 }
                               },
                               style: NeumorphicStyle(
