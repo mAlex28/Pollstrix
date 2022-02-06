@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -11,15 +11,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // late User _user;
-  // bool _isSigningOut = false;
+  bool _isSigningOut = false;
 
-  // @override
-  // void initState() {
-  //   // _user = widget._user;
-
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

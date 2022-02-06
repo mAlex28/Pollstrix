@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
-import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({Key? key}) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _UserProfilePageState createState() => _UserProfilePageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _UserProfilePageState extends State<UserProfilePage> {
+  var _loading = false;
   final _formKey = GlobalKey<FormState>();
-  String imageUrl = '';
+  String _imageUrl = '';
 
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _lnameController = TextEditingController();
@@ -85,22 +85,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/login'),
+                              onPressed: () => Navigator.of(context).pop(),
                               child: const Text(
-                                'Have an account? Login',
+                                'Go back',
                               )),
                         ],
                       ),
-                      UserImage(onFileChanged: (imageUrl) {
-                        setState(() {
-                          this.imageUrl = imageUrl;
-                        });
-                      }),
-                      // Image.asset(
-                      //   "assets/images/logo.png",
-                      //   width: size.width * 0.28,
-                      // ),
+                      Image.asset(
+                        "assets/images/logo.png",
+                        width: size.width * 0.28,
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -159,7 +153,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               onPressed: () {
                                 if (_formKey.currentState != null &&
                                     _formKey.currentState!.validate()) {
-                                  setState(() {});
+                                  setState(() {
+                                    _loading = true;
+                                  });
 
                                   authService.createUserWithEmailAndPassword(
                                       fname: _fnameController.text.trim(),

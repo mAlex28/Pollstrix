@@ -8,10 +8,26 @@ import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  const firebaseConfig = FirebaseOptions(
+    apiKey: 'AIzaSyBNEhcwHGg4XoSrWrPWg1LwZpYgfmoMPMo',
+    appId: '1:630918106032:web:a36cc8f6d094035f4d2475',
+    messagingSenderId: '630918106032',
+    projectId: 'pollstrix-ec795',
+    authDomain: 'pollstrix-ec795.firebaseapp.com',
+    storageBucket: 'pollstrix-ec795.appspot.com',
+    measurementId: 'G-Q0Z2QZ54QK',
+  );
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(options: firebaseConfig);
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MyApp());
 }
 
@@ -59,7 +75,7 @@ class AuthenticationWrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final User? user = snapshot.data;
 
-            return user == null ? const LoginPage() : const HomePage();
+            return user == null ? const LoginPage() : HomePage();
           } else {
             return const Scaffold(
               body: Center(

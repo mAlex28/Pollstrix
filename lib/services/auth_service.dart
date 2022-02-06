@@ -148,11 +148,12 @@ class AuthenticationService {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text('Email sent'),
-          content: Text('Please check your inbox to reset the password'),
+          title: const Text('Email sent'),
+          content: const Text('Please check your inbox to reset the password'),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: Text("OK"))
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"))
           ],
         ),
       );

@@ -186,13 +186,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               GoogleSignInButton(),
-              const SizedBox(
-                height: 50,
-              ),
-              const Text(
-                'developed by alex',
-                style: TextStyle(fontSize: 12),
-              )
+              // const SizedBox(
+              //   height: 50,
+              // ),
+              // const Text(
+              //   'developed by alex',
+              //   style: TextStyle(fontSize: 12),
+              // )
             ],
           ),
         ));
