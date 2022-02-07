@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_widgets.dart';
-import 'package:pollstrix/models/user_model.dart';
+// import 'package:pollstrix/models/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -10,26 +11,26 @@ class AuthenticationService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  User? _userFromFirebase(auth.User? user) {
-    if (user == null) {
-      return null;
-    }
-    return User(user.uid, user.email);
+  // auth.User? _userFromFirebase(auth.User? user) {
+  //   if (user == null) {
+  //     return null;
+  //   }
+  //   return  auth.User? (user.uid, user.email);
+  // }
+
+  Stream<auth.User?>? get user {
+    return _firebaseAuth.authStateChanges();
   }
 
-  Stream<User?>? get user {
-    return _firebaseAuth.authStateChanges().map(_userFromFirebase);
-  }
-
-  Future<User?> signInWithEmailAndPassword(
+  Future<auth.User?> signInWithEmailAndPassword(
       {required String email,
       required String password,
       required BuildContext context}) async {
+    auth.User? user;
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-
-      return _userFromFirebase(credential.user);
+      user = credential.user;
     } on auth.FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
@@ -37,9 +38,11 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: 'Error loging in. Try again'));
     }
+
+    return user;
   }
 
-  Future<User?> signInWithGoogle({required BuildContext context}) async {
+  Future<auth.User?> signInWithGoogle({required BuildContext context}) async {
     auth.User? user;
 
     if (kIsWeb) {
@@ -86,17 +89,18 @@ class AuthenticationService {
         ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
             content: 'Error occurred using Google Sign-In. Try again.'));
       }
-      return _userFromFirebase(user);
+      return user;
     }
   }
 
-  Future<User?> createUserWithEmailAndPassword(
+  Future<auth.User?> createUserWithEmailAndPassword(
       {required String fname,
       required String lname,
       required String username,
       required String email,
       required String password,
       required BuildContext context}) async {
+    auth.User? user;
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -109,7 +113,7 @@ class AuthenticationService {
         'password': password,
       });
 
-      return _userFromFirebase(credential.user);
+      user = credential.user;
     } on auth.FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
@@ -117,6 +121,8 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: 'Error creating account.'));
     }
+
+    return user;
   }
 
   Future<void> signOut({required BuildContext context}) async {
@@ -147,7 +153,7 @@ class AuthenticationService {
 
       showDialog(
         context: context,
-        builder: (BuildContext context) => AlertDialog(
+        builder: (BuildContext context) => CupertinoAlertDialog(
           title: const Text('Email sent'),
           content: const Text('Please check your inbox to reset the password'),
           actions: [
