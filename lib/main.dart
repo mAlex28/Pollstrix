@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pollstrix/screens/bottom_navigation.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
@@ -70,18 +71,14 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthenticationService>(context);
-    return StreamBuilder<auth.User?>(
-        stream: authService.user,
-        builder: (_, AsyncSnapshot<auth.User?> snapshot) {
+    final AuthenticationService authService = Provider.of(context).auth;
+    return StreamBuilder<String>(
+        stream: authService.onAuthStateChanges,
+        builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
-            final auth.User? user = snapshot.data;
+            final bool signedIn = snapshot.hasData;
 
-            return user == null
-                ? const LoginPage()
-                : HomePage(
-                    user: user,
-                  );
+            return signedIn ? const Navigation() : const LoginPage();
           } else {
             return const Scaffold(
               body: Center(
