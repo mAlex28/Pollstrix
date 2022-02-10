@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_widgets.dart';
@@ -7,19 +7,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthenticationService {
-  final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  // auth.User? _userFromFirebase(auth.User? user) {
-  //   if (user == null) {
-  //     return null;
-  //   }
-  //   return  auth.User? (user.uid, user.email);
-  // }
-
-  Stream<auth.User?>? get user {
-    return _firebaseAuth.authStateChanges();
-  }
+  Stream<String> get onAuthStateChanges =>
+      _firebaseAuth.authStateChanges().map((User? user) => user!.uid);
 
   String getCurrentUID() {
     return _firebaseAuth.currentUser!.uid;
@@ -41,16 +33,16 @@ class AuthenticationService {
     }
   }
 
-  Future<auth.User?> signInWithEmailAndPassword(
+  Future<String> signInWithEmailAndPassword(
       {required String email,
       required String password,
       required BuildContext context}) async {
-    auth.User? user;
+    User? user;
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       user = credential.user;
-    } on auth.FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
@@ -58,17 +50,18 @@ class AuthenticationService {
           CustomWidgets.customSnackbar(content: 'Error loging in. Try again'));
     }
 
-    return user;
+    return user!.uid;
   }
 
-  Future<auth.User?> signInWithGoogle({required BuildContext context}) async {
-    auth.User? user;
+// login with google
+  Future<String> signInWithGoogle({required BuildContext context}) async {
+    User? user;
 
     if (kIsWeb) {
-      auth.GoogleAuthProvider authProvider = auth.GoogleAuthProvider();
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
 
       try {
-        final auth.UserCredential userCredential =
+        final UserCredential userCredential =
             await _firebaseAuth.signInWithPopup(authProvider);
 
         user = userCredential.user;
@@ -84,16 +77,16 @@ class AuthenticationService {
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
 
-      final auth.AuthCredential credential = auth.GoogleAuthProvider.credential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken);
 
       try {
-        final auth.UserCredential userCredential =
+        final UserCredential userCredential =
             await _firebaseAuth.signInWithCredential(credential);
 
         user = userCredential.user;
-      } on auth.FirebaseAuthException catch (e) {
+      } on FirebaseAuthException catch (e) {
         if (e.code == 'account-exists-with-different-credential') {
           ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
               content:
@@ -108,18 +101,20 @@ class AuthenticationService {
         ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
             content: 'Error occurred using Google Sign-In. Try again.'));
       }
-      return user;
     }
+
+    return user!.uid;
   }
 
-  Future<auth.User?> createUserWithEmailAndPassword(
+// create new user
+  Future<String> createUserWithEmailAndPassword(
       {required String fname,
       required String lname,
       required String username,
       required String email,
       required String password,
       required BuildContext context}) async {
-    auth.User? user;
+    User? user;
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -135,7 +130,7 @@ class AuthenticationService {
       });
 
       user = credential.user;
-    } on auth.FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
@@ -143,9 +138,10 @@ class AuthenticationService {
           CustomWidgets.customSnackbar(content: 'Error creating account.'));
     }
 
-    return user;
+    return user!.uid;
   }
 
+// sign out
   Future<void> signOut({required BuildContext context}) async {
     try {
       if (!kIsWeb) {
@@ -158,7 +154,7 @@ class AuthenticationService {
       }
       // other sign out methods
       await _firebaseAuth.signOut();
-    } on auth.FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
@@ -167,6 +163,7 @@ class AuthenticationService {
     }
   }
 
+// reset password
   Future<void> resetPassword(
       {required String email, required BuildContext context}) async {
     try {
@@ -184,7 +181,7 @@ class AuthenticationService {
           ],
         ),
       );
-    } on auth.FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
@@ -194,7 +191,7 @@ class AuthenticationService {
   }
 
   // update username
-  Future updateUsername(String name, auth.User currentUser) async {
+  Future updateUsername(String name, User currentUser) async {
     await currentUser.updateDisplayName(name);
     await currentUser.reload();
   }
@@ -204,7 +201,7 @@ class AuthenticationService {
     final currentUser = _firebaseAuth.currentUser;
 
     final credential =
-        auth.EmailAuthProvider.credential(email: email, password: password);
+        EmailAuthProvider.credential(email: email, password: password);
     await currentUser!.linkWithCredential(credential);
     await updateUsername(name, currentUser);
   }
@@ -214,7 +211,7 @@ class AuthenticationService {
     final GoogleSignInAccount? account = await googleSignIn.signIn();
     final GoogleSignInAuthentication _googleAuth =
         await account!.authentication;
-    final auth.AuthCredential credential = auth.GoogleAuthProvider.credential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       idToken: _googleAuth.idToken,
       accessToken: _googleAuth.accessToken,
     );
