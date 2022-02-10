@@ -50,65 +50,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
-      body: Center(child: _pages.elementAt(_selectedIndex)
-
-          //  Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Text(
-          //       '( ${_user.email!} )',
-          //       style: const TextStyle(
-          //         fontSize: 20,
-          //         letterSpacing: 0.5,
-          //       ),
-          //     ),
-          //     const SizedBox(height: 24.0),
-          //     _isSigningOut
-          //         ? const CircularProgressIndicator()
-          //         : ElevatedButton(
-          //             onPressed: () async {
-          //               setState(() {
-          //                 _isSigningOut = true;
-          //               });
-          //               await context
-          //                   .read<AuthenticationService>()
-          //                   .signOut(context: context);
-          //               setState(() {
-          //                 _isSigningOut = false;
-          //               });
-          //               Navigator.of(context)
-          //                   .pushReplacement(_routeToSignInScreen());
-          //             },
-          //             child: const Text("Sign out"),
-          //           ),
-          //   ],
-          // ),
-          ),
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          mouseCursor: SystemMouseCursors.grab,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.post_add_rounded), label: 'Post'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.menu_rounded), label: 'Menu')
-          ]),
-    );
+        body: Container(
+      child: Text('dfsdf'),
+    ));
   }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  static const List<Widget> _pages = <Widget>[
-    Icon(Icons.call, size: 150),
-    Icon(Icons.post_add_rounded, size: 150),
-    Icon(Icons.menu_rounded, size: 150),
-  ];
 }

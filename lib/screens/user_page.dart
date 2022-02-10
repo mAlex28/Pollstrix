@@ -4,14 +4,14 @@ import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
-class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({Key? key}) : super(key: key);
+class UserPage extends StatefulWidget {
+  const UserPage({Key? key}) : super(key: key);
 
   @override
-  _UserProfilePageState createState() => _UserProfilePageState();
+  _UserPageState createState() => _UserPageState();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+class _UserPageState extends State<UserPage> {
   var _loading = false;
   final _formKey = GlobalKey<FormState>();
   String _imageUrl = '';

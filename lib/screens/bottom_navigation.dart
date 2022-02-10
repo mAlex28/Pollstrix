@@ -19,7 +19,6 @@ class _NavigationState extends State<Navigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
       body: Center(child: _pages.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
