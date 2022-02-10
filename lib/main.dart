@@ -6,9 +6,8 @@ import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_auth/firebase_auth.dart';
 
-// import 'package:pollstrix/models/user_model.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -71,11 +70,11 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthenticationService>(context);
-    return StreamBuilder<auth.User?>(
+    return StreamBuilder<User?>(
         stream: authService.user,
-        builder: (_, AsyncSnapshot<auth.User?> snapshot) {
+        builder: (_, AsyncSnapshot<User?> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
-            final auth.User? user = snapshot.data;
+            final User? user = snapshot.data;
 
             return user == null
                 ? const LoginPage()

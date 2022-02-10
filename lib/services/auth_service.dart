@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_widgets.dart';
-// import 'package:pollstrix/models/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -20,6 +19,26 @@ class AuthenticationService {
 
   Stream<auth.User?>? get user {
     return _firebaseAuth.authStateChanges();
+  }
+
+  String getCurrentUID() {
+    return _firebaseAuth.currentUser!.uid;
+  }
+
+  Future getCurrentUser() async {
+    return _firebaseAuth.currentUser;
+  }
+
+  getProfileImage() {
+    if (_firebaseAuth.currentUser?.photoURL != null) {
+      return Image.network(
+        _firebaseAuth.currentUser!.photoURL!,
+        height: 100,
+        width: 100,
+      );
+    } else {
+      return const Icon(Icons.account_circle_rounded, size: 100);
+    }
   }
 
   Future<auth.User?> signInWithEmailAndPassword(
@@ -105,6 +124,8 @@ class AuthenticationService {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
+      await updateUsername(username, credential.user!);
+
       await FirebaseFirestore.instance.collection('users').add({
         'first_name': fname,
         'last_name': lname,
@@ -170,5 +191,34 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           content: 'Error sending email. Try again.'));
     }
+  }
+
+  // update username
+  Future updateUsername(String name, auth.User currentUser) async {
+    await currentUser.updateDisplayName(name);
+    await currentUser.reload();
+  }
+
+  Future convertUserWithEmail(
+      String email, String password, String name) async {
+    final currentUser = _firebaseAuth.currentUser;
+
+    final credential =
+        auth.EmailAuthProvider.credential(email: email, password: password);
+    await currentUser!.linkWithCredential(credential);
+    await updateUsername(name, currentUser);
+  }
+
+  Future convertWithGoogle() async {
+    final currentUser = _firebaseAuth.currentUser;
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
+    final GoogleSignInAuthentication _googleAuth =
+        await account!.authentication;
+    final auth.AuthCredential credential = auth.GoogleAuthProvider.credential(
+      idToken: _googleAuth.idToken,
+      accessToken: _googleAuth.accessToken,
+    );
+    await currentUser!.linkWithCredential(credential);
+    await updateUsername(googleSignIn.currentUser!.displayName!, currentUser);
   }
 }
