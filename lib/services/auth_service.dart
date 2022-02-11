@@ -113,6 +113,7 @@ class AuthenticationService {
       required String username,
       required String email,
       required String password,
+      required String imageUrl,
       required BuildContext context}) async {
     User? user;
     try {
@@ -122,6 +123,7 @@ class AuthenticationService {
       await updateUsername(username, credential.user!);
 
       await FirebaseFirestore.instance.collection('users').add({
+        'imageUrl': imageUrl,
         'first_name': fname,
         'last_name': lname,
         'usernmae': username,

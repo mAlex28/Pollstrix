@@ -1,189 +1,178 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:pollstrix/custom/custom_textfield.dart';
-import 'package:pollstrix/services/auth_service.dart';
-import 'package:provider/provider.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+// import 'package:intl/intl.dart';
+// import 'package:pollstrix/custom/custom_textfield.dart';
+// import 'package:pollstrix/models/user_model.dart';
+// import 'package:pollstrix/services/auth_service.dart';
+// import 'package:provider/provider.dart';
 
-class UserPage extends StatefulWidget {
-  const UserPage({Key? key}) : super(key: key);
+// class UserPage extends StatefulWidget {
+//   const UserPage({Key? key}) : super(key: key);
 
-  @override
-  _UserPageState createState() => _UserPageState();
-}
+//   @override
+//   _UserPageState createState() => _UserPageState();
+// }
 
-class _UserPageState extends State<UserPage> {
-  var _loading = false;
-  final _formKey = GlobalKey<FormState>();
-  String _imageUrl = '';
+// class _UserPageState extends State<UserPage> {
 
-  final TextEditingController _fnameController = TextEditingController();
-  final TextEditingController _lnameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+//    User user = User("", "", "", "", "", "");
+//   var _loading = false;
+//   final _formKey = GlobalKey<FormState>();
+//   String _imageUrl = '';
 
-  Color _textColor(BuildContext context) {
-    if (NeumorphicTheme.isUsingDark(context)) {
-      return Colors.white;
-    } else {
-      return Colors.white;
-    }
-  }
+//   final TextEditingController _fnameController = TextEditingController();
+//   final TextEditingController _lnameController = TextEditingController();
+//   final TextEditingController _usernameController = TextEditingController();
+//   final TextEditingController _emailController = TextEditingController();
+//   final TextEditingController _passwordController = TextEditingController();
 
-  String? _formFieldsValidator(String? text) {
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    }
-    return null;
-  }
+//   Color _textColor(BuildContext context) {
+//     if (NeumorphicTheme.isUsingDark(context)) {
+//       return Colors.white;
+//     } else {
+//       return Colors.white;
+//     }
+//   }
 
-  String? _emailFieldValidator(String? text) {
-    String pattern =
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-    RegExp regExp = RegExp(pattern);
+//   String? _formFieldsValidator(String? text) {
+//     if (text == null || text.trim().isEmpty) {
+//       return 'This field is required';
+//     }
+//     return null;
+//   }
 
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    } else if (!regExp.hasMatch(text.trim())) {
-      return 'Invalid email address';
-    }
+//   String? _emailFieldValidator(String? text) {
+//     String pattern =
+//         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+//     RegExp regExp = RegExp(pattern);
 
-    return null;
-  }
+//     if (text == null || text.trim().isEmpty) {
+//       return 'This field is required';
+//     } else if (!regExp.hasMatch(text.trim())) {
+//       return 'Invalid email address';
+//     }
 
-  String? _passwordFieldValidator(String? text) {
-    String pattern =
-        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-    RegExp regExp = RegExp(pattern);
+//     return null;
+//   }
 
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    } else if (!regExp.hasMatch(text.trim())) {
-      return 'Password should be 8 characters with mix of 1 uppercase, 1 lower case, 1 digit and 1 special character';
-    }
+//   String? _passwordFieldValidator(String? text) {
+//     String pattern =
+//         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+//     RegExp regExp = RegExp(pattern);
 
-    return null;
-  }
+//     if (text == null || text.trim().isEmpty) {
+//       return 'This field is required';
+//     } else if (!regExp.hasMatch(text.trim())) {
+//       return 'Password should be 8 characters with mix of 1 uppercase, 1 lower case, 1 digit and 1 special character';
+//     }
 
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final authService = Provider.of<AuthenticationService>(context);
+//     return null;
+//   }
 
-    return Scaffold(
-        backgroundColor: NeumorphicTheme.baseColor(context),
-        body: SafeArea(
-            child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text(
-                                'Go back',
-                              )),
-                        ],
-                      ),
-                      Image.asset(
-                        "assets/images/logo.png",
-                        width: size.width * 0.28,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        'Pollstrix',
-                        style: TextStyle(
-                            fontSize: 25,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      CustomTextField(
-                          fieldValidator: _formFieldsValidator,
-                          textEditingController: _fnameController,
-                          label: 'Enter your first name'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextField(
-                          fieldValidator: _formFieldsValidator,
-                          textEditingController: _lnameController,
-                          label: 'Enter your last name'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextField(
-                          fieldValidator: _formFieldsValidator,
-                          textEditingController: _usernameController,
-                          label: 'Enter your username'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextField(
-                          fieldValidator: _emailFieldValidator,
-                          textEditingController: _emailController,
-                          label: 'Enter your email'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextField(
-                          fieldValidator: _passwordFieldValidator,
-                          password: true,
-                          textEditingController: _passwordController,
-                          label: 'Enter your password'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          NeumorphicButton(
-                              margin: const EdgeInsets.only(
-                                  left: 8, right: 8, top: 2, bottom: 4),
-                              onPressed: () {
-                                if (_formKey.currentState != null &&
-                                    _formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _loading = true;
-                                  });
+//   @override
+//   Widget build(BuildContext context) {
 
-                                  authService.createUserWithEmailAndPassword(
-                                      fname: _fnameController.text.trim(),
-                                      lname: _lnameController.text.trim(),
-                                      username: _usernameController.text.trim(),
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                      context: context);
 
-                                  Navigator.pop(context);
-                                }
-                              },
-                              style: NeumorphicStyle(
-                                color: Colors.blueAccent,
-                                shape: NeumorphicShape.flat,
-                                depth: NeumorphicTheme.embossDepth(context),
-                                boxShape: const NeumorphicBoxShape.stadium(),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 50),
-                              child: Text(
-                                "Create Account",
-                                style: TextStyle(color: _textColor(context)),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
-                ))));
-  }
-}
+//     return Scaffold(
+//         backgroundColor: NeumorphicTheme.baseColor(context),
+//         body: SafeArea(
+//             child: Container(
+//                width: MediaQuery.of(context).size.width,
+//                 padding:
+//                     const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+//                 child:
+//             Column(
+//           children: <Widget>[
+//             FutureBuilder(
+//               future: Provider.of<AuthenticationService>(context).getCurrentUser(),
+//               builder: (context, snapshot) {
+//                 if (snapshot.connectionState == ConnectionState.done) {
+//                   return _displayUserInformation(context, snapshot);
+//                 } else {
+//                   return const CircularProgressIndicator();
+//                 }
+//               },
+//             )
+//           ],
+//         ),
+        
+//                 )
+                
+//                 ));
+//   }
+
+//   _displayUserInformation(context, snapshot) {
+//     final authData = snapshot.data;
+
+//     return Column(
+//       children: <Widget>[
+//         Padding(
+//           padding: const EdgeInsets.only(top: 10.0),
+//           child: Provider.of<AuthenticationService>(context).getProfileImage(),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(
+//             "Name: ${authData.displayName ?? 'Anonymous'}",
+//             style: TextStyle(fontSize: 20),
+//           ),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(
+//             "Email: ${authData.email ?? 'Anonymous'}",
+//             style: TextStyle(fontSize: 20),
+//           ),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.all(8.0),
+//           child: Text(
+//             "Created: ${DateFormat('MM/dd/yyyy').format(authData.metadata.creationTime)}",
+//             style: TextStyle(fontSize: 20),
+//           ),
+//         ),
+//         FutureBuilder(
+//             future: _getProfileData(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.done) {
+//                 _usernameController.text = user.username;
+//               }
+//               return Container(
+//                 child: Column(
+//                   children: <Widget>[
+//                     Padding(
+//                       padding: const EdgeInsets.all(8.0),
+//                       child: Text(
+//                         "Home Country: ${_usernameController.text}",
+//                         style: TextStyle(fontSize: 20),
+//                       ),
+//                     ),
+                
+//                   ],
+//                 ),
+//               );
+//             }),
+    
+//         ElevatedButton(
+//           child: Text("Edit User"),
+//           onPressed: () {
+//             // _userEditBottomSheet(context);
+//           },
+//         )
+//       ],
+//     );
+//   }
+
+//   //  _getProfileData() async {
+//   //   final uid = await Provider.of(context).auth.getCurrentUID();
+//   //   await Provider.of(context)
+//   //       .db
+//   //       .collection('users')
+//   //       .document(uid)
+//   //       .get()
+//   //       .then((result) {
+//   //     user.homeCountry = result.data['homeCountry'];
+//   //     user.admin = result.data['admin'];
+//   //   });
+//   // }
+// }

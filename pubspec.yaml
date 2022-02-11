@@ -46,6 +46,7 @@ dependencies:
   image_cropper: ^1.4.1
   image_picker: ^0.8.4+6
   path: ^1.8.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

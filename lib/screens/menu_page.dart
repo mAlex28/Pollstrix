@@ -13,7 +13,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  User user = User("", "", "", "");
+  User user = User("", "", "", "", "", "");
   final urlImage =
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
 
@@ -43,10 +43,12 @@ class _MenuPageState extends State<MenuPage> {
               ),
               const SizedBox(height: 24),
               buildMenuItem(
-                text: 'Sign out',
-                icon: Icons.door_back_door,
-                onClicked: () => {},
-              ),
+                  text: 'Sign out',
+                  icon: Icons.logout_rounded,
+                  onClicked: () {
+                    Provider.of<AuthenticationService>(context, listen: false)
+                        .signOut(context: context);
+                  }),
             ],
           ),
         )
@@ -114,9 +116,9 @@ class _MenuPageState extends State<MenuPage> {
 
     switch (index) {
       case 0:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const UserPage(),
-        ));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) {},
+        // ));
         break;
       case 1:
         Navigator.of(context).push(MaterialPageRoute(

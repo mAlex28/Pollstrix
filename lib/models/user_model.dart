@@ -1,10 +1,13 @@
 class User {
   final String uid;
-  final String? email;
+  final String email;
   final String username;
-  final String profile;
+  final String fname;
+  final String lname;
+  final String imageUrl;
 
-  User(this.uid, this.email, this.username, this.profile);
+  User(this.uid, this.email, this.imageUrl, this.username, this.fname,
+      this.lname);
 
   // TODO: check whether the firebase store user id.
   // fix sign up image
@@ -13,6 +16,8 @@ class User {
         'uid': uid,
         'email': email,
         'username': username,
-        'profilePhoto': profile,
+        'fname': fname,
+        'lname': lname,
+        'profilePhoto': imageUrl,
       };
 }

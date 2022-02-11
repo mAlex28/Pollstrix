@@ -76,7 +76,9 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                child: Form(
+                child: Center(
+                    child: SingleChildScrollView(
+                        child: Form(
                   key: _formKey,
                   child: Column(
                     children: <Widget>[
@@ -167,9 +169,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                       username: _usernameController.text.trim(),
                                       email: _emailController.text.trim(),
                                       password: _passwordController.text.trim(),
+                                      imageUrl: imageUrl,
                                       context: context);
 
-                                  Navigator.pop(context);
+                                  Navigator.pushNamed(context, '/register');
                                 }
                               },
                               style: NeumorphicStyle(
@@ -188,6 +191,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
-                ))));
+                ))))));
   }
 }
