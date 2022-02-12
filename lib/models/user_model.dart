@@ -1,16 +1,13 @@
 class User {
-  final String uid;
-  final String email;
-  final String username;
-  final String fname;
-  final String lname;
-  final String imageUrl;
+  String uid;
+  String email;
+  String username;
+  String fname;
+  String lname;
+  String imageUrl;
 
   User(this.uid, this.email, this.imageUrl, this.username, this.fname,
       this.lname);
-
-  // TODO: check whether the firebase store user id.
-  // fix sign up image
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
@@ -20,4 +17,12 @@ class User {
         'lname': lname,
         'profilePhoto': imageUrl,
       };
+
+  User.fromData(Map<String, dynamic> data)
+      : uid = data['uid'],
+        email = data['email'],
+        username = data['username'],
+        fname = data['first_name'],
+        lname = data['last_name'],
+        imageUrl = data['imageUrl'];
 }

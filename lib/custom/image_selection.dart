@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 class UserImage extends StatefulWidget {
   final Function(String imageUrl) onFileChanged;
 
-  UserImage({required this.onFileChanged});
+  const UserImage({Key? key, required this.onFileChanged}) : super(key: key);
 
   @override
   _UserImageState createState() => _UserImageState();
@@ -38,7 +38,7 @@ class _UserImageState extends State<UserImage> {
         InkWell(
           onTap: () => _selectPhoto(),
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Text(
               imageUrl != null ? 'Change photo' : 'Select photo',
               style: TextStyle(
@@ -60,16 +60,16 @@ class _UserImageState extends State<UserImage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ListTile(
-                      leading: Icon(Icons.camera),
-                      title: Text('Camera'),
+                      leading: const Icon(Icons.camera),
+                      title: const Text('Camera'),
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.camera);
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.photo),
-                      title: Text('Select a photo'),
+                      leading: const Icon(Icons.photo),
+                      title: const Text('Select a photo'),
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.gallery);
@@ -134,8 +134,9 @@ class AppRoundImage extends StatelessWidget {
   final double height;
   final double width;
 
-  AppRoundImage(this.imageProvider,
-      {required this.height, required this.width});
+  const AppRoundImage(this.imageProvider,
+      {Key? key, required this.height, required this.width})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

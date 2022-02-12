@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pollstrix/screens/bottom_navigation.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
+        Provider(create: (_) => FirebaseFirestore.instance),
       ],
       child: NeumorphicApp(
         title: 'Pollstrix',

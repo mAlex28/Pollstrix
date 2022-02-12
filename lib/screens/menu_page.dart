@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/screens/tesst_screen.dart';
 import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -13,9 +12,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  User user = User("", "", "", "", "", "");
-  final urlImage =
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
+  final urlImage = "assets/images/avatar.png";
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +32,27 @@ class _MenuPageState extends State<MenuPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               buildMenuItem(
                 text: 'Language',
                 icon: Icons.language_rounded,
                 onClicked: () => {},
               ),
-              const SizedBox(height: 24),
+              buildMenuItem(
+                text: 'Settings',
+                icon: Icons.settings_rounded,
+                onClicked: () => {},
+              ),
+              buildMenuItem(
+                text: 'About us',
+                icon: Icons.info_rounded,
+                onClicked: () => {},
+              ),
+              buildMenuItem(
+                text: 'Invite',
+                icon: Icons.share_rounded,
+                onClicked: () => {},
+              ),
               buildMenuItem(
                   text: 'Sign out',
                   icon: Icons.logout_rounded,
@@ -60,29 +71,29 @@ class _MenuPageState extends State<MenuPage> {
     final userData = snapshot.data;
 
     return InkWell(
-        onTap: () {},
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const UserPage(),
+            )),
         child: Container(
-          color: Colors.amber,
+          color: Colors.lightBlue.shade600,
           padding: const EdgeInsets.symmetric(horizontal: 20).add(
-            (const EdgeInsets.symmetric(vertical: 40)),
+            (const EdgeInsets.symmetric(vertical: 20)),
           ),
           child: Row(
             children: [
-              CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlImage)),
+              CircleAvatar(radius: 30, backgroundImage: AssetImage(urlImage)),
               const SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "${userData.displayName ?? "Unkown"}",
-                    style:
-                        const TextStyle(fontSize: 20, color: Colors.blueAccent),
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "${userData.email ?? "Unkown"}",
-                    style:
-                        const TextStyle(fontSize: 14, color: Colors.blueAccent),
+                    "${userData.email ?? "Anonymous"}",
+                    style: const TextStyle(fontSize: 14, color: Colors.white),
                   ),
                 ],
               ),
@@ -127,9 +138,4 @@ class _MenuPageState extends State<MenuPage> {
         break;
     }
   }
-
-  // _getUserData() async {
-  //   final uid = await Provider.of(context).auth.getCurrentUID();
-
-  // }
 }

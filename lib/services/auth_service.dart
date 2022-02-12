@@ -33,7 +33,7 @@ class AuthenticationService {
     }
   }
 
-  Future<String> signInWithEmailAndPassword(
+  Future<String?> signInWithEmailAndPassword(
       {required String email,
       required String password,
       required BuildContext context}) async {
@@ -42,6 +42,7 @@ class AuthenticationService {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       user = credential.user;
+      return user!.uid;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
@@ -49,8 +50,6 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: 'Error loging in. Try again'));
     }
-
-    return user!.uid;
   }
 
 // login with google
@@ -123,6 +122,7 @@ class AuthenticationService {
       await updateUsername(username, credential.user!);
 
       await FirebaseFirestore.instance.collection('users').add({
+        'uid': credential.user!.uid,
         'imageUrl': imageUrl,
         'first_name': fname,
         'last_name': lname,

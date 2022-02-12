@@ -99,10 +99,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           this.imageUrl = imageUrl;
                         });
                       }),
-                      // Image.asset(
-                      //   "assets/images/logo.png",
-                      //   width: size.width * 0.28,
-                      // ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -172,7 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       imageUrl: imageUrl,
                                       context: context);
 
-                                  Navigator.pushNamed(context, '/register');
+                                  Navigator.pushNamed(context, '/');
                                 }
                               },
                               style: NeumorphicStyle(
