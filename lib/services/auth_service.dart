@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_widgets.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final urlImage = "assets/images/avatar.png";
 
   Stream<String> get onAuthStateChanges =>
@@ -118,9 +120,9 @@ class AuthenticationService {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      await updateUsername(username, credential.user!, photoURL: imageUrl);
+      await updateUserProfile(username, credential.user!, photoURL: imageUrl);
 
-      await FirebaseFirestore.instance
+      await _firebaseFirestore
           .collection('users')
           .doc(credential.user!.uid)
           .set({
@@ -146,31 +148,23 @@ class AuthenticationService {
   }
 
   // update user account
-  Future updateUser(
+  Future updateUserDetails(
       {required String fname,
       required String lname,
       required String username,
-      required String email,
-      required String password,
       required String imageUrl,
       required BuildContext context}) async {
     try {
-      var userr = getCurrentUser();
-      // await updateUsername(username, userr);
+      final currentUser = _firebaseAuth.currentUser;
 
-      // await FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc(credential.user!.uid)
-      //     .set({
-      //   'uid': credential.user!.uid,
-      //   'imageUrl': imageUrl,
-      //   'first_name': fname,
-      //   'last_name': lname,
-      //   'username': username,
-      //   'email': email,
-      //   'password': password,
-      // });
+      await updateUserProfile(username, currentUser!, photoURL: imageUrl);
 
+      await _firebaseFirestore.collection('users').doc(currentUser.uid).update({
+        'imageUrl': imageUrl,
+        'first_name': fname,
+        'last_name': lname,
+        'username': username,
+      });
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
@@ -230,9 +224,38 @@ class AuthenticationService {
   }
 
   // update username
-  Future updateUsername(String name, User currentUser, {photoURL}) async {
+  Future updateUserProfile(String name, User currentUser, {photoURL}) async {
     await currentUser.updateDisplayName(name);
     await currentUser.updatePhotoURL(photoURL);
+    await currentUser.reload();
+  }
+
+  // update username
+  Future updateUserEmail(String email, context) async {
+    final currentUser = _firebaseAuth.currentUser!;
+    try {
+      await currentUser.updateEmail(email);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('Email sent'),
+          content:
+              const Text('Please check your inbox change the email address'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"))
+          ],
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error sending email. Try again.'));
+    }
     await currentUser.reload();
   }
 
@@ -243,7 +266,7 @@ class AuthenticationService {
     final credential =
         EmailAuthProvider.credential(email: email, password: password);
     await currentUser!.linkWithCredential(credential);
-    await updateUsername(name, currentUser);
+    await updateUserProfile(name, currentUser);
   }
 
   Future convertWithGoogle() async {
@@ -256,6 +279,7 @@ class AuthenticationService {
       accessToken: _googleAuth.accessToken,
     );
     await currentUser!.linkWithCredential(credential);
-    await updateUsername(googleSignIn.currentUser!.displayName!, currentUser);
+    await updateUserProfile(
+        googleSignIn.currentUser!.displayName!, currentUser);
   }
 }
