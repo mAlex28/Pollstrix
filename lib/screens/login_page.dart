@@ -188,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    GoogleSignInButton(),
+                    const GoogleSignInButton(),
                     // const SizedBox(
                     //   height: 50,
                     // ),

@@ -81,7 +81,10 @@ class _MenuPageState extends State<MenuPage> {
           ),
           child: Row(
             children: [
-              CircleAvatar(radius: 30, backgroundImage: AssetImage(urlImage)),
+              CircleAvatar(
+                  radius: 30,
+                  backgroundImage: Provider.of<AuthenticationService>(context)
+                      .getProfileImage()),
               const SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,5 +140,10 @@ class _MenuPageState extends State<MenuPage> {
         ));
         break;
     }
+  }
+
+  _getProfileImage() async {
+    final image =
+        await Provider.of<AuthenticationService>(context).getProfileImage();
   }
 }

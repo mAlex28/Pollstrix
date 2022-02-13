@@ -8,10 +8,12 @@ class CustomTextField extends StatelessWidget {
   final FormFieldValidator<String>? fieldValidator;
 
   const CustomTextField(
-      {required this.textEditingController,
+      {Key? key,
+      required this.textEditingController,
       required this.label,
       this.password = false,
-      this.fieldValidator});
+      this.fieldValidator})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

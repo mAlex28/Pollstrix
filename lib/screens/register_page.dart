@@ -67,7 +67,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final authService = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
@@ -94,11 +93,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               )),
                         ],
                       ),
-                      UserImage(onFileChanged: (imageUrl) {
-                        setState(() {
-                          this.imageUrl = imageUrl;
-                        });
-                      }),
+                      UserImage(
+                        onFileChanged: (imageUrl) {
+                          setState(() {
+                            this.imageUrl = imageUrl;
+                          });
+                        },
+                        isProfile: false,
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -168,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       imageUrl: imageUrl,
                                       context: context);
 
-                                  Navigator.pushNamed(context, '/');
+                                  // Navigator.pushNamed(context, '/');
                                 }
                               },
                               style: NeumorphicStyle(

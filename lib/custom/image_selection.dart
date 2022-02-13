@@ -8,11 +8,16 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:pollstrix/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class UserImage extends StatefulWidget {
   final Function(String imageUrl) onFileChanged;
+  final bool isProfile;
 
-  const UserImage({Key? key, required this.onFileChanged}) : super(key: key);
+  const UserImage(
+      {Key? key, required this.onFileChanged, required this.isProfile})
+      : super(key: key);
 
   @override
   _UserImageState createState() => _UserImageState();
@@ -21,6 +26,23 @@ class UserImage extends StatefulWidget {
 class _UserImageState extends State<UserImage> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
+
+  _getUserProfile() async {
+    if (widget.isProfile) {
+      final profile =
+          await Provider.of<AuthenticationService>(context).getCurrentUser();
+
+      setState(() {
+        imageUrl = profile.photoURL;
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    _getUserProfile();
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +136,7 @@ class _UserImageState extends State<UserImage> {
   Future _uploadFile(String path) async {
     final ref = storage.FirebaseStorage.instance
         .ref()
-        .child('images')
+        .child('user/profile')
         .child(DateTime.now().toIso8601String() + p.basename(path));
 
     final result = await ref.putFile(File(path));
@@ -130,7 +152,7 @@ class _UserImageState extends State<UserImage> {
 }
 
 class AppRoundImage extends StatelessWidget {
-  final ImageProvider imageProvider;
+  final dynamic imageProvider;
   final double height;
   final double width;
 

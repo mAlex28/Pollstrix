@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final urlImage = "assets/images/avatar.png";
 
   Stream<String> get onAuthStateChanges =>
       _firebaseAuth.authStateChanges().map((User? user) => user!.uid);
@@ -23,13 +24,11 @@ class AuthenticationService {
 
   getProfileImage() {
     if (_firebaseAuth.currentUser?.photoURL != null) {
-      return Image.network(
+      return NetworkImage(
         _firebaseAuth.currentUser!.photoURL!,
-        height: 100,
-        width: 100,
       );
     } else {
-      return const Icon(Icons.account_circle_rounded, size: 100);
+      return AssetImage(urlImage);
     }
   }
 
@@ -119,14 +118,17 @@ class AuthenticationService {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      await updateUsername(username, credential.user!);
+      await updateUsername(username, credential.user!, photoURL: imageUrl);
 
-      await FirebaseFirestore.instance.collection('users').add({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set({
         'uid': credential.user!.uid,
         'imageUrl': imageUrl,
         'first_name': fname,
         'last_name': lname,
-        'usernmae': username,
+        'username': username,
         'email': email,
         'password': password,
       });
@@ -141,6 +143,41 @@ class AuthenticationService {
     }
 
     return user!.uid;
+  }
+
+  // update user account
+  Future updateUser(
+      {required String fname,
+      required String lname,
+      required String username,
+      required String email,
+      required String password,
+      required String imageUrl,
+      required BuildContext context}) async {
+    try {
+      var userr = getCurrentUser();
+      // await updateUsername(username, userr);
+
+      // await FirebaseFirestore.instance
+      //     .collection('users')
+      //     .doc(credential.user!.uid)
+      //     .set({
+      //   'uid': credential.user!.uid,
+      //   'imageUrl': imageUrl,
+      //   'first_name': fname,
+      //   'last_name': lname,
+      //   'username': username,
+      //   'email': email,
+      //   'password': password,
+      // });
+
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: 'Error creating account.'));
+    }
   }
 
 // sign out
@@ -193,8 +230,9 @@ class AuthenticationService {
   }
 
   // update username
-  Future updateUsername(String name, User currentUser) async {
+  Future updateUsername(String name, User currentUser, {photoURL}) async {
     await currentUser.updateDisplayName(name);
+    await currentUser.updatePhotoURL(photoURL);
     await currentUser.reload();
   }
 
