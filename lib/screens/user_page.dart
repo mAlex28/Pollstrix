@@ -6,7 +6,6 @@ import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_storage/firebase_storage.dart' as storage;
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -36,27 +35,6 @@ class _UserPageState extends State<UserPage> {
     } else {
       imageUrl = '';
     }
-  }
-
-  String? _formFieldsValidator(String? text) {
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    }
-    return null;
-  }
-
-  String? _emailFieldValidator(String? text) {
-    String pattern =
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-    RegExp regExp = RegExp(pattern);
-
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    } else if (!regExp.hasMatch(text.trim())) {
-      return 'Invalid email address';
-    }
-
-    return null;
   }
 
   @override

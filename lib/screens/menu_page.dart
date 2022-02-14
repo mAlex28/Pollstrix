@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pollstrix/screens/tesst_screen.dart';
 import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -135,15 +134,10 @@ class _MenuPageState extends State<MenuPage> {
         // ));
         break;
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => TestPage(),
-        ));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) => const TestPage(),
+        // ));
         break;
     }
-  }
-
-  _getProfileImage() async {
-    final image =
-        await Provider.of<AuthenticationService>(context).getProfileImage();
   }
 }
