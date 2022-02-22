@@ -281,4 +281,22 @@ class AuthenticationService {
     await updateUserProfile(
         googleSignIn.currentUser!.displayName!, currentUser);
   }
+
+  Future post(
+      {required String title,
+      required List<String>? choices,
+      required DateTime createdTime}) async {
+    try {
+      final currentUser = await AuthenticationService().getCurrentUID();
+
+      await _firebaseFirestore.collection('polls').doc().set({
+        'uid': currentUser,
+        'title': title,
+        'choices': choices,
+        'createdAt': createdTime
+      });
+    } catch (e) {
+      return e;
+    }
+  }
 }

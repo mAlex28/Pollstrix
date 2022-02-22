@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pollstrix/screens/add_post_page.dart';
+import 'package:pollstrix/screens/post_poll_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
+import 'package:pollstrix/screens/test_poll.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -44,8 +45,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add_rounded),
+            child: const Icon(Icons.add_rounded),
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => const AddPostPage()))));
+                builder: (BuildContext context) => const PostPollPage()))));
   }
 }
