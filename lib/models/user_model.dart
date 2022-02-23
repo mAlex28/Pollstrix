@@ -5,9 +5,10 @@ class User {
   String fname;
   String lname;
   String imageUrl;
+  String bio;
 
   User(this.uid, this.email, this.imageUrl, this.username, this.fname,
-      this.lname);
+      this.lname, this.bio);
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
@@ -15,6 +16,7 @@ class User {
         'username': username,
         'fname': fname,
         'lname': lname,
+        'bio': bio,
         'profilePhoto': imageUrl,
       };
 
@@ -24,5 +26,6 @@ class User {
         username = data['username'],
         fname = data['first_name'],
         lname = data['last_name'],
+        bio = data['bio'],
         imageUrl = data['imageUrl'];
 }

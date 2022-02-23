@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:pollstrix/screens/bottom_navigation.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
+import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +59,8 @@ class MyApp extends StatelessWidget {
           '/': (context) => const AuthenticationWrapper(),
           '/login': (context) => const LoginPage(),
           '/register': (context) => const RegisterPage(),
-          '/reset-password': (context) => const ResetPasswordPage()
+          '/forgot-password': (context) => const ForgotPasswordPage(),
+          '/reset-password': (context) => const ResetPasswordPage(),
         },
       ),
     );

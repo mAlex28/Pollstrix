@@ -3,14 +3,14 @@ import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
-class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({Key? key}) : super(key: key);
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({Key? key}) : super(key: key);
 
   @override
-  _ResetPasswordPageState createState() => _ResetPasswordPageState();
+  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
 
-class _ResetPasswordPageState extends State<ResetPasswordPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
 
   Color _textColor(BuildContext context) {
@@ -96,6 +96,45 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         "Send Email",
                         style: TextStyle(color: _textColor(context)),
                       )),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 18),
+                              child: TextButton(
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, '/login'),
+                                  child: const Text(
+                                    'Login here',
+                                  )))
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 18),
+                              child: TextButton(
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, '/register'),
+                                  child: const Text(
+                                    'Create a new account',
+                                  )))
+                        ],
+                      ),
+                    ],
+                  )
                 ],
               ),
             ],

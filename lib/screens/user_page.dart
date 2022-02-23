@@ -15,7 +15,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  User user = User("", "", "", "", "", "");
+  User user = User("", "", "", "", "", "", "");
   bool isUpdating = false;
   String imageUrl = '';
 
@@ -23,6 +23,7 @@ class _UserPageState extends State<UserPage> {
   final TextEditingController _lnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
 
   _getUserProfile() async {
     final profile =
@@ -63,6 +64,7 @@ class _UserPageState extends State<UserPage> {
                           lname: _lnameController.text,
                           username: _usernameController.text,
                           imageUrl: imageUrl,
+                          bio: _bioController.text,
                           context: context)
                       .then((value) {
                     setState(() {
@@ -94,6 +96,7 @@ class _UserPageState extends State<UserPage> {
                                 _lnameController.text = user.lname;
                                 _usernameController.text = user.username;
                                 _emailController.text = user.email;
+                                _bioController.text = user.bio;
                               }
 
                               return Column(
@@ -109,6 +112,37 @@ class _UserPageState extends State<UserPage> {
                                         isProfile: true),
                                     const SizedBox(
                                       height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Neumorphic(
+                                          margin: const EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              top: 2,
+                                              bottom: 4),
+                                          style: NeumorphicStyle(
+                                            depth: NeumorphicTheme.embossDepth(
+                                                context),
+                                            boxShape: const NeumorphicBoxShape
+                                                .stadium(),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 14, horizontal: 18),
+                                          child: TextField(
+                                            minLines: 2,
+                                            controller: _bioController,
+                                            decoration:
+                                                const InputDecoration.collapsed(
+                                                    hintText: "About you...."),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 15,
                                     ),
                                     Column(
                                       crossAxisAlignment:
@@ -262,7 +296,7 @@ class _UserPageState extends State<UserPage> {
                                                                 context,
                                                                 '/reset-password'),
                                                         child: const Text(
-                                                          'Forgot password',
+                                                          'Change password',
                                                         )))
                                               ],
                                             ),
@@ -274,7 +308,31 @@ class _UserPageState extends State<UserPage> {
                                                         vertical: 14,
                                                         horizontal: 18),
                                                     child: TextButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          showDialog<Widget>(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      builder) {
+                                                                return AlertDialog(
+                                                                    actions: [
+                                                                      TextButton(
+                                                                          onPressed: () => Navigator.pop(
+                                                                              context),
+                                                                          child:
+                                                                              const Text("No")),
+                                                                      TextButton(
+                                                                          onPressed: () => authData.deleteAccount(context).then((value) => Navigator.pushNamed(
+                                                                              context,
+                                                                              '/')),
+                                                                          child:
+                                                                              const Text("Yes"))
+                                                                    ],
+                                                                    content:
+                                                                        const Text(
+                                                                            'Are you sure you want to delete the account?'));
+                                                              });
+                                                        },
                                                         child: Text(
                                                           'Delete Account',
                                                           style: TextStyle(
@@ -303,6 +361,7 @@ class _UserPageState extends State<UserPage> {
         user.lname = value.data()!['last_name'];
         user.email = value.data()!['email'];
         user.username = value.data()!['username'];
+        user.bio = value.data()!['bio'];
       });
     } catch (e) {
       CupertinoAlertDialog(

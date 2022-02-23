@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pollstrix/models/poll_model.dart';
 import 'package:pollstrix/custom/poll_form_options.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -14,17 +15,23 @@ class PostPollPage extends StatefulWidget {
 
 class _PostPollPageState extends State<PostPollPage> {
   late GlobalKey<FormState> _formKey;
-
+  late DateTime _startDate, _endDate;
   late TextEditingController _textEditingController;
+  final DateRangePickerController _dateRangePickerController =
+      DateRangePickerController();
   late Poll _poll;
 
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-
     _textEditingController = TextEditingController();
     _poll = Poll();
+    final DateTime today = DateTime.now();
+    _startDate = today;
+    _endDate = today.add(const Duration(days: 7));
+    _dateRangePickerController.selectedRange =
+        PickerDateRange(today, today.add(const Duration(days: 7)));
   }
 
   @override
@@ -48,6 +55,13 @@ class _PostPollPageState extends State<PostPollPage> {
     setState(() => _poll.title = title);
   }
 
+  // void selectionChanged(DateRangePickerSelectionChangedArgs args) {
+  //   setState(() {
+  //     _startDate = args.value.startDate;
+  //     _endDate = args.value.endDate;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     const pollChoices = ['First', 'Second', 'Additional', 'Additional'];
@@ -67,6 +81,54 @@ class _PostPollPageState extends State<PostPollPage> {
             key: _formKey,
             child: Column(
               children: [
+                Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              showDialog<Widget>(
+                                  context: context,
+                                  builder: (BuildContext builder) {
+                                    return AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        content: SizedBox(
+                                          height: 450,
+                                          width: 300,
+                                          child: SfDateRangePicker(
+                                            controller:
+                                                _dateRangePickerController,
+                                            enablePastDates: false,
+                                            onSubmit: (dynamic value) {
+                                              setState(() {
+                                                _startDate = value.startDate;
+                                                _endDate = value.endDate;
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                            showActionButtons: true,
+                                            // onSelectionChanged:
+                                            //     selectionChanged,
+                                            selectionMode:
+                                                DateRangePickerSelectionMode
+                                                    .range,
+                                            onCancel: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ));
+                                  });
+                            },
+                            icon: const Icon(
+                              Icons.calendar_today_rounded,
+                            ),
+                            label: const Text('Date'),
+                          ),
+                          Text(
+                              '${DateFormat.yMMMEd().format(_startDate)} - ${DateFormat.yMMMEd().format(_endDate)}'),
+                        ])),
                 Container(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: TextFormField(
@@ -89,41 +151,6 @@ class _PostPollPageState extends State<PostPollPage> {
                         hintText: 'Write something here!'),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: ElevatedButton.icon(
-                      // style: ElevatedButton.styleFrom(
-                      //   primary: Colors.lightBlue[300],
-                      //   shape: RoundedRectangleBorder(
-                      //     borderRadius: BorderRadius.circular(10.0),
-                      //   ),
-                      // ),
-                      onPressed: () {
-                        showDialog<Widget>(
-                            context: context,
-                            builder: (BuildContext builder) {
-                              return AlertDialog(
-                                  backgroundColor: Colors.white,
-                                  content: SizedBox(
-                                    height: 500,
-                                    width: 300,
-                                    child: SfDateRangePicker(
-                                      showActionButtons: true,
-                                      selectionMode:
-                                          DateRangePickerSelectionMode.range,
-                                      onCancel: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ));
-                            });
-                      },
-                      icon: const Icon(
-                        Icons.calendar_today_rounded,
-                      ),
-                      label: const Text('Select date range')),
-                ),
                 PollFormOptions(
                     key: const Key('choice'),
                     optionTitles: pollChoices,
@@ -143,7 +170,10 @@ class _PostPollPageState extends State<PostPollPage> {
                           authService.post(
                               title: _textEditingController.text,
                               choices: _poll.options,
-                              createdTime: DateTime.now());
+                              createdTime: DateTime.now(),
+                              startDate: _startDate,
+                              endDate: _endDate,
+                              context: context);
                         },
                         icon: const Icon(Icons.post_add_rounded),
                         label: const Text('Post'))),

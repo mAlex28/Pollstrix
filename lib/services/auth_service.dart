@@ -132,6 +132,7 @@ class AuthenticationService {
         'username': username,
         'email': email,
         'password': password,
+        'bio': '',
       });
 
       user = credential.user;
@@ -152,7 +153,8 @@ class AuthenticationService {
       required String lname,
       required String username,
       required String imageUrl,
-      required BuildContext context}) async {
+      required BuildContext context,
+      String? bio}) async {
     try {
       final currentUser = _firebaseAuth.currentUser;
 
@@ -163,6 +165,7 @@ class AuthenticationService {
         'first_name': fname,
         'last_name': lname,
         'username': username,
+        'bio': bio,
       });
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -258,6 +261,20 @@ class AuthenticationService {
     await currentUser.reload();
   }
 
+  // delete user account
+  Future deleteAccount(BuildContext context) async {
+    try {
+      await _firebaseAuth.currentUser!.delete();
+      await _firebaseAuth.currentUser!.reload();
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error sending email. Try again.'));
+    }
+  }
+
   Future convertUserWithEmail(
       String email, String password, String name) async {
     final currentUser = _firebaseAuth.currentUser;
@@ -285,18 +302,29 @@ class AuthenticationService {
   Future post(
       {required String title,
       required List<String>? choices,
-      required DateTime createdTime}) async {
+      required DateTime createdTime,
+      required DateTime startDate,
+      required DateTime endDate,
+      required BuildContext context}) async {
     try {
-      final currentUser = await AuthenticationService().getCurrentUID();
+      final currentUser = AuthenticationService().getCurrentUID();
 
       await _firebaseFirestore.collection('polls').doc().set({
         'uid': currentUser,
         'title': title,
         'choices': choices,
-        'createdAt': createdTime
+        'createdAt': createdTime,
+        'startDate': startDate,
+        'endDate': endDate,
       });
+
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
-      return e;
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error creating a poll. Try again.'));
     }
   }
 }
