@@ -75,6 +75,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/google_logo.png
     - assets/images/avatar.png
+    - assets/images/webbackground.png
 
   #   - images/a_dot_ham.jpeg
 
