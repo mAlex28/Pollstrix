@@ -1,120 +1,177 @@
 import 'package:flutter/material.dart';
-import 'package:pollstrix/models/poll_model.dart';
-import 'package:pollstrix/custom/poll_form_options.dart';
+import 'package:polls/polls.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
-class PollForm extends StatefulWidget {
-  const PollForm({Key? key}) : super(key: key);
+class TestPollPage extends StatefulWidget {
+  const TestPollPage({Key? key}) : super(key: key);
 
   @override
-  _PollFormState createState() => _PollFormState();
+  State<TestPollPage> createState() => _TestPollPageState();
 }
 
-class _PollFormState extends State<PollForm> {
-  late GlobalKey<FormState> _formKey;
-  late TextEditingController _titleController;
-  late Poll _poll;
+class _TestPollPageState extends State<TestPollPage> {
+  double option1 = 1.0;
+  double option2 = 0.0;
+  double option3 = 1.0;
+  double option4 = 1.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _formKey = GlobalKey<FormState>();
-    _titleController = TextEditingController();
-    _poll = Poll();
-  }
-
-  void _saveTitleValue(String? title) {
-    setState(() => _poll.title = title);
-  }
-
-  void _saveOptionValue(String option, int index) {
-    setState(() {
-      _poll.options ??= [];
-
-      if (index >= _poll.options!.length) {
-        _poll.options!.add(option);
-      } else {
-        _poll.options![index] = option;
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-
-    super.dispose();
-  }
+  String user = "king@mail.com";
+  Map usersWhoVoted = {
+    'sam@mail.com': 3,
+    'mike@mail.com': 4,
+    'john@mail.com': 1,
+    'kenny@mail.com': 1
+  };
+  String creator = "eddy@mail.com";
 
   @override
   Widget build(BuildContext context) {
-    const choicePollOptions = ['First', 'Second', 'Extra', 'Extra'];
-
-    return Scaffold(
-        body: SingleChildScrollView(
-      child: Container(
-        margin: const EdgeInsets.all(16.0),
-        child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 16.0),
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+            Polls(
                 children: [
-                  TextFormField(
-                    controller: _titleController,
-                    validator: (title) {
-                      if (title!.isEmpty) return 'Please, provide a title';
-                      return null;
-                    },
-                    onSaved: _saveTitleValue,
-                    decoration: const InputDecoration(
-                      labelText: 'Question title',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Divider(),
-                  const SizedBox(height: 16.0),
-                  PollFormOptions(
-                    key: const Key('choice'),
-                    optionTitles: choicePollOptions,
-                    initialOptions: _poll.options,
-                    saveValue: _saveOptionValue,
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-
-                        _poll.isAuth = true;
-
-                        Navigator.of(context).pop(
-                          ChoicePoll.fromPoll(
-                            _poll,
-                            optionsVoteCount: List.filled(
-                              _poll.options!.length,
-                              0,
-                              growable: false,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('Create poll'),
-                  ),
+                  Polls.options(title: 'Cairo', value: option1),
+                  Polls.options(title: 'Mecca', value: option2),
+                  Polls.options(title: 'Denmark', value: option3),
+                  Polls.options(title: 'Mogadishu', value: option4),
                 ],
-              ),
-            )
-          ],
-        ),
-      ),
-    ));
+                onVoteBackgroundColor: Colors.blue,
+                leadingBackgroundColor: Colors.blue,
+                backgroundColor: Colors.white,
+                question: const Text(
+                  'What is the capital of egypt?',
+                  style: TextStyle(fontSize: 18),
+                ),
+                voteData: usersWhoVoted,
+                userChoice: usersWhoVoted[this.user],
+                currentUser: this.user,
+                creatorID: this.creator,
+                onVote: (choice) {
+                  setState(() {
+                    this.usersWhoVoted[this.user] = choice;
+                  });
+                  if (choice == 1) {
+                    setState(() {
+                      option1 += 1.0;
+                    });
+                  }
+                  if (choice == 2) {
+                    setState(() {
+                      option2 += 1.0;
+                    });
+                  }
+                  if (choice == 3) {
+                    setState(() {
+                      option3 += 1.0;
+                    });
+                  }
+                  if (choice == 4) {
+                    setState(() {
+                      option4 += 1.0;
+                    });
+                  }
+                }),
+            SizedBox(
+              height: 20,
+            ),
+            Polls(
+                children: [
+                  Polls.options(title: 'Lago', value: option1),
+                  Polls.options(title: 'Shakespear', value: option2),
+                  Polls.options(title: 'Voldermort', value: option3),
+                  Polls.options(title: 'Harry', value: option4),
+                ],
+                onVoteBackgroundColor: Colors.blue,
+                leadingBackgroundColor: Colors.blue,
+                backgroundColor: Colors.white,
+                question: const Text(
+                  'What is the name of the main antagonist in the Shakespeare play Othello?',
+                  style: TextStyle(fontSize: 18),
+                ),
+                voteData: usersWhoVoted,
+                userChoice: usersWhoVoted[this.user],
+                currentUser: this.user,
+                creatorID: this.creator,
+                onVote: (choice) {
+                  setState(() {
+                    this.usersWhoVoted[this.user] = choice;
+                  });
+                  if (choice == 1) {
+                    setState(() {
+                      option1 += 1.0;
+                    });
+                  }
+                  if (choice == 2) {
+                    setState(() {
+                      option2 += 1.0;
+                    });
+                  }
+                  if (choice == 3) {
+                    setState(() {
+                      option3 += 1.0;
+                    });
+                  }
+                  if (choice == 4) {
+                    setState(() {
+                      option4 += 1.0;
+                    });
+                  }
+                }),
+          ]),
+    );
+  }
+
+  Future _getData() async {
+    // final CollectionReference pollList =
+    //     Provider.of<FirebaseFirestore>(context).collection('polls');
+
+    try {
+      return await Provider.of<FirebaseFirestore>(context)
+          .collection('polls')
+          .get();
+    } catch (e) {
+      const Center(child: CircularProgressIndicator());
+    }
   }
 }
+
+
+
+
+
+// FutureBuilder(
+//         future: _getData(),
+//         builder: (context, AsyncSnapshot<dynamic> snapshot) {
+//           if (snapshot.connectionState == ConnectionState.done) {
+//             print('done ');
+
+//             if (!snapshot.hasData) {
+//               print('no data');
+//               return const Center(
+//                 child: CircularProgressIndicator(),
+//               );
+//             } else {
+//               print(snapshot.data);
+//               print('done and has data');
+//               return ListView.builder(itemBuilder: (_, index) {
+//                 print('list');
+//                 return Card(
+//                   child: ListTile(
+//                       title: Text(
+//                           (snapshot.data![index].data() as dynamic)['title'])),
+//                 );
+//               });
+//             }
+//           } else {
+//             print('connecting');
+//             return const Center(
+//               child: CircularProgressIndicator(),
+//             );
+//           }
+//         },
+//       )

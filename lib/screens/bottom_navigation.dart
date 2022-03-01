@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/menu_page.dart';
+import 'package:pollstrix/screens/test_poll.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({Key? key}) : super(key: key);
@@ -43,7 +44,7 @@ class _NavigationState extends State<Navigation> {
   }
 
   static const List<Widget> _pages = <Widget>[
-    HomePage(),
+    TestPollPage(),
     Icon(Icons.post_add_rounded, size: 150),
     MenuPage()
   ];

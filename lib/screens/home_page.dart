@@ -12,30 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late User _user;
-  bool _isSigningOut = false;
-
-  int _selectedIndex = 0;
-
-  Route _routeToSignInScreen() {
-    return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const LoginPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = const Offset(-1.0, 0.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -45,6 +21,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.lightBlue,
+            foregroundColor: Colors.white,
             child: const Icon(Icons.add_rounded),
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => const PostPollPage()))));

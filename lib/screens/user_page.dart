@@ -132,7 +132,6 @@ class _UserPageState extends State<UserPage> {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 14, horizontal: 18),
                                           child: TextField(
-                                            minLines: 2,
                                             controller: _bioController,
                                             decoration:
                                                 const InputDecoration.collapsed(

@@ -25,19 +25,23 @@ class Poll {
     this.finished = true,
   });
 
-  Poll.fromFirestore(DocumentSnapshot doc)
-      : id = doc.id,
-        title = doc.get('title') as String,
-        options = doc.get('options') != null
-            ? (doc.get('options') as List<dynamic>).cast<String>()
-            : [],
-        createdAt = doc.get('createdAt') as Timestamp,
-        location = doc.get('location') as GeoPoint,
-        isAuth = doc.get('isAuth') as bool,
-        voteValue = doc.get('voteValue') as int,
-        voteCount = doc.get('voteCount') as int,
-        dismissed = doc.get('dismissed') as bool,
-        finished = doc.get('finished') as bool;
+  Poll.fromSnapshot(snapshot)
+      : title = snapshot.data()['title'],
+        createdAt = snapshot.data()['startDate'];
+
+  // Poll.fromFirestore(doc)
+  //     : id = doc.id,
+  //       title = doc.get('title') as String,
+  //       options = doc.get('options') != null
+  //           ? (doc.get('options') as List<dynamic>).cast<String>()
+  //           : [],
+  //       createdAt = doc.get('createdAt') as Timestamp,
+  //       location = doc.get('location') as GeoPoint,
+  //       isAuth = doc.get('isAuth') as bool,
+  //       voteValue = doc.get('voteValue') as int,
+  //       voteCount = doc.get('voteCount') as int,
+  //       dismissed = doc.get('dismissed') as bool,
+  //       finished = doc.get('finished') as bool;
 
   Map<String, dynamic> genericToJson() => {
         'title': title,
@@ -109,7 +113,7 @@ class ChoicePoll extends Poll {
       : optionsVoteCount = doc.get('optionsVoteCount') != null
             ? (doc.get('optionsVoteCount') as List<dynamic>).cast<int>()
             : [],
-        super.fromFirestore(doc);
+        super.fromSnapshot(doc);
 
   @override
   Map<String, dynamic> genericToJson() => {
