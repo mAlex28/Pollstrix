@@ -33,7 +33,7 @@ class AuthenticationService {
     }
   }
 
-  Future<String?> signInWithEmailAndPassword(
+  Future<dynamic> signInWithEmailAndPassword(
       {required String email,
       required String password,
       required BuildContext context}) async {

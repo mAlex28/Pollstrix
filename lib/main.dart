@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:pollstrix/screens/bottom_navigation.dart';
+import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
@@ -73,13 +73,14 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthenticationService authService = Provider.of(context);
+
     return StreamBuilder<String>(
         stream: authService.onAuthStateChanges,
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             final bool signedIn = snapshot.hasData;
 
-            return signedIn ? const Navigation() : const LoginPage();
+            return signedIn ? const HomePage() : const LoginPage();
           } else {
             return const Scaffold(
               body: Center(
