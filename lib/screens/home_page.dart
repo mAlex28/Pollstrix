@@ -1,11 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/menu_page.dart';
 import 'package:pollstrix/screens/post_poll_page.dart';
-import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/profile_content_page.dart';
-import 'package:pollstrix/screens/test_poll.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
