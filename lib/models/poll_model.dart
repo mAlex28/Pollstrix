@@ -63,7 +63,7 @@ class Poll {
 }
 
 class ChoicePoll extends Poll {
-  List<int>? optionsVoteCount;
+  List<int> optionsVoteCount;
 
   ChoicePoll({
     required String id,
@@ -91,7 +91,7 @@ class ChoicePoll extends Poll {
           finished: finished,
         );
 
-  ChoicePoll.fromPoll(Poll poll, {this.optionsVoteCount})
+  ChoicePoll.fromPoll(Poll poll, {required this.optionsVoteCount})
       : super(
           id: poll.id,
           title: poll.title,
@@ -106,7 +106,7 @@ class ChoicePoll extends Poll {
         );
 
   int get totalCount =>
-      optionsVoteCount!.fold(0, (prev, element) => prev + element);
+      optionsVoteCount.fold(0, (prev, element) => prev + element);
 
   @override
   ChoicePoll.fromFirestore(DocumentSnapshot doc)
@@ -123,7 +123,7 @@ class ChoicePoll extends Poll {
 
   @override
   String toString() {
-    return ' (${options!.length} options)';
+    return '${options!.length} options';
   }
 }
 
@@ -137,14 +137,22 @@ List<Poll?> mapQueryPoll(QuerySnapshot query) {
   }).toList();
 }
 
-Stream<List<Poll?>> popularPollListSnapshots() => FirebaseFirestore.instance
-    .collection('polls')
-    .orderBy('voteCount', descending: true)
-    .snapshots()
-    .map(mapQueryPoll);
+Stream<List<Poll>> popularPollListSnapshots() => FirebaseFirestore.instance
+        .collection('polls')
+        .orderBy('voteCount', descending: true)
+        .snapshots()
+        .map((QuerySnapshot query) {
+      return query.docs.map((e) {
+        return ChoicePoll.fromFirestore(e);
+      }).toList();
+    });
 
-Stream<List<Poll?>> latestPollListSnapshots() => FirebaseFirestore.instance
-    .collection('polls')
-    .orderBy('createdAt', descending: true)
-    .snapshots()
-    .map(mapQueryPoll);
+Stream<List<Poll>> latestPollListSnapshots() => FirebaseFirestore.instance
+        .collection('polls')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((QuerySnapshot query) {
+      return query.docs.map((e) {
+        return ChoicePoll.fromFirestore(e);
+      }).toList();
+    });
