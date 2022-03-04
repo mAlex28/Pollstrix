@@ -19,6 +19,10 @@ class AuthenticationService {
     return _firebaseAuth.currentUser!.uid;
   }
 
+  String? getCurrentUserEmail() {
+    return _firebaseAuth.currentUser!.email;
+  }
+
   Future getCurrentUser() async {
     return _firebaseAuth.currentUser;
   }
@@ -311,14 +315,34 @@ class AuthenticationService {
 
       await _firebaseFirestore.collection('polls').doc().set({
         'uid': currentUser,
+        'creatorEmail': getCurrentUserEmail(),
         'title': title,
         'choices': choices,
         'createdAt': createdTime,
         'startDate': startDate,
         'endDate': endDate,
+        'finished': false,
+        'voteCount': 0,
+        'voteData': {}
       });
 
       Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: e.message.toString()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error creating a poll. Try again.'));
+    }
+  }
+
+  Future onVote(BuildContext context, int voteCount,
+      Map<dynamic, dynamic>? voteData, String pid) async {
+    try {
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(pid)
+          .update({'voteCount': voteCount, 'voteData': voteData});
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));

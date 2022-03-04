@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:polls/polls.dart';
-import 'package:pollstrix/models/poll_model.dart';
+import 'package:pollstrix/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class PollTile extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> doc;
@@ -13,76 +16,162 @@ class PollTile extends StatefulWidget {
 }
 
 class _PollTileState extends State<PollTile> {
-  double option1 = 1.0;
-  double option2 = 1.0;
-  double option3 = 1.0;
-  double option4 = 1.0;
+  final List<bool> isSelected = [false, false];
+  late DateTime _currentDate;
 
-  String user = "king@mail.com";
-
-  Map usersWhoVoted = {
-    'sam@mail.com': 3,
-    'mike@mail.com': 4,
-    'john@mail.com': 1,
-    'kenny@mail.com': 1
-  };
-  String creator = "eddy@mail.com";
+  @override
+  void initState() {
+    _currentDate = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Polls(
-              children: (widget.doc.data() as dynamic)['choices'].map((choice) {
-                return Polls.options(title: '$choice', value: option1);
-              }).toList(),
-              question: Text(
-                (widget.doc.data() as dynamic)['title'],
-                style: const TextStyle(fontSize: 16),
+    final currentUser =
+        Provider.of<AuthenticationService>(context).getCurrentUserEmail();
+
+    final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'];
+
+    final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
+
+    double option1 = 1.0;
+    double option2 = 1.0;
+    double option3 = 1.0;
+    double option4 = 1.0;
+
+    // double option1 = (widget.doc.data() as dynamic)['choiceOne'] ?? 0.0;
+    // double option2 = (widget.doc.data() as dynamic)['choiceTwo'] ?? 0.0;
+    // double option3 = (widget.doc.data() as dynamic)['choiceThree'] ?? 0.0;
+    // double option4 = (widget.doc.data() as dynamic)['choiceFour'] ?? 0.0;
+
+    return endDate.isAfter(_currentDate)
+        ? Card(
+            margin: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const [
+                      Icon(
+                        Icons.more_vert_rounded,
+                        size: 15.0,
+                      )
+                    ],
+                  ),
+                  Polls(
+                    children:
+                        (widget.doc.data() as dynamic)['choices'].map((choice) {
+                      return Polls.options(title: '$choice', value: option1);
+                    }).toList(),
+                    question: Text(
+                      (widget.doc.data() as dynamic)['title'],
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    voteData: usersWhoVoted,
+                    currentUser: currentUser,
+                    creatorID: (widget.doc.data() as dynamic)['uid'],
+                    userChoice: usersWhoVoted[currentUser],
+                    onVote: (choice) {
+                      setState(() {
+                        usersWhoVoted[currentUser] = choice;
+                      });
+                      if (choice == 1) {
+                        setState(() {
+                          option1 += 1.0;
+                        });
+                      }
+                      if (choice == 2) {
+                        setState(() {
+                          option2 += 1.0;
+                        });
+                      }
+                      if (choice == 3) {
+                        setState(() {
+                          option3 += 1.0;
+                        });
+                      }
+                      if (choice == 4) {
+                        setState(() {
+                          option4 += 1.0;
+                        });
+                      }
+
+                      // Provider.of<AuthenticationService>(context).onVote(context, 0,
+                      //     {"email": currentUser, "option": choice}, widget.doc.id);
+                    },
+                    onVoteBackgroundColor: Colors.blue,
+                    leadingBackgroundColor: Colors.blue,
+                    backgroundColor: Colors.white,
+                    allowCreatorVote: false,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          // ToggleButtons(
+                          //   children:const <Widget>[
+                          //     Icon(Icons.thumb_up_rounded),
+                          //     Icon(Icons.thumb_down_rounded)
+                          //   ],
+                          //   isSelected: isSelected,
+                          //   color: Colors.grey,
+                          //   selectedColor: Colors.lightBlue,
+                          //   onPressed: (int index) {
+                          //     setState(() {
+                          //       for (int buttonIndex = 0;
+                          //           buttonIndex < isSelected.length;
+                          //           buttonIndex++) {
+                          //         if (buttonIndex == index) {
+                          //           isSelected[buttonIndex] =
+                          //               !isSelected[buttonIndex];
+                          //         } else {
+                          //           isSelected[buttonIndex] = false;
+                          //         }
+                          //       }
+                          //     });
+                          //   },
+                          // )
+
+                          IconButton(
+                            icon: const Icon(
+                              Icons.thumb_up_alt_rounded,
+                              semanticLabel: 'Thumbs up',
+                            ),
+                            iconSize: 20,
+                            color: Colors.grey,
+                            tooltip: 'Thumbs up',
+                            onPressed: () {},
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.thumb_down_alt_rounded,
+                              semanticLabel: 'Thumbs down',
+                            ),
+                            iconSize: 20,
+                            color: Colors.grey,
+                            tooltip: 'Thumbs down',
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        child: const Text('Leave a feedback',
+                            style:
+                                TextStyle(fontSize: 12.0, color: Colors.grey)),
+                        onPressed: () {/* ... */},
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              voteData: usersWhoVoted,
-              currentUser: this.user,
-              creatorID: this.creator,
-              onVote: (choice) {
-                setState(() {
-                  this.usersWhoVoted[this.user] = choice;
-                });
-                if (choice == 1) {
-                  setState(() {
-                    option1 += 1.0;
-                  });
-                }
-                if (choice == 2) {
-                  setState(() {
-                    option2 += 1.0;
-                  });
-                }
-                if (choice == 3) {
-                  setState(() {
-                    option3 += 1.0;
-                  });
-                }
-                if (choice == 4) {
-                  setState(() {
-                    option4 += 1.0;
-                  });
-                }
-              },
-              onVoteBackgroundColor: Colors.blue,
-              leadingBackgroundColor: Colors.blue,
-              backgroundColor: Colors.white,
-              allowCreatorVote: false,
-              userChoice: usersWhoVoted[this.user],
             ),
-            // ChoicePollAction(choicePoll: poll),
-          ],
-        ),
-      ),
-    );
+          )
+        : const Card(
+            child: Text('ended'),
+          );
   }
 }
