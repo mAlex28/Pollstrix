@@ -132,7 +132,7 @@ class _PostPollPageState extends State<PostPollPage> {
                         onSaved: _saveTitle,
                         controller: _textEditingController,
                         keyboardType: TextInputType.multiline,
-                        minLines: 5,
+                        minLines: 3,
                         validator: (value) {
                           if (value!.isEmpty) return 'Title is required';
                           return null;

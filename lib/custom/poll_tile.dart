@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:polls/polls.dart';
@@ -29,19 +27,9 @@ class _PollTileState extends State<PollTile> {
     final currentUser =
         Provider.of<AuthenticationService>(context).getCurrentUserEmail();
 
-    final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'];
+    final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
 
     final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
-
-    double option1 = 1.0;
-    double option2 = 1.0;
-    double option3 = 1.0;
-    double option4 = 1.0;
-
-    // double option1 = (widget.doc.data() as dynamic)['choiceOne'] ?? 0.0;
-    // double option2 = (widget.doc.data() as dynamic)['choiceTwo'] ?? 0.0;
-    // double option3 = (widget.doc.data() as dynamic)['choiceThree'] ?? 0.0;
-    // double option4 = (widget.doc.data() as dynamic)['choiceFour'] ?? 0.0;
 
     return endDate.isAfter(_currentDate)
         ? Card(
@@ -64,7 +52,9 @@ class _PollTileState extends State<PollTile> {
                   Polls(
                     children:
                         (widget.doc.data() as dynamic)['choices'].map((choice) {
-                      return Polls.options(title: '$choice', value: option1);
+                      return Polls.options(
+                          title: '${choice['title']}',
+                          value: (choice['votes']).toDouble());
                     }).toList(),
                     question: Text(
                       (widget.doc.data() as dynamic)['title'],
@@ -75,37 +65,55 @@ class _PollTileState extends State<PollTile> {
                     creatorID: (widget.doc.data() as dynamic)['uid'],
                     userChoice: usersWhoVoted[currentUser],
                     onVote: (choice) {
-                      setState(() {
-                        usersWhoVoted[currentUser] = choice;
-                      });
                       if (choice == 1) {
                         setState(() {
-                          option1 += 1.0;
+                          Provider.of<AuthenticationService>(context).onVote(
+                              context: context,
+                              title: (widget.doc.data() as dynamic)['title'],
+                              email: currentUser!,
+                              selectedOption: choice,
+                              pid: widget.doc.id);
                         });
                       }
                       if (choice == 2) {
                         setState(() {
-                          option2 += 1.0;
+                          Provider.of<AuthenticationService>(context).onVote(
+                              context: context,
+                              title: (widget.doc.data() as dynamic)['title'],
+                              email: currentUser!,
+                              selectedOption: choice,
+                              pid: widget.doc.id);
                         });
                       }
                       if (choice == 3) {
                         setState(() {
-                          option3 += 1.0;
+                          Provider.of<AuthenticationService>(context).onVote(
+                              context: context,
+                              title: (widget.doc.data() as dynamic)['title'],
+                              email: currentUser!,
+                              selectedOption: choice,
+                              pid: widget.doc.id);
                         });
                       }
                       if (choice == 4) {
                         setState(() {
-                          option4 += 1.0;
+                          Provider.of<AuthenticationService>(context).onVote(
+                              context: context,
+                              title: (widget.doc.data() as dynamic)['title'],
+                              email: currentUser!,
+                              selectedOption: choice,
+                              pid: widget.doc.id);
                         });
                       }
 
-                      // Provider.of<AuthenticationService>(context).onVote(context, 0,
-                      //     {"email": currentUser, "option": choice}, widget.doc.id);
+                      setState(() {
+                        usersWhoVoted[currentUser] = choice;
+                      });
                     },
                     onVoteBackgroundColor: Colors.blue,
                     leadingBackgroundColor: Colors.blue,
                     backgroundColor: Colors.white,
-                    allowCreatorVote: false,
+                    // allowCreatorVote: false,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

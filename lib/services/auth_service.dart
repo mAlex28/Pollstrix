@@ -110,7 +110,7 @@ class AuthenticationService {
   }
 
 // create new user
-  Future<String> createUserWithEmailAndPassword(
+  Future<dynamic> createUserWithEmailAndPassword(
       {required String fname,
       required String lname,
       required String username,
@@ -313,17 +313,23 @@ class AuthenticationService {
     try {
       final currentUser = AuthenticationService().getCurrentUID();
 
+      List<dynamic> listOfChoices = [];
+
+      for (var item in choices!) {
+        listOfChoices.add({'title': item, 'votes': 0});
+      }
+
       await _firebaseFirestore.collection('polls').doc().set({
         'uid': currentUser,
         'creatorEmail': getCurrentUserEmail(),
         'title': title,
-        'choices': choices,
+        'choices': listOfChoices,
         'createdAt': createdTime,
         'startDate': startDate,
         'endDate': endDate,
         'finished': false,
         'voteCount': 0,
-        'voteData': {}
+        'voteData': [{}]
       });
 
       Navigator.pop(context);
@@ -336,19 +342,40 @@ class AuthenticationService {
     }
   }
 
-  Future onVote(BuildContext context, int voteCount,
-      Map<dynamic, dynamic>? voteData, String pid) async {
+  Future onVote(
+      {required BuildContext context,
+      required String title,
+      required String email,
+      required int selectedOption,
+      required String pid}) async {
     try {
-      await _firebaseFirestore
-          .collection('polls')
-          .doc(pid)
-          .update({'voteCount': voteCount, 'voteData': voteData});
+      var totalVotes;
+      var voteDetails;
+      var currentVotesOnTheChoice;
+
+      await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {
+        totalVotes = value.data()!['voteCount'];
+        voteDetails = value.data()!['voteDetails'];
+        currentVotesOnTheChoice = value.data()!['choices'].map((choice) {
+          if (choice['title'] == title) {
+            return choice['votes'];
+          }
+        });
+      });
+
+      voteDetails.add({'email': email, 'option': selectedOption});
+
+      //TODO: update the votes of the voted choice
+      await _firebaseFirestore.collection('polls').doc(pid).update({
+        'voteCount': totalVotes + 1,
+        'voteData': voteDetails,
+      });
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          content: 'Error creating a poll. Try again.'));
+      ScaffoldMessenger.of(context).showSnackBar(
+          CustomWidgets.customSnackbar(content: 'Error voting. Try again.'));
     }
   }
 }
