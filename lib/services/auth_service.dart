@@ -329,7 +329,7 @@ class AuthenticationService {
         'endDate': endDate,
         'finished': false,
         'voteCount': 0,
-        'voteData': [{}]
+        'voteData': []
       });
 
       Navigator.pop(context);
@@ -344,36 +344,43 @@ class AuthenticationService {
 
   Future onVote(
       {required BuildContext context,
-      required String title,
       required String email,
       required int selectedOption,
       required String pid}) async {
     try {
       var totalVotes;
       var voteDetails;
-      var currentVotesOnTheChoice;
+      var currentVotesOnTheChoice, titleChoice, choices;
 
       await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {
         totalVotes = value.data()!['voteCount'];
-        voteDetails = value.data()!['voteDetails'];
-        currentVotesOnTheChoice = value.data()!['choices'].map((choice) {
-          if (choice['title'] == title) {
-            return choice['votes'];
-          }
-        });
+        voteDetails = value.data()!['voteData'];
+        // value.data()!['choices'].map((choice) {
+        //   if ((selectedOption - 1) == 0) {
+        //     titleChoice = choice['title'];
+        //     currentVotesOnTheChoice = choice['votes'];
+        //   }
+        // }).toList();
       });
+
+      await _firebaseFirestore
+          .collection('polls')
+          .where("choices", arrayContains: 'first');
 
       voteDetails.add({'email': email, 'option': selectedOption});
 
-      //TODO: update the votes of the voted choice
       await _firebaseFirestore.collection('polls').doc(pid).update({
         'voteCount': totalVotes + 1,
         'voteData': voteDetails,
+        'choices': [
+          {titleChoice: currentVotesOnTheChoice + 1}
+        ]
       });
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: 'Error voting. Try again.'));
     }

@@ -1,11 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:pollstrix/screens/home_page.dart';
-import 'package:pollstrix/screens/login_page.dart';
-import 'package:pollstrix/screens/register_page.dart';
-import 'package:pollstrix/screens/forgot_password_page.dart';
-import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -57,10 +52,6 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthenticationWrapper(),
-          '/login': (context) => const LoginPage(),
-          '/register': (context) => const RegisterPage(),
-          '/forgot-password': (context) => const ForgotPasswordPage(),
-          '/reset-password': (context) => const ResetPasswordPage(),
         },
       ),
     );

@@ -5,7 +5,6 @@ class Poll {
   String? title;
   List<String>? options;
   Timestamp? createdAt;
-  GeoPoint? location;
   bool? isAuth;
   int? voteValue;
   int? voteCount;
@@ -17,7 +16,6 @@ class Poll {
     this.title,
     this.options,
     this.createdAt,
-    this.location,
     this.isAuth = false,
     this.voteValue,
     this.voteCount = 0,
@@ -25,29 +23,23 @@ class Poll {
     this.finished = true,
   });
 
-  Poll.fromSnapshot(snapshot)
-      : title = snapshot.data()['title'],
-        createdAt = snapshot.data()['startDate'];
-
-  // Poll.fromFirestore(doc)
-  //     : id = doc.id,
-  //       title = doc.get('title') as String,
-  //       options = doc.get('options') != null
-  //           ? (doc.get('options') as List<dynamic>).cast<String>()
-  //           : [],
-  //       createdAt = doc.get('createdAt') as Timestamp,
-  //       location = doc.get('location') as GeoPoint,
-  //       isAuth = doc.get('isAuth') as bool,
-  //       voteValue = doc.get('voteValue') as int,
-  //       voteCount = doc.get('voteCount') as int,
-  //       dismissed = doc.get('dismissed') as bool,
-  //       finished = doc.get('finished') as bool;
+  Poll.fromFirestore(DocumentSnapshot doc)
+      : id = doc.id,
+        title = doc.get('title') as String,
+        options = doc.get('options') != null
+            ? (doc.get('options') as List<dynamic>).cast<String>()
+            : [],
+        createdAt = doc.get('createdAt') as Timestamp,
+        isAuth = doc.get('isAuth') as bool,
+        voteValue = doc.get('voteValue') as int,
+        voteCount = doc.get('voteCount') as int,
+        dismissed = doc.get('dismissed') as bool,
+        finished = doc.get('finished') as bool;
 
   Map<String, dynamic> genericToJson() => {
         'title': title,
         'options': options,
         'createdAt': createdAt,
-        'location': location,
         'voteCount': voteCount,
       };
 
@@ -68,10 +60,8 @@ class ChoicePoll extends Poll {
   ChoicePoll({
     required String id,
     required String title,
-    required String type,
     required List<String> options,
     required Timestamp createdAt,
-    required GeoPoint location,
     required bool isAuth,
     required int voteValue,
     required int voteCount,
@@ -83,7 +73,6 @@ class ChoicePoll extends Poll {
           title: title,
           options: options,
           createdAt: createdAt,
-          location: location,
           isAuth: isAuth,
           voteValue: voteValue,
           voteCount: voteCount,
@@ -97,7 +86,6 @@ class ChoicePoll extends Poll {
           title: poll.title,
           options: poll.options,
           createdAt: poll.createdAt,
-          location: poll.location,
           isAuth: poll.isAuth,
           voteValue: poll.voteValue,
           voteCount: poll.voteCount,
@@ -113,7 +101,7 @@ class ChoicePoll extends Poll {
       : optionsVoteCount = doc.get('optionsVoteCount') != null
             ? (doc.get('optionsVoteCount') as List<dynamic>).cast<int>()
             : [],
-        super.fromSnapshot(doc);
+        super.fromFirestore(doc);
 
   @override
   Map<String, dynamic> genericToJson() => {
@@ -128,31 +116,38 @@ class ChoicePoll extends Poll {
 }
 
 List<Poll?> mapQueryPoll(QuerySnapshot query) {
-  return query.docs.map((doc) {
-    if (doc.get('dismissed') != null && doc.get('dismissed') as bool) {
+  return query.docs.map((e) {
+    if (e.get("dissmissed") != null && e.get('dissmieed') as bool) {
       return null;
     }
-
-    return ChoicePoll.fromFirestore(doc);
+    return ChoicePoll.fromFirestore(e);
   }).toList();
 }
 
-Stream<List<Poll>> popularPollListSnapshots() => FirebaseFirestore.instance
+Stream<List<Poll?>> popularPollListSnapshots() => FirebaseFirestore.instance
         .collection('polls')
         .orderBy('voteCount', descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
       return query.docs.map((e) {
+        if (e.get("dissmissed") != null && e.get('dissmieed') as bool) {
+          return null;
+        }
+
         return ChoicePoll.fromFirestore(e);
       }).toList();
     });
 
-Stream<List<Poll>> latestPollListSnapshots() => FirebaseFirestore.instance
+Stream<List<Poll?>> latestPollListSnapshots() => FirebaseFirestore.instance
         .collection('polls')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
       return query.docs.map((e) {
+        if (e.get("dissmissed") != null && e.get('dissmieed') as bool) {
+          return null;
+        }
+
         return ChoicePoll.fromFirestore(e);
       }).toList();
     });

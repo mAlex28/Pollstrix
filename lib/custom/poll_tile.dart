@@ -49,6 +49,7 @@ class _PollTileState extends State<PollTile> {
                       )
                     ],
                   ),
+                  // Polls.castVot
                   Polls(
                     children:
                         (widget.doc.data() as dynamic)['choices'].map((choice) {
@@ -65,85 +66,25 @@ class _PollTileState extends State<PollTile> {
                     creatorID: (widget.doc.data() as dynamic)['uid'],
                     userChoice: usersWhoVoted[currentUser],
                     onVote: (choice) {
-                      if (choice == 1) {
-                        setState(() {
-                          Provider.of<AuthenticationService>(context).onVote(
+                      Provider.of<AuthenticationService>(context, listen: false)
+                          .onVote(
                               context: context,
-                              title: (widget.doc.data() as dynamic)['title'],
                               email: currentUser!,
                               selectedOption: choice,
                               pid: widget.doc.id);
-                        });
-                      }
-                      if (choice == 2) {
-                        setState(() {
-                          Provider.of<AuthenticationService>(context).onVote(
-                              context: context,
-                              title: (widget.doc.data() as dynamic)['title'],
-                              email: currentUser!,
-                              selectedOption: choice,
-                              pid: widget.doc.id);
-                        });
-                      }
-                      if (choice == 3) {
-                        setState(() {
-                          Provider.of<AuthenticationService>(context).onVote(
-                              context: context,
-                              title: (widget.doc.data() as dynamic)['title'],
-                              email: currentUser!,
-                              selectedOption: choice,
-                              pid: widget.doc.id);
-                        });
-                      }
-                      if (choice == 4) {
-                        setState(() {
-                          Provider.of<AuthenticationService>(context).onVote(
-                              context: context,
-                              title: (widget.doc.data() as dynamic)['title'],
-                              email: currentUser!,
-                              selectedOption: choice,
-                              pid: widget.doc.id);
-                        });
-                      }
 
-                      setState(() {
-                        usersWhoVoted[currentUser] = choice;
-                      });
+                      setState(() {});
                     },
                     onVoteBackgroundColor: Colors.blue,
                     leadingBackgroundColor: Colors.blue,
                     backgroundColor: Colors.white,
-                    // allowCreatorVote: false,
+                    allowCreatorVote: true,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Row(
                         children: [
-                          // ToggleButtons(
-                          //   children:const <Widget>[
-                          //     Icon(Icons.thumb_up_rounded),
-                          //     Icon(Icons.thumb_down_rounded)
-                          //   ],
-                          //   isSelected: isSelected,
-                          //   color: Colors.grey,
-                          //   selectedColor: Colors.lightBlue,
-                          //   onPressed: (int index) {
-                          //     setState(() {
-                          //       for (int buttonIndex = 0;
-                          //           buttonIndex < isSelected.length;
-                          //           buttonIndex++) {
-                          //         if (buttonIndex == index) {
-                          //           isSelected[buttonIndex] =
-                          //               !isSelected[buttonIndex];
-                          //         } else {
-                          //           isSelected[buttonIndex] = false;
-                          //         }
-                          //       }
-                          //     });
-                          //   },
-                          // )
-
                           IconButton(
                             icon: const Icon(
                               Icons.thumb_up_alt_rounded,
