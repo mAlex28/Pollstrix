@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pollstrix/screens/home_page.dart';
+import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-
+import 'package:pollstrix/screens/register_page.dart';
+import 'package:pollstrix/screens/forgot_password_page.dart';
+import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -52,6 +56,10 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthenticationWrapper(),
+          '/login': (context) => const LoginPage(),
+          '/register': (context) => const RegisterPage(),
+          '/forgot-password': (context) => const ForgotPasswordPage(),
+          '/reset-password': (context) => const ResetPasswordPage(),
         },
       ),
     );
@@ -71,7 +79,7 @@ class AuthenticationWrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final bool signedIn = snapshot.hasData;
 
-            return signedIn ? const HomePage() : const LoginPage();
+            return signedIn ? HomePage() : const LoginPage();
           } else {
             return const Scaffold(
               body: Center(

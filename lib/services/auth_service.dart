@@ -355,34 +355,41 @@ class AuthenticationService {
       await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {
         totalVotes = value.data()!['voteCount'];
         voteDetails = value.data()!['voteData'];
-        // value.data()!['choices'].map((choice) {
-        //   if ((selectedOption - 1) == 0) {
-        //     titleChoice = choice['title'];
-        //     currentVotesOnTheChoice = choice['votes'];
-        //   }
-        // }).toList();
-      });
+        List<dynamic> choicesList = value.data()!['choices'];
+        var index;
 
-      await _firebaseFirestore
-          .collection('polls')
-          .where("choices", arrayContains: 'first');
+        choicesList.asMap().entries.map((e) {
+          index = e.key;
+          if ((selectedOption - 1) == e.key) {
+            titleChoice = e.value['title'];
+            currentVotesOnTheChoice = e.value['votes'];
+            return;
+          }
+        }).toList();
 
-      voteDetails.add({'email': email, 'option': selectedOption});
+        _firebaseFirestore.collection('polls').doc(pid).set({
+          'choices': FieldValue.arrayRemove([
+            {'title': titleChoice, 'votes': currentVotesOnTheChoice}
+          ])
+        }, SetOptions(merge: true));
 
-      await _firebaseFirestore.collection('polls').doc(pid).update({
-        'voteCount': totalVotes + 1,
-        'voteData': voteDetails,
-        'choices': [
-          {titleChoice: currentVotesOnTheChoice + 1}
-        ]
+        voteDetails.add({'email': email, 'option': selectedOption});
+
+        _firebaseFirestore.collection('polls').doc(pid).update({
+          'voteCount': totalVotes + 1,
+          'voteData': voteDetails,
+          'choices': FieldValue.arrayUnion([
+            {'title': titleChoice, 'votes': currentVotesOnTheChoice + 1}
+          ])
+        });
       });
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-          CustomWidgets.customSnackbar(content: 'Error voting. Try again.'));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(CustomWidgets.customSnackbar(content: e.toString()));
     }
   }
 }

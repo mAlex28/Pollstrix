@@ -49,7 +49,22 @@ class _PollTileState extends State<PollTile> {
                       )
                     ],
                   ),
-                  // Polls.castVot
+                  Polls.viewPolls(
+                    children:
+                        (widget.doc.data() as dynamic)['choices'].map((choice) {
+                      return Polls.options(
+                          title: '${choice['title']}',
+                          value: (choice['votes']).toDouble());
+                    }).toList(),
+                    question: Text(
+                      (widget.doc.data() as dynamic)['title'],
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    userChoice: usersWhoVoted[currentUser],
+                    onVoteBackgroundColor: Colors.blue,
+                    leadingBackgroundColor: Colors.blue,
+                    backgroundColor: Colors.white,
+                  ),
                   Polls(
                     children:
                         (widget.doc.data() as dynamic)['choices'].map((choice) {
