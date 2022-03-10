@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
           '/register': (context) => const RegisterPage(),
           '/forgot-password': (context) => const ForgotPasswordPage(),
           '/reset-password': (context) => const ResetPasswordPage(),
+          '/feedback-page': (context) => const FeedContentPage()
         },
       ),
     );

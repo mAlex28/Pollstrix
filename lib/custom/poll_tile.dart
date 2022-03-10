@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:polls/polls.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
+import 'package:pollstrix/screens/feedback_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +18,7 @@ class PollTile extends StatefulWidget {
 class _PollTileState extends State<PollTile> {
   final List<bool> isSelected = [false, false];
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  late TextEditingController _reportTextController;
   late DateTime _currentDate;
 
   bool isLiked = false;
@@ -23,9 +26,17 @@ class _PollTileState extends State<PollTile> {
 
   @override
   void initState() {
+    super.initState();
+    _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _isLiked();
     _isDisliked();
+  }
+
+  @override
+  void dispose() {
+    _reportTextController.dispose();
+    super.dispose();
   }
 
   Future<bool> _isLiked() async {
@@ -148,11 +159,116 @@ class _PollTileState extends State<PollTile> {
     });
   }
 
+  _showReportDialog(
+      {required String uid,
+      required String pid,
+      required BuildContext context}) {
+    final size = MediaQuery.of(context).size;
+
+    showDialog<Widget>(
+        context: context,
+        builder: (BuildContext builder) {
+          return AlertDialog(
+            title: const Text(
+              'Report a poll',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16.0),
+            ),
+            backgroundColor: Colors.white,
+            content: SizedBox(
+              height: 140,
+              width: 300,
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
+                    child: Text(
+                      'Please state why you are reporting this poll clearly!',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                  TextField(
+                    controller: _reportTextController,
+                    autofocus: true,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 10,
+                    minLines: 3,
+                    decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.all(10.0),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade500, width: 1.5),
+                        ),
+                        hintStyle: const TextStyle(fontSize: 14.0),
+                        hintText: 'Write something here!'),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  }),
+              TextButton(
+                  child: const Text('Submit'),
+                  onPressed: () async {
+                    if (_reportTextController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          CustomWidgets.customSnackbar(
+                              content: 'Cannot submit an empty report'));
+                    } else {
+                      await _firebaseFirestore.collection('reports').doc().set({
+                        'uid': uid,
+                        'pid': pid,
+                        'report': _reportTextController.text.trim(),
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          CustomWidgets.customSnackbar(
+                              content: 'Successfully submited'));
+                    }
+
+                    Navigator.of(context).pop();
+                  })
+            ],
+          );
+        });
+  }
+
+  // Show pop up menu on the card when hamburger is clicked
+  _showPopupMenu(BuildContext context, TapDownDetails details,
+      {required String uid, required String pid}) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+          details.globalPosition.dx,
+          details.globalPosition.dy,
+          details.globalPosition.dx,
+          details.globalPosition.dy),
+      items: [
+        const PopupMenuItem<String>(child: Text('Report'), value: '1'),
+      ],
+      elevation: 8.0,
+    ).then((value) {
+      if (value == null) return;
+
+      if (value == '1') {
+        _showReportDialog(uid: uid, pid: pid, context: context);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser =
         Provider.of<AuthenticationService>(context).getCurrentUserEmail();
-
+    final String currentUserID =
+        Provider.of<AuthenticationService>(context).getCurrentUID();
     final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
     final creater = (widget.doc.data() as dynamic)['creatorEmail'];
     final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
@@ -166,13 +282,18 @@ class _PollTileState extends State<PollTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
-                      Icon(
-                        Icons.more_vert_rounded,
-                        size: 15.0,
-                      )
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('End In'),
+                      GestureDetector(
+                          child: const Icon(
+                            Icons.more_vert_rounded,
+                            size: 16.0,
+                          ),
+                          onTapDown: (details) => _showPopupMenu(
+                              context, details,
+                              uid: currentUserID, pid: widget.doc.id))
                     ],
                   ),
                   currentUser == creater
@@ -289,11 +410,15 @@ class _PollTileState extends State<PollTile> {
                         ],
                       ),
                       TextButton(
-                        child: const Text('Leave a feedback',
-                            style:
-                                TextStyle(fontSize: 12.0, color: Colors.grey)),
-                        onPressed: () {/* ... */},
-                      ),
+                          child: const Text('Leave a feedback',
+                              style: TextStyle(
+                                  fontSize: 12.0, color: Colors.grey)),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FeedbackPage(
+                                        doc: widget.doc,
+                                      )))),
                     ],
                   ),
                 ],

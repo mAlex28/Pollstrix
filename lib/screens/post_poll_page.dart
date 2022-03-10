@@ -72,7 +72,9 @@ class _PostPollPageState extends State<PostPollPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12.0),
         child: _isLoading
-            ? const CircularProgressIndicator()
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
             : Form(
                 key: _formKey,
                 child: Column(
@@ -157,7 +159,7 @@ class _PostPollPageState extends State<PostPollPage> {
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: ElevatedButton.icon(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
                               }
@@ -166,7 +168,7 @@ class _PostPollPageState extends State<PostPollPage> {
                               setState(() {
                                 _isLoading = true;
                               });
-                              authService.post(
+                              await authService.post(
                                   title: _textEditingController.text,
                                   choices: _poll.options,
                                   createdTime: DateTime.now(),
