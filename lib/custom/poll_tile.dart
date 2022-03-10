@@ -20,6 +20,7 @@ class _PollTileState extends State<PollTile> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late TextEditingController _reportTextController;
   late DateTime _currentDate;
+  bool _changePollType = false;
 
   bool isLiked = false;
   bool isDisliked = false;
@@ -296,7 +297,7 @@ class _PollTileState extends State<PollTile> {
                               uid: currentUserID, pid: widget.doc.id))
                     ],
                   ),
-                  currentUser == creater
+                  currentUser == creater || _changePollType
                       ? Polls.viewPolls(
                           children: (widget.doc.data() as dynamic)['choices']
                               .map((choice) {
@@ -336,6 +337,9 @@ class _PollTileState extends State<PollTile> {
                                     email: currentUser!,
                                     selectedOption: choice,
                                     pid: widget.doc.id);
+                            setState(() {
+                              _changePollType = true;
+                            });
                           },
                           onVoteBackgroundColor: Colors.blue,
                           leadingBackgroundColor: Colors.blue,
