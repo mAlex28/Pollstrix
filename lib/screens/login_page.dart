@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pollstrix/custom/custom_widgets.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/custom/google_signin_button.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';

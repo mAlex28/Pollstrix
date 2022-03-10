@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pollstrix/custom/custom_widgets.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -137,6 +137,8 @@ class AuthenticationService {
         'email': email,
         'password': password,
         'bio': '',
+        'likedPolls': [],
+        'dislikedPolls': []
       });
 
       user = credential.user;
@@ -329,7 +331,9 @@ class AuthenticationService {
         'endDate': endDate,
         'finished': false,
         'voteCount': 0,
-        'voteData': []
+        'voteData': [],
+        'likes': 0,
+        'dislikes': 0,
       });
 
       Navigator.pop(context);

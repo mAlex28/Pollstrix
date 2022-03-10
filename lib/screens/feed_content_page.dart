@@ -15,27 +15,30 @@ class _FeedContentPageState extends State<FeedContentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: const Text('Pollstrix'),
+        ),
         body: Column(children: [
-      Flexible(
-          child: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('polls').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ListView(
-              scrollDirection: Axis.vertical,
-              children: snapshot.data!.docs.map((doc) {
-                return PollTile(
-                  doc: doc,
+          Flexible(
+              child: StreamBuilder<QuerySnapshot>(
+            stream: db.collection('polls').snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }).toList(),
-            );
-          }
-        },
-      )),
-    ]));
+              } else {
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  children: snapshot.data!.docs.map((doc) {
+                    return PollTile(
+                      doc: doc,
+                    );
+                  }).toList(),
+                );
+              }
+            },
+          )),
+        ]));
   }
 }
