@@ -273,6 +273,11 @@ class _PollTileState extends State<PollTile> {
     final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
     final creater = (widget.doc.data() as dynamic)['creatorEmail'];
     final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
+    final DateTime startDate =
+        (widget.doc.data() as dynamic)['startDate'].toDate();
+
+    // calculate remaining time left for the poll
+    final range = endDate.difference(startDate).inDays;
 
     return endDate.isAfter(_currentDate)
         ? Card(
@@ -286,7 +291,22 @@ class _PollTileState extends State<PollTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text('End In'),
+                      DecoratedBox(
+                          decoration: const BoxDecoration(
+                              color: Colors.red,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Text(
+                              'Ends In: $range days',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.4,
+                                  fontSize: 12.0),
+                            ),
+                          )),
                       GestureDetector(
                           child: const Icon(
                             Icons.more_vert_rounded,
@@ -421,7 +441,8 @@ class _PollTileState extends State<PollTile> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => FeedbackPage(
-                                        doc: widget.doc,
+                                        pollID: widget.doc.id,
+                                        userID: currentUserID,
                                       )))),
                     ],
                   ),
