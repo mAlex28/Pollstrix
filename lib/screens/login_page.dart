@@ -170,31 +170,37 @@ class _LoginPageState extends State<LoginPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 14, horizontal: 18),
-                                        child: TextButton(
-                                            onPressed: () =>
-                                                Navigator.pushNamed(context,
-                                                    '/forgot-password'),
-                                            child: const Text(
-                                              'Forgot password',
-                                            )))
+                                    Flexible(
+                                        fit: FlexFit.loose,
+                                        child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 14, horizontal: 18),
+                                            child: TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pushNamed(context,
+                                                        '/forgot-password'),
+                                                child: const Text(
+                                                  'Forgot password',
+                                                ))))
                                   ],
                                 ),
                                 Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 14, horizontal: 18),
-                                        child: TextButton(
-                                            onPressed: () =>
-                                                Navigator.pushNamed(
-                                                    context, '/register'),
-                                            child: const Text(
-                                              'Create a new account',
-                                            )))
+                                    Flexible(
+                                        fit: FlexFit.loose,
+                                        child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 14, horizontal: 18),
+                                            child: TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pushNamed(
+                                                        context, '/register'),
+                                                child: const Text(
+                                                  'Create a new account',
+                                                ))))
                                   ],
                                 ),
                               ],

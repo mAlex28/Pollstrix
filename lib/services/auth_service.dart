@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:intl/intl.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -125,14 +126,17 @@ class AuthenticationService {
 
       await updateUserProfile(username, credential.user!, photoURL: imageUrl);
 
+      final firstName = toBeginningOfSentenceCase(fname);
+      final lastName = toBeginningOfSentenceCase(lname);
+
       await _firebaseFirestore
           .collection('users')
           .doc(credential.user!.uid)
           .set({
         'uid': credential.user!.uid,
         'imageUrl': imageUrl,
-        'first_name': fname,
-        'last_name': lname,
+        'first_name': firstName,
+        'last_name': lastName,
         'username': username,
         'email': email,
         'password': password,

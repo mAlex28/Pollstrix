@@ -32,13 +32,13 @@ class User {
 
   User.fromMap(Map<String, dynamic> data, {String? uid})
       : uid = uid ?? '',
-        email = data['email'] as String ?? '',
-        username = data['username'] as String ?? '',
-        firstName = data['first_name'] as String ?? '',
-        lastName = data['last_name'] as String ?? '',
-        bio = data['bio'] as String ?? '',
-        imageUrl = data['imageUrl'] as String ?? '',
-        polls = data['polls'] as List<Poll> ?? [];
+        email = data['email'] as String,
+        username = data['username'] as String,
+        firstName = data['first_name'] as String,
+        lastName = data['last_name'] as String,
+        bio = data['bio'] as String,
+        imageUrl = data['imageUrl'] as String,
+        polls = data['polls'] as List<Poll>;
 
   Stream<List<Poll?>> pollsSnapshots() => FirebaseFirestore.instance
       .collection('users/$uid/polls')
