@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
@@ -45,15 +44,15 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
       ],
-      child: NeumorphicApp(
+      child: MaterialApp(
         title: 'Pollstrix',
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.light,
-        theme: const NeumorphicThemeData(
-          baseColor: Color(0xFFFFFFFF),
-          lightSource: LightSource.topLeft,
-          depth: 10,
-        ),
+        // theme: const Mater(
+        //   baseColor: Color(0xFFFFFFFF),
+        //   lightSource: LightSource.topLeft,
+        //   depth: 10,
+        // ),
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthenticationWrapper(),

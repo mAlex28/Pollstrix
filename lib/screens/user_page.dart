@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -18,6 +18,7 @@ class _UserPageState extends State<UserPage> {
   User user = User();
   bool isUpdating = false;
   String imageUrl = '';
+  final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _lnameController = TextEditingController();
@@ -36,6 +37,27 @@ class _UserPageState extends State<UserPage> {
     } else {
       imageUrl = '';
     }
+  }
+
+  String? _formFieldsValidator(String? text) {
+    if (text == null || text.trim().isEmpty) {
+      return 'This field is required';
+    }
+    return null;
+  }
+
+  String? _emailFieldValidator(String? text) {
+    String pattern =
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+    RegExp regExp = RegExp(pattern);
+
+    if (text == null || text.trim().isEmpty) {
+      return 'This field is required';
+    } else if (!regExp.hasMatch(text.trim())) {
+      return 'Invalid email address';
+    }
+
+    return null;
   }
 
   @override
@@ -75,277 +97,190 @@ class _UserPageState extends State<UserPage> {
                 icon: const Icon(Icons.done_rounded))
           ],
         ),
-        backgroundColor: NeumorphicTheme.baseColor(context),
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            child: Center(
-                child: SingleChildScrollView(
-                    child: isUpdating
-                        ? Column(
-                            children: const [
-                              CircularProgressIndicator(),
-                              Text('Updating user data...')
-                            ],
-                          )
-                        : FutureBuilder(
-                            future: _getUserData(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                _fnameController.text = user.firstName!;
-                                _lnameController.text = user.lastName!;
-                                _usernameController.text = user.username!;
-                                _emailController.text = user.email!;
-                                _bioController.text = user.bio!;
-                              }
+        backgroundColor: Colors.white,
+        body: Center(
+            child: SingleChildScrollView(
+                child: isUpdating
+                    ? Column(
+                        children: const [
+                          CircularProgressIndicator(),
+                          Text('Updating user data...')
+                        ],
+                      )
+                    : FutureBuilder(
+                        future: _getUserData(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            _fnameController.text = user.firstName!;
+                            _lnameController.text = user.lastName!;
+                            _usernameController.text = user.username!;
+                            _emailController.text = user.email!;
+                            _bioController.text = user.bio!;
+                          }
 
-                              return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    UserImage(
-                                        onFileChanged: (imageUrl) {
-                                          setState(() {
-                                            this.imageUrl = imageUrl;
-                                          });
-                                        },
-                                        isProfile: true),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Column(
+                          return Padding(
+                              padding: const EdgeInsets.all(30),
+                              child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Neumorphic(
-                                          margin: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              top: 2,
-                                              bottom: 4),
-                                          style: NeumorphicStyle(
-                                            depth: NeumorphicTheme.embossDepth(
-                                                context),
-                                            boxShape: const NeumorphicBoxShape
-                                                .stadium(),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 18),
-                                          child: TextField(
-                                            controller: _bioController,
-                                            decoration:
-                                                const InputDecoration.collapsed(
-                                                    hintText: "About you...."),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Neumorphic(
-                                          margin: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              top: 2,
-                                              bottom: 4),
-                                          style: NeumorphicStyle(
-                                            depth: NeumorphicTheme.embossDepth(
-                                                context),
-                                            boxShape: const NeumorphicBoxShape
-                                                .stadium(),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 18),
-                                          child: TextField(
-                                            controller: _fnameController,
-                                            decoration: const InputDecoration
-                                                    .collapsed(
-                                                hintText:
-                                                    "Enter your first name"),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Neumorphic(
-                                          margin: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              top: 2,
-                                              bottom: 4),
-                                          style: NeumorphicStyle(
-                                            depth: NeumorphicTheme.embossDepth(
-                                                context),
-                                            boxShape: const NeumorphicBoxShape
-                                                .stadium(),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 18),
-                                          child: TextField(
-                                            controller: _lnameController,
-                                            decoration:
-                                                const InputDecoration.collapsed(
-                                                    hintText:
-                                                        "Enter your last name"),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Neumorphic(
-                                          margin: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              top: 2,
-                                              bottom: 4),
-                                          style: NeumorphicStyle(
-                                            depth: NeumorphicTheme.embossDepth(
-                                                context),
-                                            boxShape: const NeumorphicBoxShape
-                                                .stadium(),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 18),
-                                          child: TextField(
-                                            controller: _usernameController,
-                                            decoration:
-                                                const InputDecoration.collapsed(
-                                                    hintText:
-                                                        "Enter your username"),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Neumorphic(
-                                          margin: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              top: 2,
-                                              bottom: 4),
-                                          style: NeumorphicStyle(
-                                            depth: NeumorphicTheme.embossDepth(
-                                                context),
-                                            boxShape: const NeumorphicBoxShape
-                                                .stadium(),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14, horizontal: 18),
-                                          child: TextField(
-                                            readOnly: true,
-                                            onTap: () =>
-                                                authData.updateUserEmail(
-                                                    _emailController.text,
-                                                    context),
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        UserImage(
+                                            onFileChanged: (imageUrl) {
+                                              setState(() {
+                                                this.imageUrl = imageUrl;
+                                              });
+                                            },
+                                            isProfile: true),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        CustomTextField(
+                                          textEditingController: _bioController,
+                                          label: 'About you...',
+                                          prefixIcon:
+                                              const Icon(Icons.person_rounded),
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        CustomTextField(
+                                          fieldValidator: _formFieldsValidator,
+                                          textEditingController:
+                                              _fnameController,
+                                          keyboardType: TextInputType.name,
+                                          label: 'Enter your first name',
+                                          prefixIcon:
+                                              const Icon(Icons.person_rounded),
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        CustomTextField(
+                                            fieldValidator:
+                                                _formFieldsValidator,
+                                            textEditingController:
+                                                _lnameController,
+                                            keyboardType: TextInputType.name,
+                                            label: 'Enter your last name',
+                                            prefixIcon: const Icon(
+                                                Icons.person_rounded)),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        CustomTextField(
+                                            fieldValidator:
+                                                _formFieldsValidator,
+                                            textEditingController:
+                                                _usernameController,
+                                            label: 'Enter your username',
+                                            prefixIcon: const Icon(
+                                                Icons.person_rounded)),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        CustomTextField(
+                                            fieldValidator:
+                                                _emailFieldValidator,
+                                            textEditingController:
+                                                _emailController,
+                                            label: 'Enter your email',
                                             keyboardType:
                                                 TextInputType.emailAddress,
-                                            controller: _emailController,
-                                            decoration:
-                                                const InputDecoration.collapsed(
-                                                    hintText:
-                                                        "Enter your email"),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                            prefixIcon: const Icon(
+                                                Icons.email_rounded)),
+                                        // Column(
+                                        //   crossAxisAlignment:
+                                        //       CrossAxisAlignment.start,
+                                        //   children: [
+                                        //     TextField(
+                                        //       readOnly: true,
+                                        //       onTap: () => authData.updateUserEmail(
+                                        //           _emailController.text, context),
+                                        //       keyboardType:
+                                        //           TextInputType.emailAddress,
+                                        //       controller: _emailController,
+                                        //       decoration:
+                                        //           const InputDecoration.collapsed(
+                                        //               hintText: "Enter your email"),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        Column(
                                           children: [
-                                            Column(
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 14,
-                                                        horizontal: 18),
-                                                    child: TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pushNamed(
-                                                                context,
-                                                                '/reset-password'),
-                                                        child: const Text(
-                                                          'Change password',
-                                                        )))
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Flexible(
+                                                        fit: FlexFit.loose,
+                                                        child: TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pushNamed(
+                                                                    context,
+                                                                    '/reset-password'),
+                                                            child: const Text(
+                                                              'Change password',
+                                                            )))
+                                                  ],
+                                                ),
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Flexible(
+                                                        fit: FlexFit.loose,
+                                                        child: TextButton(
+                                                            onPressed: () {
+                                                              showDialog<
+                                                                      Widget>(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (BuildContext
+                                                                          builder) {
+                                                                    return AlertDialog(
+                                                                        actions: [
+                                                                          TextButton(
+                                                                              onPressed: () => Navigator.pop(context),
+                                                                              child: const Text("No")),
+                                                                          TextButton(
+                                                                              onPressed: () => authData.deleteAccount(context).then((value) => Navigator.pushNamed(context, '/')),
+                                                                              child: const Text("Yes"))
+                                                                        ],
+                                                                        content:
+                                                                            const Text('Are you sure you want to delete the account?'));
+                                                                  });
+                                                            },
+                                                            child: Text(
+                                                              'Delete Account',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .red
+                                                                      .shade600),
+                                                            )))
+                                                  ],
+                                                ),
                                               ],
-                                            ),
-                                            Column(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 14,
-                                                        horizontal: 18),
-                                                    child: TextButton(
-                                                        onPressed: () {
-                                                          showDialog<Widget>(
-                                                              context: context,
-                                                              builder:
-                                                                  (BuildContext
-                                                                      builder) {
-                                                                return AlertDialog(
-                                                                    actions: [
-                                                                      TextButton(
-                                                                          onPressed: () => Navigator.pop(
-                                                                              context),
-                                                                          child:
-                                                                              const Text("No")),
-                                                                      TextButton(
-                                                                          onPressed: () => authData.deleteAccount(context).then((value) => Navigator.pushNamed(
-                                                                              context,
-                                                                              '/')),
-                                                                          child:
-                                                                              const Text("Yes"))
-                                                                    ],
-                                                                    content:
-                                                                        const Text(
-                                                                            'Are you sure you want to delete the account?'));
-                                                              });
-                                                        },
-                                                        child: Text(
-                                                          'Delete Account',
-                                                          style: TextStyle(
-                                                              color: Colors.red
-                                                                  .shade600),
-                                                        )))
-                                              ],
-                                            ),
+                                            )
                                           ],
-                                        )
-                                      ],
-                                    ),
-                                  ]);
-                            })))));
+                                        ),
+                                      ])));
+                        }))));
   }
 
   _getUserData() async {

@@ -1,9 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
+import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/google_signin_button.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginPage extends StatefulWidget {
@@ -14,18 +15,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  bool _showProgress = false;
-
-  Color _textColor(BuildContext context) {
-    if (NeumorphicTheme.isUsingDark(context)) {
-      return Colors.white;
-    } else {
-      return Colors.white;
-    }
-  }
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -37,204 +30,209 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _waitAndCheckErrors(
     Future<void> Function() signInFunction,
   ) async {
-    setState(() => _showProgress = true);
+    setState(() => _isLoading = true);
     try {
       await signInFunction();
-    } on Exception catch (e) {
+    } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(CustomWidgets.customSnackbar(content: e.toString()));
-      setState(() => _showProgress = false);
+      setState(() => _isLoading = false);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          content: 'Error signing in to the account.'));
+      setState(() => _isLoading = false);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_showProgress) return const Center(child: CircularProgressIndicator());
-
     final size = MediaQuery.of(context).size;
     final authService = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
-        backgroundColor: NeumorphicTheme.baseColor(context),
+        backgroundColor: Colors.white,
         body: kIsWeb
             ? _webView()
-            : Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Image.asset(
-                          "assets/images/logo.png",
-                          width: size.width * 0.28,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text(
-                          'Pollstrix',
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Neumorphic(
-                              margin: const EdgeInsets.only(
-                                  left: 8, right: 8, top: 2, bottom: 4),
-                              style: NeumorphicStyle(
-                                depth: NeumorphicTheme.embossDepth(context),
-                                boxShape: const NeumorphicBoxShape.stadium(),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 18),
-                              child: TextField(
-                                controller: _emailController,
-                                decoration: const InputDecoration.collapsed(
-                                    hintText: "Enter your email"),
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Neumorphic(
-                              margin: const EdgeInsets.only(
-                                  left: 8, right: 8, top: 2, bottom: 4),
-                              style: NeumorphicStyle(
-                                depth: NeumorphicTheme.embossDepth(context),
-                                boxShape: const NeumorphicBoxShape.stadium(),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 18),
-                              child: TextField(
-                                controller: _passwordController,
-                                decoration: const InputDecoration.collapsed(
-                                    hintText: "Enter your password"),
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            NeumorphicButton(
-                                margin: const EdgeInsets.only(
-                                    left: 8, right: 8, top: 2, bottom: 4),
-                                onPressed: () {
-                                  final signInFunction =
-                                      authService.signInWithEmailAndPassword(
-                                          email: _emailController.text.trim(),
-                                          password:
-                                              _passwordController.text.trim(),
-                                          context: context);
-
-                                  _waitAndCheckErrors(() => signInFunction);
-                                },
-                                style: NeumorphicStyle(
-                                  color: Colors.blueAccent,
-                                  shape: NeumorphicShape.flat,
-                                  depth: NeumorphicTheme.embossDepth(context),
-                                  boxShape: const NeumorphicBoxShape.stadium(),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 50),
-                                child: Text(
-                                  "Login",
-                                  style: TextStyle(color: _textColor(context)),
-                                )),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Column(
-                          children: [
-                            Row(
+            : _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Center(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(35),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                        fit: FlexFit.loose,
-                                        child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 14, horizontal: 18),
-                                            child: TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pushNamed(context,
-                                                        '/forgot-password'),
-                                                child: const Text(
-                                                  'Forgot password',
-                                                ))))
-                                  ],
+                              children: <Widget>[
+                                Image.asset(
+                                  "assets/images/logo.png",
+                                  width: size.width * 0.2,
+                                  fit: BoxFit.contain,
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                        fit: FlexFit.loose,
-                                        child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 14, horizontal: 18),
-                                            child: TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pushNamed(
-                                                        context, '/register'),
-                                                child: const Text(
-                                                  'Create a new account',
-                                                ))))
-                                  ],
+                                const SizedBox(
+                                  height: 10,
                                 ),
-                              ],
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(
-                              vertical: size.height * 0.02),
-                          width: size.width * 0.8,
-                          child: Row(
-                            children: <Widget>[
-                              buildDivider(),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(
-                                  "OR",
+                                const Text(
+                                  'Pollstrix',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w400,
+                                      fontSize: 25,
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(
+                                  height: 45,
+                                ),
+                                CustomTextField(
+                                  fieldValidator: (value) {
+                                    String pattern =
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                                    RegExp regExp = RegExp(pattern);
+
+                                    if (value == null || value.trim().isEmpty) {
+                                      return 'This field is required';
+                                    } else if (!regExp.hasMatch(value.trim())) {
+                                      return 'Invalid email address';
+                                    }
+                                  },
+                                  textEditingController: _emailController,
+                                  label: 'Enter your email',
+                                  prefixIcon: const Icon(Icons.person_rounded),
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                CustomTextField(
+                                  fieldValidator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return "This field is requied";
+                                    }
+                                  },
+                                  textEditingController: _passwordController,
+                                  label: 'Enter your password',
+                                  prefixIcon:
+                                      const Icon(Icons.password_rounded),
+                                  keyboardType: TextInputType.visiblePassword,
+                                ),
+                                const SizedBox(
+                                  height: 25,
+                                ),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.blueAccent),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(50))),
+                                    elevation: MaterialStateProperty.all(8),
+                                    padding: MaterialStateProperty.all(
+                                        const EdgeInsets.symmetric(
+                                            vertical: 12, horizontal: 40)),
+                                  ),
+                                  onPressed: () async {
+                                    final signInFunction =
+                                        authService.signInWithEmailAndPassword(
+                                            email: _emailController.text.trim(),
+                                            password:
+                                                _passwordController.text.trim(),
+                                            context: context);
+
+                                    _waitAndCheckErrors(() => signInFunction);
+                                  },
+                                  child: const Text(
+                                    "Sign In",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              buildDivider(),
-                            ],
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                                fit: FlexFit.loose,
+                                                child: TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            '/forgot-password'),
+                                                    child: const Text(
+                                                      'Forgot password',
+                                                    )))
+                                          ],
+                                        ),
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                                fit: FlexFit.loose,
+                                                child: TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            '/register'),
+                                                    child: const Text(
+                                                      'Create a new account',
+                                                    )))
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: size.height * 0.02),
+                                  width: size.width * 0.8,
+                                  child: Row(
+                                    children: <Widget>[
+                                      buildDivider(),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Text(
+                                          "OR",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      buildDivider(),
+                                    ],
+                                  ),
+                                ),
+                                const GoogleSignInButton(),
+                              ],
+                            ),
                           ),
                         ),
-                        const GoogleSignInButton(),
-                      ],
+                      ),
                     ),
-                  ),
-                )));
+                  ));
   }
 
   Widget _webView() {
@@ -268,21 +266,23 @@ class _LoginPageState extends State<LoginPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Neumorphic(
-                      margin: const EdgeInsets.only(
-                          left: 8, right: 8, top: 2, bottom: 4),
-                      style: NeumorphicStyle(
-                        depth: NeumorphicTheme.embossDepth(context),
-                        boxShape: const NeumorphicBoxShape.stadium(),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 18),
-                      child: TextField(
-                        controller: _emailController,
-                        decoration: const InputDecoration.collapsed(
-                            hintText: "Enter your email"),
-                      ),
-                    )
+                    CustomTextField(
+                      fieldValidator: (value) {
+                        String pattern =
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                        RegExp regExp = RegExp(pattern);
+
+                        if (value == null || value.trim().isEmpty) {
+                          return 'This field is required';
+                        } else if (!regExp.hasMatch(value.trim())) {
+                          return 'Invalid email address';
+                        }
+                      },
+                      textEditingController: _emailController,
+                      label: 'Enter your email',
+                      prefixIcon: const Icon(Icons.person_rounded),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -291,46 +291,47 @@ class _LoginPageState extends State<LoginPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Neumorphic(
-                      margin: const EdgeInsets.only(
-                          left: 8, right: 8, top: 2, bottom: 4),
-                      style: NeumorphicStyle(
-                        depth: NeumorphicTheme.embossDepth(context),
-                        boxShape: const NeumorphicBoxShape.stadium(),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 18),
-                      child: TextField(
-                        controller: _passwordController,
-                        decoration: const InputDecoration.collapsed(
-                            hintText: "Enter your password"),
-                      ),
-                    )
+                    CustomTextField(
+                      fieldValidator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "This field is requied";
+                        }
+                      },
+                      textEditingController: _passwordController,
+                      label: 'Enter your password',
+                      prefixIcon: const Icon(Icons.password_rounded),
+                      keyboardType: TextInputType.visiblePassword,
+                    ),
                   ],
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 25,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    NeumorphicButton(
-                        margin: const EdgeInsets.only(
-                            left: 8, right: 8, top: 2, bottom: 4),
-                        onPressed: () {},
-                        style: NeumorphicStyle(
-                          color: Colors.blueAccent,
-                          shape: NeumorphicShape.flat,
-                          depth: NeumorphicTheme.embossDepth(context),
-                          boxShape: const NeumorphicBoxShape.stadium(),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 50),
-                        child: Text(
-                          "Login",
-                          style: TextStyle(color: _textColor(context)),
-                        )),
-                  ],
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.blueAccent),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50))),
+                    elevation: MaterialStateProperty.all(8),
+                    padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 40)),
+                  ),
+                  onPressed: () async {
+                    // await authService.signInWithEmailAndPassword(
+                    //     email: _emailController.text.trim(),
+                    //     password: _passwordController.text.trim(),
+                    //     context: context);
+                  },
+                  child: const Text(
+                    "Sign In",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 15,

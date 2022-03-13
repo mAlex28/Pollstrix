@@ -442,7 +442,7 @@ class _PollTileState extends State<PollTile> {
                               MaterialPageRoute(
                                   builder: (context) => FeedbackPage(
                                         pollID: widget.doc.id,
-                                        userID: currentUserID,
+                                        userID: currentUser!,
                                       )))),
                     ],
                   ),

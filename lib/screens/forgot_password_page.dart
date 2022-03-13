@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -11,143 +11,138 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  Color _textColor(BuildContext context) {
-    if (NeumorphicTheme.isUsingDark(context)) {
-      return Colors.white;
-    } else {
-      return Colors.white;
-    }
-  }
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final authService = Provider.of<AuthenticationService>(context);
     return Scaffold(
-        backgroundColor: NeumorphicTheme.baseColor(context),
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            verticalDirection: VerticalDirection.down,
-            children: <Widget>[
-              Image.asset(
-                "assets/images/logo.png",
-                width: size.width * 0.28,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                'Pollstrix',
-                style: TextStyle(
-                    fontSize: 25,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Neumorphic(
-                    margin: const EdgeInsets.only(
-                        left: 8, right: 8, top: 2, bottom: 4),
-                    style: NeumorphicStyle(
-                      depth: NeumorphicTheme.embossDepth(context),
-                      boxShape: const NeumorphicBoxShape.stadium(),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14, horizontal: 18),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration.collapsed(
-                          hintText: "Enter your email address here"),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  NeumorphicButton(
-                      margin: const EdgeInsets.only(
-                          left: 8, right: 8, top: 2, bottom: 4),
-                      onPressed: () {
-                        authService.resetPassword(
-                            email: _emailController.text.trim(),
-                            context: context);
-                      },
-                      style: NeumorphicStyle(
-                        color: Colors.blueAccent,
-                        shape: NeumorphicShape.flat,
-                        depth: NeumorphicTheme.embossDepth(context),
-                        boxShape: const NeumorphicBoxShape.stadium(),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 50),
-                      child: Text(
-                        "Send Email",
-                        style: TextStyle(color: _textColor(context)),
-                      )),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 18),
-                              child: TextButton(
-                                  onPressed: () =>
-                                      Navigator.pushNamed(context, '/login'),
-                                  child: const Text(
-                                    'Login here',
-                                  )))
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 18),
-                              child: TextButton(
-                                  onPressed: () =>
-                                      Navigator.pushNamed(context, '/register'),
-                                  child: const Text(
-                                    'Create a new account',
-                                  )))
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ],
-          ),
-        ));
-  }
+        backgroundColor: Colors.white,
+        body: Center(
+            child: SingleChildScrollView(
+                child: Container(
+                    color: Colors.white,
+                    child: Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            verticalDirection: VerticalDirection.down,
+                            children: <Widget>[
+                              Image.asset(
+                                "assets/images/logo.png",
+                                width: size.width * 0.28,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                'Pollstrix',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              CustomTextField(
+                                fieldValidator: (value) {
+                                  String pattern =
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                                  RegExp regExp = RegExp(pattern);
 
-  Expanded buildDivider() {
-    return const Expanded(
-      child: Divider(
-        color: Color(0xFFD9D9D9),
-        height: 1.5,
-      ),
-    );
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'This field is required';
+                                  } else if (!regExp.hasMatch(value.trim())) {
+                                    return 'Invalid email address';
+                                  }
+                                },
+                                textEditingController: _emailController,
+                                label: 'Enter your email here',
+                                prefixIcon: const Icon(Icons.email_rounded),
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.blueAccent),
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50))),
+                                  elevation: MaterialStateProperty.all(8),
+                                  padding: MaterialStateProperty.all(
+                                      const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 40)),
+                                ),
+                                onPressed: () async {
+                                  await authService.resetPassword(
+                                      email: _emailController.text.trim(),
+                                      context: context);
+                                },
+                                child: const Text(
+                                  "Send Email",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                              fit: FlexFit.loose,
+                                              child: TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pushNamed(
+                                                          context, '/login'),
+                                                  child: const Text(
+                                                    'Have an account',
+                                                  )))
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                              fit: FlexFit.loose,
+                                              child: TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pushNamed(
+                                                          context, '/register'),
+                                                  child: const Text(
+                                                    'Create a new account',
+                                                  )))
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ))))));
   }
 }

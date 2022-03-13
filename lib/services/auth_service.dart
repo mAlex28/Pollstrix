@@ -24,8 +24,16 @@ class AuthenticationService {
     return _firebaseAuth.currentUser!.email;
   }
 
+  String? getCurrentUserDisplayName() {
+    return _firebaseAuth.currentUser!.displayName;
+  }
+
   Future getCurrentUser() async {
     return _firebaseAuth.currentUser;
+  }
+
+  String? getCurrentUserImageUrl() {
+    return _firebaseAuth.currentUser!.photoURL;
   }
 
   getProfileImage() {
@@ -317,7 +325,7 @@ class AuthenticationService {
       required DateTime endDate,
       required BuildContext context}) async {
     try {
-      final currentUser = AuthenticationService().getCurrentUID();
+      final currentUser = getCurrentUID();
 
       List<dynamic> listOfChoices = [];
 
