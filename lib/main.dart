@@ -80,7 +80,7 @@ class AuthenticationWrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final bool signedIn = snapshot.hasData;
 
-            return signedIn ? HomePage() : const LoginPage();
+            return signedIn ? const HomePage() : const LoginPage();
           } else {
             return const Scaffold(
               body: Center(

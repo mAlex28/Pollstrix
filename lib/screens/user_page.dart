@@ -140,10 +140,12 @@ class _UserPageState extends State<UserPage> {
                                           height: 10,
                                         ),
                                         CustomTextField(
+                                          minLines: 3,
+                                          maxLines: 5,
                                           textEditingController: _bioController,
                                           label: 'About you...',
-                                          prefixIcon:
-                                              const Icon(Icons.person_rounded),
+                                          // prefixIcon:
+                                          //     const Icon(Icons.person_rounded),
                                         ),
                                         const SizedBox(
                                           height: 15,

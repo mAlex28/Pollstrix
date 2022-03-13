@@ -5,7 +5,9 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final bool password;
   final TextInputType keyboardType;
-  final Icon prefixIcon;
+  final Icon? prefixIcon;
+  final int minLines;
+  final int maxLines;
   final FormFieldValidator<String>? fieldValidator;
 
   const CustomTextField(
@@ -15,12 +17,16 @@ class CustomTextField extends StatelessWidget {
       this.password = false,
       this.fieldValidator,
       this.keyboardType = TextInputType.text,
-      required this.prefixIcon})
+      this.prefixIcon,
+      this.minLines = 1,
+      this.maxLines = 1})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      minLines: minLines,
+      maxLines: maxLines,
       keyboardType: keyboardType,
       autofocus: false,
       obscureText: password,

@@ -34,25 +34,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           key: _formKey,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            verticalDirection: VerticalDirection.down,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Image.asset(
-                                "assets/images/logo.png",
-                                width: size.width * 0.28,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                'Pollstrix',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
                               CustomTextField(
                                 fieldValidator: (value) {
                                   String pattern =
