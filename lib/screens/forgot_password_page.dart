@@ -119,7 +119,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                                       Navigator.pushNamed(
                                                           context, '/login'),
                                                   child: const Text(
-                                                    'Have an account',
+                                                    'Have an account?',
                                                   )))
                                         ],
                                       ),

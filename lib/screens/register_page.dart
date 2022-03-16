@@ -17,6 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   String imageUrl = '';
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _lnameController = TextEditingController();
@@ -64,7 +65,19 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _isLoading = true);
     try {
       await signInFunction();
-      Navigator.pushNamed(context, '/');
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Creating Account...'),
+          content: const Text('Please wait you will be redirecteed shortly'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/'),
+                child: const Text("OK"))
+          ],
+        ),
+      );
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(CustomWidgets.customSnackbar(content: e.toString()));
@@ -73,10 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           content: 'Error signing in to the account.'));
       setState(() => _isLoading = false);
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -175,7 +184,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   CustomTextField(
                                       fieldValidator: _passwordFieldValidator,
-                                      password: true,
+                                      password: _isPasswordVisible,
+                                      suffixIcon: IconButton(
+                                          iconSize: 18.0,
+                                          onPressed: () {
+                                            setState(() {
+                                              _isPasswordVisible =
+                                                  !_isPasswordVisible;
+                                            });
+                                          },
+                                          icon: Icon(_isPasswordVisible
+                                              ? Icons.visibility_rounded
+                                              : Icons.visibility_off_rounded)),
                                       textEditingController:
                                           _passwordController,
                                       label: 'Enter your password',

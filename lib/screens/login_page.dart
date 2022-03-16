@@ -130,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                                   icon: Icon(_isPasswordVisible
                                       ? Icons.visibility_rounded
                                       : Icons.visibility_off_rounded)),
-                              keyboardType: TextInputType.visiblePassword,
                             ),
                             const SizedBox(
                               height: 25,

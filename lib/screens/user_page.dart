@@ -185,33 +185,78 @@ class _UserPageState extends State<UserPage> {
                                         const SizedBox(
                                           height: 15,
                                         ),
-                                        CustomTextField(
-                                            fieldValidator:
-                                                _emailFieldValidator,
-                                            textEditingController:
-                                                _emailController,
-                                            label: 'Enter your email',
-                                            keyboardType:
-                                                TextInputType.emailAddress,
-                                            prefixIcon: const Icon(
-                                                Icons.email_rounded)),
-                                        // Column(
-                                        //   crossAxisAlignment:
-                                        //       CrossAxisAlignment.start,
-                                        //   children: [
-                                        //     TextField(
-                                        //       readOnly: true,
-                                        //       onTap: () => authData.updateUserEmail(
-                                        //           _emailController.text, context),
-                                        //       keyboardType:
-                                        //           TextInputType.emailAddress,
-                                        //       controller: _emailController,
-                                        //       decoration:
-                                        //           const InputDecoration.collapsed(
-                                        //               hintText: "Enter your email"),
-                                        //     ),
-                                        //   ],
-                                        // ),
+                                        TextField(
+                                          readOnly: true,
+                                          autofocus: false,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          controller: _emailController,
+                                          decoration: InputDecoration(
+                                              suffix: GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          actions: [
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: <
+                                                                  Widget>[
+                                                                TextButton(
+                                                                    onPressed: () =>
+                                                                        Navigator.pop(
+                                                                            context),
+                                                                    child: const Text(
+                                                                        "Cancel")),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      await authData.updateUserEmail(
+                                                                          _emailController
+                                                                              .text,
+                                                                          context);
+                                                                    },
+                                                                    child: const Text(
+                                                                        "Confirm"))
+                                                              ],
+                                                            )
+                                                          ],
+                                                          title: const Text(
+                                                              'Change your email..'),
+                                                          content: TextField(
+                                                            onChanged:
+                                                                (value) {},
+                                                            controller:
+                                                                _emailController,
+                                                            decoration:
+                                                                const InputDecoration(
+                                                                    hintText:
+                                                                        "Email here..."),
+                                                          ),
+                                                        );
+                                                      });
+                                                },
+                                                child: const Text(
+                                                  'Change email',
+                                                  style: TextStyle(
+                                                      fontSize: 14.0,
+                                                      color: Colors.blueAccent),
+                                                ),
+                                              ),
+                                              prefixIcon: const Icon(
+                                                  Icons.email_rounded),
+                                              hintText: "Enter your email",
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 15, 20, 15),
+                                              border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20))),
+                                        ),
                                         const SizedBox(
                                           height: 15,
                                         ),

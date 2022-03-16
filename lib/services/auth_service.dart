@@ -224,13 +224,18 @@ class AuthenticationService {
 
       showDialog(
         context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
+        builder: (BuildContext context) => AlertDialog(
           title: const Text('Email sent'),
           content: const Text('Please check your inbox to reset the password'),
           actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("OK"))
+              ],
+            )
           ],
         ),
       );
@@ -258,21 +263,29 @@ class AuthenticationService {
 
       showDialog(
         context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('Email sent'),
-          content:
-              const Text('Please check your inbox change the email address'),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"))
-          ],
-        ),
+        builder: (BuildContext context) => AlertDialog(
+            title: const Text('Email updated'),
+            content:
+                const Text('Please check your inbox change the email address'),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("OK"))
+                ],
+              )
+            ]),
       );
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      FocusManager.instance.primaryFocus?.unfocus();
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));
     } catch (e) {
+      Navigator.pop(context);
+      FocusManager.instance.primaryFocus?.unfocus();
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           content: 'Error sending email. Try again.'));
     }
@@ -283,7 +296,27 @@ class AuthenticationService {
   Future deleteAccount(BuildContext context) async {
     try {
       await _firebaseAuth.currentUser!.delete();
+      // redirect the user to login page
+      Navigator.pushNamed(context, '/login');
       await _firebaseAuth.currentUser!.reload();
+
+      // get the data related to the current user to achieve it
+      await _firebaseFirestore
+          .collection('users')
+          .doc(getCurrentUID())
+          .get()
+          .then((value) {
+        _firebaseFirestore
+            .collection('achievedUsers')
+            .doc(getCurrentUID())
+            .set(value.data()!);
+      });
+
+      // delete the data related to the current logged in user from firestore
+      await _firebaseFirestore
+          .collection('users')
+          .doc(getCurrentUID())
+          .delete();
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           CustomWidgets.customSnackbar(content: e.message.toString()));

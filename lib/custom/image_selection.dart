@@ -83,7 +83,7 @@ class _UserImageState extends State<UserImage> {
                   children: [
                     ListTile(
                       leading: const Icon(Icons.camera),
-                      title: const Text('Camera'),
+                      title: const Text('Take a picture'),
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.camera);
@@ -91,7 +91,7 @@ class _UserImageState extends State<UserImage> {
                     ),
                     ListTile(
                       leading: const Icon(Icons.photo),
-                      title: const Text('Select a photo'),
+                      title: const Text('Select from gallery'),
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.gallery);
