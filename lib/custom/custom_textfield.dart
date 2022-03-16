@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final bool password;
   final TextInputType keyboardType;
+  final IconButton? suffixIcon;
   final Icon? prefixIcon;
   final int minLines;
   final int maxLines;
@@ -19,7 +20,8 @@ class CustomTextField extends StatelessWidget {
       this.keyboardType = TextInputType.text,
       this.prefixIcon,
       this.minLines = 1,
-      this.maxLines = 1})
+      this.maxLines = 1,
+      this.suffixIcon})
       : super(key: key);
 
   @override
@@ -34,10 +36,11 @@ class CustomTextField extends StatelessWidget {
       controller: textEditingController,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+          suffixIcon: suffixIcon,
           hintText: label,
           prefixIcon: prefixIcon,
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30))),
     );
   }
 }
