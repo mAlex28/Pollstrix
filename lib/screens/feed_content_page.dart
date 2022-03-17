@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pollstrix/custom/custom_searchbar_delegate.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 
 class FeedContentPage extends StatefulWidget {
@@ -11,6 +12,24 @@ class FeedContentPage extends StatefulWidget {
 
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
+  List<String> searchItems = [
+    "Apple",
+    "Banana",
+    "Pineapple",
+    "Pear",
+    "Watermelon",
+    "Organe",
+    "Blueberries"
+  ];
+  String searchKey = 'test';
+  search() {
+    return db
+        .collection('Col-Name')
+        .where('fieldName', isGreaterThanOrEqualTo: searchKey)
+        .where('fieldName', isLessThan: searchKey + 'z')
+        .snapshots()
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +43,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                // do something
+                showSearch(
+                    context: context, delegate: CustomSearchBarDelegate());
               },
             ),
             IconButton(
