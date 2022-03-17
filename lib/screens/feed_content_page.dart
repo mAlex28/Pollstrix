@@ -17,11 +17,34 @@ class _FeedContentPageState extends State<FeedContentPage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Pollstrix'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.search_rounded,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                // do something
+              },
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.sort_rounded,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                // do something
+              },
+            )
+          ],
         ),
         body: Column(children: [
           Flexible(
               child: StreamBuilder<QuerySnapshot>(
-            stream: db.collection('polls').snapshots(),
+            stream: db
+                .collection('polls')
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(
