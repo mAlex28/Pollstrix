@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_searchbar_delegate.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
+import 'package:pollstrix/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class FeedContentPage extends StatefulWidget {
   const FeedContentPage({Key? key}) : super(key: key);
@@ -12,6 +14,16 @@ class FeedContentPage extends StatefulWidget {
 
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _openEndDrawer() {
+    _scaffoldKey.currentState!.openEndDrawer();
+  }
+
   List<String> searchItems = [
     "Apple",
     "Banana",
@@ -34,6 +46,13 @@ class _FeedContentPageState extends State<FeedContentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
+        endDrawer: Drawer(
+          child: Container(
+            alignment: Alignment.center,
+            child: const Text('Hello!'),
+          ),
+        ),
         appBar: AppBar(
           title: const Text('Pollstrix'),
           actions: <Widget>[
@@ -53,7 +72,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                // do something
+                _openEndDrawer();
               },
             )
           ],

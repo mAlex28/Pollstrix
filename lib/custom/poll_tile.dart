@@ -26,16 +26,25 @@ class _PollTileState extends State<PollTile> {
   bool _changePollType = false;
   late bool _showBarChart;
   List<bool> isSelectedPoll = [true, false];
+  final String currentUserID = AuthenticationService().getCurrentUID();
+  List<dynamic> pollsWithLikes = [];
 
   bool isLiked = false;
   bool isDisliked = false;
 
   @override
   void initState() {
+    _findLikedPollsOfTheUser();
+
     super.initState();
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
@@ -44,80 +53,137 @@ class _PollTileState extends State<PollTile> {
     super.dispose();
   }
 
-  _likeOrDislike(likesOrDislikes, pid, uid, bool liked) async {
-    List<dynamic> voted = [];
+  _findLikedPollsOfTheUser() async {
+    List<dynamic> likedPolls = [];
+    List<dynamic> pidList = [];
 
-    await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-      if (liked) {
-        voted = value.data()!['likedPolls'];
-        voted.add(pid);
-      } else {
-        voted = value.data()!['dislikedPolls'];
-        voted.add(pid);
-      }
+    // get a list of available pids
+    await _firebaseFirestore.collection('polls').get().then((value) {
+      value.docs.forEach((doc) {
+        pidList.add(doc.id);
+      });
     });
-
-    await _firebaseFirestore.collection('polls').doc(pid).update(liked
-        ? isDisliked
-            ? {'dislikes': likesOrDislikes - 1, 'likes': likesOrDislikes + 1}
-            : {'likes': likesOrDislikes + 1}
-        : isLiked
-            ? {'dislikes': likesOrDislikes + 1, 'likes': likesOrDislikes - 1}
-            : {'dislikes': likesOrDislikes + 1});
-
-    await _firebaseFirestore.collection('users').doc(uid).update(liked
-        ? {'likedPolls': FieldValue.arrayUnion(voted)}
-        : {
-            'dislikedPolls': FieldValue.arrayUnion(voted),
-          });
-
-    setState(() {
-      if (liked) {
-        isLiked = true;
-        isDisliked = false;
-      } else {
-        isDisliked = true;
-        isLiked = false;
-      }
-    });
-  }
-
-  _removeLikeOrDislike(likesOrDislikes, pid, uid, bool liked) async {
-    List<dynamic> voted = [];
-
-    await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-      if (liked) {
-        voted = value.data()!['likedPolls'];
-        voted.remove(pid);
-      } else {
-        voted = value.data()!['dislikedPolls'];
-        voted.remove(pid);
-      }
-    });
-
-    await _firebaseFirestore.collection('polls').doc(pid).update(liked
-        ? {
-            'likes': likesOrDislikes - 1,
-          }
-        : {
-            'dislikes': likesOrDislikes - 1,
-          });
 
     await _firebaseFirestore
         .collection('users')
-        .doc(uid)
-        .update(liked ? {'likedPolls': voted} : {'dislikedPolls': voted});
+        .doc(currentUserID)
+        .get()
+        .then((value) {
+      likedPolls = value.data()!['likedPolls'];
 
-    setState(() {
-      if (liked) {
-        isLiked = false;
-      } else {
-        isDisliked = false;
-      }
+      setState(() {
+        likedPolls.map((e) {
+          if (pidList.contains(e)) {
+            pollsWithLikes.add(e);
+          }
+        }).toList();
+      });
     });
   }
 
-  // Show report dialog to report a poll
+  _like(
+      {required int likes,
+      required String pid,
+      required String uid,
+      required bool isPollLiked}) async {
+    List<dynamic> likedPolls = [];
+
+    if (isPollLiked) {
+      likedPolls.clear();
+
+      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
+        likedPolls = value.data()!['likedPolls'];
+        likedPolls.remove(pid);
+      });
+
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(pid)
+          .update({'likes': likes - 1});
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .update({'likedPolls': likedPolls});
+
+      setState(() {
+        isLiked = false;
+      });
+    } else {
+      likedPolls.clear();
+
+      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
+        likedPolls = value.data()!['likedPolls'];
+        likedPolls.add(pid);
+      });
+
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(pid)
+          .update({'likes': likes + 1});
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .update({'likedPolls': FieldValue.arrayUnion(likedPolls)});
+      setState(() {
+        isLiked = true;
+      });
+    }
+  }
+
+  _dislike(
+      {required int dislikes,
+      required String pid,
+      required String uid,
+      required bool isPollDisiked}) async {
+    List<dynamic> dislikedPolls = [];
+
+    if (isPollDisiked) {
+      dislikedPolls.clear();
+
+      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
+        dislikedPolls = value.data()!['dislikedPolls'];
+        dislikedPolls.remove(pid);
+      });
+
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(pid)
+          .update({'dislikes': dislikes - 1});
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .update({'dislikedPolls': dislikedPolls});
+
+      setState(() {
+        isDisliked = false;
+      });
+    } else {
+      dislikedPolls.clear();
+
+      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
+        dislikedPolls = value.data()!['dislikedPolls'];
+        dislikedPolls.add(pid);
+      });
+
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(pid)
+          .update({'dislikes': dislikes + 1});
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .update({'dislikedPolls': dislikedPolls});
+      setState(() {
+        isDisliked = true;
+      });
+    }
+  }
+
+// Show report dialog to report a poll
   _showReportDialog(
       {required String uid,
       required String pid,
@@ -392,59 +458,51 @@ class _PollTileState extends State<PollTile> {
                               semanticLabel: 'Thumbs up',
                             ),
                             iconSize: 20,
-                            color: isLiked == false
-                                ? Colors.grey
-                                : Colors.lightBlue[600],
+                            color: isLiked ||
+                                    pollsWithLikes.contains(widget.doc.id)
+                                ? Colors.lightBlue[600]
+                                : Colors.grey,
                             tooltip: 'Thumbs up',
                             onPressed: () async {
-                              if (isLiked) {
-                                isLiked = false;
-                                await _removeLikeOrDislike(
-                                    (widget.doc.data() as dynamic)['likes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    true);
-                              } else {
-                                await _likeOrDislike(
-                                    (widget.doc.data() as dynamic)['likes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    true);
-                              }
+                              await _like(
+                                  likes:
+                                      (widget.doc.data() as dynamic)['likes'],
+                                  pid: widget.doc.id,
+                                  uid: (widget.doc.data() as dynamic)['uid'],
+                                  isPollLiked: isLiked);
                             },
                           ),
                           Text(((widget.doc.data() as dynamic)['likes'])
                               .toString()),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.thumb_down_alt_rounded,
-                              semanticLabel: 'Thumbs down',
-                            ),
-                            iconSize: 20,
-                            color: isDisliked == false
-                                ? Colors.grey
-                                : Colors.lightBlue[600],
-                            tooltip: 'Thumbs down',
-                            onPressed: () async {
-                              if (isDisliked) {
-                                isDisliked = true;
-                                await _removeLikeOrDislike(
-                                    (widget.doc.data() as dynamic)['dislikes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    false);
-                              } else {
-                                await _likeOrDislike(
-                                    (widget.doc.data() as dynamic)['dislikes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    false);
-                              }
-                              setState(() {});
-                            },
-                          ),
-                          Text(((widget.doc.data() as dynamic)['dislikes'])
-                              .toString()),
+                          // IconButton(
+                          //   icon: const Icon(
+                          //     Icons.thumb_down_alt_rounded,
+                          //     semanticLabel: 'Thumbs down',
+                          //   ),
+                          //   iconSize: 20,
+                          //   color: isDisliked == false
+                          //       ? Colors.grey
+                          //       : Colors.lightBlue[600],
+                          //   tooltip: 'Thumbs down',
+                          //   onPressed: () {
+                          // if (isDisliked) {
+                          //   isDisliked = true;
+                          //   await _removeLikeOrDislike(
+                          //       (widget.doc.data() as dynamic)['dislikes'],
+                          //       widget.doc.id,
+                          //       (widget.doc.data() as dynamic)['uid'],
+                          //       false);
+                          // } else {
+                          //   await _likeOrDislike(
+                          //       (widget.doc.data() as dynamic)['dislikes'],
+                          //       widget.doc.id,
+                          //       (widget.doc.data() as dynamic)['uid'],
+                          //       false);
+                          // }
+                          // },
+                          // ),
+                          // Text(((widget.doc.data() as dynamic)['dislikes'])
+                          //     .toString()),
                         ],
                       ),
                       TextButton(
@@ -570,65 +628,68 @@ class _PollTileState extends State<PollTile> {
                               semanticLabel: 'Thumbs up',
                             ),
                             iconSize: 20,
-                            color: isLiked == false
-                                ? Colors.grey
-                                : Colors.lightBlue[600],
+                            color:
+                                isLiked ? Colors.lightBlue[600] : Colors.grey,
                             tooltip: 'Thumbs up',
                             onPressed: () async {
-                              if (isLiked) {
-                                isLiked = false;
-                                await _removeLikeOrDislike(
-                                    (widget.doc.data() as dynamic)['likes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    true);
-                              } else {
-                                await _likeOrDislike(
-                                    (widget.doc.data() as dynamic)['likes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    true);
-                              }
-
-                              setState(() {});
+                              await _like(
+                                  likes:
+                                      (widget.doc.data() as dynamic)['likes'],
+                                  pid: widget.doc.id,
+                                  uid: (widget.doc.data() as dynamic)['uid'],
+                                  isPollLiked: isLiked);
+                              // if (isLiked) {
+                              //   isLiked = false;
+                              //   await _removeLikeOrDislike(
+                              //       (widget.doc.data() as dynamic)['likes'],
+                              //       widget.doc.id,
+                              //       (widget.doc.data() as dynamic)['uid'],
+                              //       true);
+                              // } else {
+                              //   await _likeOrDislike(
+                              //       (widget.doc.data() as dynamic)['likes'],
+                              //       widget.doc.id,
+                              //       (widget.doc.data() as dynamic)['uid'],
+                              //       true);
+                              // }
                             },
                           ),
                           Text(((widget.doc.data() as dynamic)['likes'])
                               .toString()),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.thumb_down_alt_rounded,
-                              semanticLabel: 'Thumbs down',
-                            ),
-                            iconSize: 20,
-                            color: isDisliked == false
-                                ? Colors.grey
-                                : Colors.lightBlue[600],
-                            tooltip: 'Thumbs down',
-                            onPressed: () async {
-                              if (isDisliked) {
-                                isDisliked = true;
-                                await _removeLikeOrDislike(
-                                    (widget.doc.data() as dynamic)['dislikes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    false);
-                              } else {
-                                await _likeOrDislike(
-                                    (widget.doc.data() as dynamic)['dislikes'],
-                                    widget.doc.id,
-                                    (widget.doc.data() as dynamic)['uid'],
-                                    false);
-                              }
-                              setState(() {});
-                            },
-                          ),
-                          Text(((widget.doc.data() as dynamic)['dislikes'])
-                              .toString()),
+                          // IconButton(
+                          //   icon: const Icon(
+                          //     Icons.thumb_down_alt_rounded,
+                          //     semanticLabel: 'Thumbs down',
+                          //   ),
+                          //   iconSize: 20,
+                          //   color: isDisliked == false
+                          //       ? Colors.grey
+                          //       : Colors.lightBlue[600],
+                          //   tooltip: 'Thumbs down',
+                          //   onPressed: () async {
+                          // if (isDisliked) {
+                          //   isDisliked = true;
+                          //   await _removeLikeOrDislike(
+                          //       (widget.doc.data() as dynamic)['dislikes'],
+                          //       widget.doc.id,
+                          //       (widget.doc.data() as dynamic)['uid'],
+                          //       false);
+                          // } else {
+                          //   await _likeOrDislike(
+                          //       (widget.doc.data() as dynamic)['dislikes'],
+                          //       widget.doc.id,
+                          //       (widget.doc.data() as dynamic)['uid'],
+                          //       false);
+                          // }
+                          // setState(() {});
+                          //   },
+                          // ),
+                          // Text(((widget.doc.data() as dynamic)['dislikes'])
+                          //     .toString()),
                         ],
                       ),
                       TextButton(
-                          child: const Text('Leave a feedback',
+                          child: const Text('View feedback',
                               style: TextStyle(
                                   fontSize: 12.0, color: Colors.grey)),
                           onPressed: () => Navigator.push(
