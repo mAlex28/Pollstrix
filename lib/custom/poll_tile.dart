@@ -178,6 +178,7 @@ class _PollTileState extends State<PollTile> {
                     if (_reportTextController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           CustomWidgets.customSnackbar(
+                              backgroundColor: Colors.red,
                               content: 'Cannot submit an empty report'));
                     } else {
                       await _firebaseFirestore.collection('reports').doc().set({
@@ -187,6 +188,7 @@ class _PollTileState extends State<PollTile> {
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                           CustomWidgets.customSnackbar(
+                              backgroundColor: Colors.green,
                               content: 'Successfully submited'));
                     }
 
@@ -222,11 +224,13 @@ class _PollTileState extends State<PollTile> {
                           .whenComplete(() {
                         ScaffoldMessenger.of(context).showSnackBar(
                             CustomWidgets.customSnackbar(
+                                backgroundColor: Colors.green,
                                 content: 'Successfully deleted'));
                         Navigator.of(context).pop();
                       }).onError((error, stackTrace) => ScaffoldMessenger.of(
                                   context)
                               .showSnackBar(CustomWidgets.customSnackbar(
+                                  backgroundColor: Colors.red,
                                   content:
                                       'Unkown error! Please try again later')));
                     },

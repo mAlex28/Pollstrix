@@ -143,6 +143,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                       CustomWidgets.customSnackbar(
+                          backgroundColor: Colors.red,
                           content: 'Oops..Something went wrong..'));
                 }
               },

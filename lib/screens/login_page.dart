@@ -28,11 +28,12 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await signInFunction();
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(CustomWidgets.customSnackbar(content: e.toString()));
+      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          backgroundColor: Colors.red, content: e.toString()));
       setState(() => _isLoading = false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+          backgroundColor: Colors.red,
           content: 'Error signing in to the account.'));
       setState(() => _isLoading = false);
     } finally {
