@@ -38,7 +38,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
       });
     });
 
-    // db.collection('polls').where('endDate', is)
+    db.collection('polls').where('endDate');
   }
 
   @override
