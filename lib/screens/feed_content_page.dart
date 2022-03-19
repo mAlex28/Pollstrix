@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_searchbar_delegate.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
-import 'package:pollstrix/services/auth_service.dart';
-import 'package:provider/provider.dart';
 
 class FeedContentPage extends StatefulWidget {
   const FeedContentPage({Key? key}) : super(key: key);
@@ -15,42 +13,190 @@ class FeedContentPage extends StatefulWidget {
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late DateTime _currentDate;
+  var stream;
+
   @override
   void initState() {
     super.initState();
+    _currentDate = DateTime.now();
+    stream = db
+        .collection('polls')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+    _compareDates();
   }
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
   }
 
-  List<String> searchItems = [
-    "Apple",
-    "Banana",
-    "Pineapple",
-    "Pear",
-    "Watermelon",
-    "Organe",
-    "Blueberries"
-  ];
-  String searchKey = 'test';
-  search() {
-    return db
-        .collection('Col-Name')
-        .where('fieldName', isGreaterThanOrEqualTo: searchKey)
-        .where('fieldName', isLessThan: searchKey + 'z')
-        .snapshots()
-        .toList();
+  _compareDates() async {
+    await db.collection('polls').get().then((value) {
+      value.docs.map((e) {
+        e.data()['endDate'];
+      });
+    });
+
+    // db.collection('polls').where('endDate', is)
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        endDrawer: Drawer(
-          child: Container(
-            alignment: Alignment.center,
-            child: const Text('Hello!'),
+        endDrawer: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: Drawer(
+            child: ListView(
+              padding: const EdgeInsets.all(10.0),
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 20, bottom: 8),
+                  child: Text(
+                    'Sort By:',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.blue),
+                  ),
+                ),
+                ListTile(
+                  title: const Text(
+                    'Votes (most - least)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .orderBy('voteCount', descending: true)
+                          .snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Votes (least - most)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .orderBy('voteCount')
+                          .snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Likes (most - least)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .orderBy('likes', descending: true)
+                          .snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Likes (least - most)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream =
+                          db.collection('polls').orderBy('likes').snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Running',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    // Update the state of the app
+                    // ...
+                    // Then close the drawer
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Ended',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    // Update the state of the app
+                    // ...
+                    // Then close the drawer
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Created Date (Asc)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .orderBy('createdAt')
+                          .snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Created Date (Desc)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  hoverColor: Colors.lightBlue,
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  onTap: () {
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .orderBy('createdAt', descending: true)
+                          .snapshots();
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         appBar: AppBar(
@@ -80,10 +226,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
         body: Column(children: [
           Flexible(
               child: StreamBuilder<QuerySnapshot>(
-            stream: db
-                .collection('polls')
-                .orderBy('createdAt', descending: true)
-                .snapshots(),
+            stream: stream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(
