@@ -21,30 +21,26 @@ class PollTile extends StatefulWidget {
 
 class _PollTileState extends State<PollTile> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final String currentUserID = AuthenticationService().getCurrentUID();
+
   late TextEditingController _reportTextController;
   late DateTime _currentDate;
-  bool _changePollType = false;
   late bool _showBarChart;
-  List<bool> isSelectedPoll = [true, false];
-  final String currentUserID = AuthenticationService().getCurrentUID();
-  List<dynamic> pollsWithLikes = [];
 
+  List<bool> isSelectedPoll = [true, false];
+
+  bool _changePollType = false;
   bool isLiked = false;
   bool isDisliked = false;
 
   @override
   void initState() {
-    _findLikedPollsOfTheUser();
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
+    _findLikedPollsOfTheUser();
     _checkFinishedStatus();
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
   }
 
   @override
@@ -53,16 +49,9 @@ class _PollTileState extends State<PollTile> {
     super.dispose();
   }
 
+  // find polls that are liked by the user and show them in blue colour
   _findLikedPollsOfTheUser() async {
     List<dynamic> likedPolls = [];
-    List<dynamic> pidList = [];
-
-    // get a list of available pids
-    await _firebaseFirestore.collection('polls').get().then((value) {
-      value.docs.forEach((doc) {
-        pidList.add(doc.id);
-      });
-    });
 
     await _firebaseFirestore
         .collection('users')
@@ -73,8 +62,8 @@ class _PollTileState extends State<PollTile> {
 
       setState(() {
         likedPolls.map((e) {
-          if (pidList.contains(e)) {
-            pollsWithLikes.add(e);
+          if (e == widget.doc.id) {
+            isLiked = true;
           }
         }).toList();
       });
@@ -469,10 +458,8 @@ class _PollTileState extends State<PollTile> {
                               semanticLabel: 'Thumbs up',
                             ),
                             iconSize: 20,
-                            color: isLiked ||
-                                    pollsWithLikes.contains(widget.doc.id)
-                                ? Colors.lightBlue[600]
-                                : Colors.grey,
+                            color:
+                                isLiked ? Colors.lightBlue[600] : Colors.grey,
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(
@@ -496,20 +483,7 @@ class _PollTileState extends State<PollTile> {
                           //       : Colors.lightBlue[600],
                           //   tooltip: 'Thumbs down',
                           //   onPressed: () {
-                          // if (isDisliked) {
-                          //   isDisliked = true;
-                          //   await _removeLikeOrDislike(
-                          //       (widget.doc.data() as dynamic)['dislikes'],
-                          //       widget.doc.id,
-                          //       (widget.doc.data() as dynamic)['uid'],
-                          //       false);
-                          // } else {
-                          //   await _likeOrDislike(
-                          //       (widget.doc.data() as dynamic)['dislikes'],
-                          //       widget.doc.id,
-                          //       (widget.doc.data() as dynamic)['uid'],
-                          //       false);
-                          // }
+                          //
                           // },
                           // ),
                           // Text(((widget.doc.data() as dynamic)['dislikes'])
@@ -579,8 +553,17 @@ class _PollTileState extends State<PollTile> {
                         style: const TextStyle(fontSize: 16)),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text(
+                            ((widget.doc.data() as dynamic)['voteCount'])
+                                    .toString() +
+                                ' votes',
+                            style: TextStyle(
+                                fontSize: 12.0, color: Colors.grey[800])),
+                      ),
                       ToggleSwitch(
                         borderColor: const [Colors.blue],
                         borderWidth: 1,
@@ -649,54 +632,10 @@ class _PollTileState extends State<PollTile> {
                                   pid: widget.doc.id,
                                   uid: (widget.doc.data() as dynamic)['uid'],
                                   isPollLiked: isLiked);
-                              // if (isLiked) {
-                              //   isLiked = false;
-                              //   await _removeLikeOrDislike(
-                              //       (widget.doc.data() as dynamic)['likes'],
-                              //       widget.doc.id,
-                              //       (widget.doc.data() as dynamic)['uid'],
-                              //       true);
-                              // } else {
-                              //   await _likeOrDislike(
-                              //       (widget.doc.data() as dynamic)['likes'],
-                              //       widget.doc.id,
-                              //       (widget.doc.data() as dynamic)['uid'],
-                              //       true);
-                              // }
                             },
                           ),
                           Text(((widget.doc.data() as dynamic)['likes'])
                               .toString()),
-                          // IconButton(
-                          //   icon: const Icon(
-                          //     Icons.thumb_down_alt_rounded,
-                          //     semanticLabel: 'Thumbs down',
-                          //   ),
-                          //   iconSize: 20,
-                          //   color: isDisliked == false
-                          //       ? Colors.grey
-                          //       : Colors.lightBlue[600],
-                          //   tooltip: 'Thumbs down',
-                          //   onPressed: () async {
-                          // if (isDisliked) {
-                          //   isDisliked = true;
-                          //   await _removeLikeOrDislike(
-                          //       (widget.doc.data() as dynamic)['dislikes'],
-                          //       widget.doc.id,
-                          //       (widget.doc.data() as dynamic)['uid'],
-                          //       false);
-                          // } else {
-                          //   await _likeOrDislike(
-                          //       (widget.doc.data() as dynamic)['dislikes'],
-                          //       widget.doc.id,
-                          //       (widget.doc.data() as dynamic)['uid'],
-                          //       false);
-                          // }
-                          // setState(() {});
-                          //   },
-                          // ),
-                          // Text(((widget.doc.data() as dynamic)['dislikes'])
-                          //     .toString()),
                         ],
                       ),
                       TextButton(
