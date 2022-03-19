@@ -13,32 +13,19 @@ class FeedContentPage extends StatefulWidget {
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late DateTime _currentDate;
   var stream;
 
   @override
   void initState() {
     super.initState();
-    _currentDate = DateTime.now();
     stream = db
         .collection('polls')
         .orderBy('createdAt', descending: true)
         .snapshots();
-    _compareDates();
   }
 
   void _openEndDrawer() {
     _scaffoldKey.currentState!.openEndDrawer();
-  }
-
-  _compareDates() async {
-    await db.collection('polls').get().then((value) {
-      value.docs.map((e) {
-        e.data()['endDate'];
-      });
-    });
-
-    db.collection('polls').where('endDate');
   }
 
   @override
@@ -138,9 +125,12 @@ class _FeedContentPageState extends State<FeedContentPage> {
                   dense: true,
                   visualDensity: VisualDensity.compact,
                   onTap: () {
-                    // Update the state of the app
-                    // ...
-                    // Then close the drawer
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .where('finished', isEqualTo: false)
+                          .snapshots();
+                    });
                     Navigator.pop(context);
                   },
                 ),
@@ -153,9 +143,12 @@ class _FeedContentPageState extends State<FeedContentPage> {
                   dense: true,
                   visualDensity: VisualDensity.compact,
                   onTap: () {
-                    // Update the state of the app
-                    // ...
-                    // Then close the drawer
+                    setState(() {
+                      stream = db
+                          .collection('polls')
+                          .where('finished', isEqualTo: true)
+                          .snapshots();
+                    });
                     Navigator.pop(context);
                   },
                 ),

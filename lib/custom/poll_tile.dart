@@ -35,11 +35,11 @@ class _PollTileState extends State<PollTile> {
   @override
   void initState() {
     _findLikedPollsOfTheUser();
-
-    super.initState();
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
+    _checkFinishedStatus();
+    super.initState();
   }
 
   @override
@@ -79,6 +79,17 @@ class _PollTileState extends State<PollTile> {
         }).toList();
       });
     });
+  }
+
+  // check if the poll has ended and update the 'finished' status of the poll
+  _checkFinishedStatus() async {
+    final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
+    if (endDate.isBefore(_currentDate)) {
+      await _firebaseFirestore
+          .collection('polls')
+          .doc(widget.doc.id)
+          .update({'finished': true});
+    }
   }
 
   _like(
