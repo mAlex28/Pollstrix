@@ -27,15 +27,11 @@ class _HomePageState extends State<HomePage> {
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
-          children: [
-            const FeedContentPage(),
-            ProfileContentPage(),
-            const MenuPage()
-          ],
+          children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.blueGrey,
+          selectedItemColor: Colors.blueAccent[300],
+          unselectedItemColor: Colors.blueGrey[200],
           showUnselectedLabels: true,
           onTap: (value) {
             setState(() {

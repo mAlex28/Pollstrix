@@ -1,6 +1,8 @@
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
@@ -35,7 +37,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  get initialData => null;
+  // get initialData => null;
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +46,23 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
       ],
-      child: MaterialApp(
-        title: 'Pollstrix',
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.light,
-        // theme: const Mater(
-        //   baseColor: Color(0xFFFFFFFF),
-        //   lightSource: LightSource.topLeft,
-        //   depth: 10,
-        // ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const AuthenticationWrapper(),
-          '/login': (context) => const LoginPage(),
-          '/register': (context) => const RegisterPage(),
-          '/forgot-password': (context) => const ForgotPasswordPage(),
-          '/reset-password': (context) => const ResetPasswordPage(),
-          '/feedback-page': (context) => const FeedContentPage()
+      child: ThemeProvider(
+        initTheme: kLightTheme,
+        builder: (context, myTheme) {
+          return MaterialApp(
+            title: 'Pollstrix',
+            debugShowCheckedModeBanner: false,
+            theme: myTheme,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => const AuthenticationWrapper(),
+              '/login': (context) => const LoginPage(),
+              '/register': (context) => const RegisterPage(),
+              '/forgot-password': (context) => const ForgotPasswordPage(),
+              '/reset-password': (context) => const ResetPasswordPage(),
+              '/feedback-page': (context) => const FeedContentPage()
+            },
+          );
         },
       ),
     );

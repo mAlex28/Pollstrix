@@ -29,7 +29,6 @@ class _PollTileState extends State<PollTile> {
   late DateTime _currentDate;
   late bool _showBarChart;
 
-  bool _changePollType = false;
   bool _hasUserVoted = false;
   bool isLiked = false;
   bool isDisliked = false;
@@ -428,9 +427,9 @@ class _PollTileState extends State<PollTile> {
                             style: const TextStyle(fontSize: 16),
                           ),
                           userChoice: usersWhoVoted[currentUser],
-                          onVoteBackgroundColor: Colors.blue,
-                          leadingBackgroundColor: Colors.blue,
-                          backgroundColor: Colors.white,
+                          onVoteBackgroundColor: Colors.blueGrey,
+                          leadingBackgroundColor: Colors.blueAccent,
+                          backgroundColor: Colors.blue,
                         )
                       : Polls(
                           children: (widget.doc.data() as dynamic)['choices']
@@ -477,8 +476,9 @@ class _PollTileState extends State<PollTile> {
                               semanticLabel: 'Thumbs up',
                             ),
                             iconSize: 20,
-                            color:
-                                isLiked ? Colors.lightBlue[600] : Colors.grey,
+                            color: isLiked
+                                ? Colors.lightBlue[600]
+                                : Colors.blueGrey[100],
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(
