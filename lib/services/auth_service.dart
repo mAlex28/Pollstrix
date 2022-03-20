@@ -367,10 +367,12 @@ class AuthenticationService {
     try {
       final currentUser = getCurrentUID();
 
-      List<dynamic> listOfChoices = [];
+      var listOfChoices = {};
 
-      for (var item in choices!) {
-        listOfChoices.add({'title': item, 'votes': 0});
+      for (var i = 0; i < choices!.length; i++) {
+        listOfChoices.addAll({
+          i.toString(): {'title': choices[i], 'votes': 0}
+        });
       }
 
       await _firebaseFirestore.collection('polls').doc().set({
@@ -403,50 +405,51 @@ class AuthenticationService {
       {required BuildContext context,
       required String email,
       required int selectedOption,
+      required Map<String, dynamic> choices,
       required String pid}) async {
     try {
       var totalVotes;
       var voteDetails;
-      var currentVotesOnTheChoice, titleChoice, choices;
+      var currentVotesOnTheChoice, titleChoice;
 
       await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {
         totalVotes = value.data()!['voteCount'];
         voteDetails = value.data()!['voteData'];
-        List<dynamic> choicesList = value.data()!['choices'];
-        var index;
 
-        choicesList.asMap().entries.map((e) {
-          index = e.key;
-          if ((selectedOption - 1) == e.key) {
-            titleChoice = e.value['title'];
-            currentVotesOnTheChoice = e.value['votes'];
+        choices.entries.map((e) {
+          if (int.parse(e.key) == (selectedOption - 1)) {
+            e.value['votes'] = e.value['votes'] + 1;
             return;
           }
         }).toList();
-
-        _firebaseFirestore.collection('polls').doc(pid).set({
-          'choices': FieldValue.arrayRemove([
-            {'title': titleChoice, 'votes': currentVotesOnTheChoice}
-          ])
-        }, SetOptions(merge: true));
 
         voteDetails.add({'email': email, 'option': selectedOption});
 
         _firebaseFirestore.collection('polls').doc(pid).update({
           'voteCount': totalVotes + 1,
           'voteData': voteDetails,
-          'choices': FieldValue.arrayUnion([
-            {'title': titleChoice, 'votes': currentVotesOnTheChoice + 1}
-          ])
+          'choices': choices
         });
       });
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.toString()));
     }
   }
 }
+
+
+ // List<dynamic> choicesList = value.data()!['choices'];
+        // var index;
+
+        // choicesList.asMap().entries.map((e) {
+        //   index = e.key;
+        //   if ((selectedOption - 1) == e.key) {
+        //     titleChoice = e.value['title'];
+        //     currentVotesOnTheChoice = e.value['votes'];
+        //     return;
+        //   }
+        // }).toList();

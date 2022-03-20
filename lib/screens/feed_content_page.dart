@@ -12,7 +12,6 @@ class FeedContentPage extends StatefulWidget {
 
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var stream;
 
   @override
@@ -24,174 +23,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
         .snapshots();
   }
 
-  void _openEndDrawer() {
-    _scaffoldKey.currentState!.openEndDrawer();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        endDrawer: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
-          child: Drawer(
-            child: ListView(
-              padding: const EdgeInsets.all(10.0),
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 20, bottom: 8),
-                  child: Text(
-                    'Sort By:',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.blue),
-                  ),
-                ),
-                ListTile(
-                  title: const Text(
-                    'Votes (most - least)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .orderBy('voteCount', descending: true)
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Votes (least - most)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .orderBy('voteCount')
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Likes (most - least)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .orderBy('likes', descending: true)
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Likes (least - most)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream =
-                          db.collection('polls').orderBy('likes').snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Running',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .where('finished', isEqualTo: false)
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Ended',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .where('finished', isEqualTo: true)
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Created Date (Asc)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .orderBy('createdAt')
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text(
-                    'Created Date (Desc)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  hoverColor: Colors.lightBlue,
-                  dense: true,
-                  visualDensity: VisualDensity.compact,
-                  onTap: () {
-                    setState(() {
-                      stream = db
-                          .collection('polls')
-                          .orderBy('createdAt', descending: true)
-                          .snapshots();
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
         appBar: AppBar(
           title: const Text('Pollstrix'),
           actions: <Widget>[
@@ -205,15 +39,139 @@ class _FeedContentPageState extends State<FeedContentPage> {
                     context: context, delegate: CustomSearchBarDelegate());
               },
             ),
-            IconButton(
-              icon: const Icon(
-                Icons.sort_rounded,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                _openEndDrawer();
-              },
-            )
+            PopupMenuButton(
+                icon: const Icon(Icons.sort_rounded),
+                elevation: 8.0,
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sorty by Votes (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 1,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('voteCount')
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sorty by Votes (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 2,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('voteCount', descending: true)
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Likes (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 3,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('likes')
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Likes (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 4,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('likes', descending: true)
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Date (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 5,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('createdAt')
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Date (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 6,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('createdAt', descending: true)
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Running',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 7,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .where('finished', isEqualTo: false)
+                                .snapshots();
+                          });
+                        },
+                      ),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Ended',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 8,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .where('finished', isEqualTo: true)
+                                .snapshots();
+                          });
+                        },
+                      ),
+                    ]),
           ],
         ),
         body: Column(children: [

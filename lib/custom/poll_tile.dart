@@ -22,14 +22,15 @@ class PollTile extends StatefulWidget {
 class _PollTileState extends State<PollTile> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final String currentUserID = AuthenticationService().getCurrentUID();
+  final String? currentUserEmail =
+      AuthenticationService().getCurrentUserEmail();
 
   late TextEditingController _reportTextController;
   late DateTime _currentDate;
   late bool _showBarChart;
 
-  List<bool> isSelectedPoll = [true, false];
-
   bool _changePollType = false;
+  bool _hasUserVoted = false;
   bool isLiked = false;
   bool isDisliked = false;
 
@@ -40,6 +41,7 @@ class _PollTileState extends State<PollTile> {
     _showBarChart = true;
     _findLikedPollsOfTheUser();
     _checkFinishedStatus();
+    _checkUserVoteStatus();
     super.initState();
   }
 
@@ -345,6 +347,19 @@ class _PollTileState extends State<PollTile> {
     });
   }
 
+  // Check if the current user has already voted on the poll
+  _checkUserVoteStatus() async {
+    List<dynamic> votedUsers = (widget.doc.data() as dynamic)['voteData'];
+
+    votedUsers.asMap().entries.map((e) {
+      if (e.value['email'] == currentUserEmail) {
+        setState(() {
+          _hasUserVoted = true;
+        });
+      }
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser =
@@ -399,13 +414,14 @@ class _PollTileState extends State<PollTile> {
                               creator: creatorID))
                     ],
                   ),
-                  currentUser == creater || _changePollType
+                  currentUser == creater || _hasUserVoted
                       ? Polls.viewPolls(
                           children: (widget.doc.data() as dynamic)['choices']
-                              .map((choice) {
+                              .entries
+                              .map((e) {
                             return Polls.options(
-                                title: '${choice['title']}',
-                                value: (choice['votes']).toDouble());
+                                title: '${e.value['title']}',
+                                value: (e.value['votes']).toDouble());
                           }).toList(),
                           question: Text(
                             (widget.doc.data() as dynamic)['title'],
@@ -418,10 +434,11 @@ class _PollTileState extends State<PollTile> {
                         )
                       : Polls(
                           children: (widget.doc.data() as dynamic)['choices']
+                              .entries
                               .map((choice) {
                             return Polls.options(
-                                title: '${choice['title']}',
-                                value: (choice['votes']).toDouble());
+                                title: '${choice.value['title']}',
+                                value: (choice.value['votes']).toDouble());
                           }).toList(),
                           question: Text(
                             (widget.doc.data() as dynamic)['title'],
@@ -437,10 +454,12 @@ class _PollTileState extends State<PollTile> {
                                 .onVote(
                                     context: context,
                                     email: currentUser!,
+                                    choices: (widget.doc.data()
+                                        as dynamic)['choices'],
                                     selectedOption: choice,
                                     pid: widget.doc.id);
                             setState(() {
-                              _changePollType = true;
+                              _hasUserVoted = true;
                             });
                           },
                           onVoteBackgroundColor: Colors.blue,
