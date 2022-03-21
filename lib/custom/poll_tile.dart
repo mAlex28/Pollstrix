@@ -46,7 +46,7 @@ class _PollTileState extends State<PollTile> {
 
   @override
   void dispose() {
-    _reportTextController.dispose();
+    // _reportTextController.dispose();
     super.dispose();
   }
 
@@ -60,7 +60,7 @@ class _PollTileState extends State<PollTile> {
         .get()
         .then((value) {
       likedPolls = value.data()!['likedPolls'];
-
+      // if (mounted) {
       setState(() {
         likedPolls.map((e) {
           if (e == widget.doc.id) {
@@ -68,6 +68,7 @@ class _PollTileState extends State<PollTile> {
           }
         }).toList();
       });
+      // }
     });
   }
 
@@ -485,7 +486,7 @@ class _PollTileState extends State<PollTile> {
                                   likes:
                                       (widget.doc.data() as dynamic)['likes'],
                                   pid: widget.doc.id,
-                                  uid: (widget.doc.data() as dynamic)['uid'],
+                                  uid: currentUserID,
                                   isPollLiked: isLiked);
                             },
                           ),
@@ -649,7 +650,7 @@ class _PollTileState extends State<PollTile> {
                                   likes:
                                       (widget.doc.data() as dynamic)['likes'],
                                   pid: widget.doc.id,
-                                  uid: (widget.doc.data() as dynamic)['uid'],
+                                  uid: currentUserID,
                                   isPollLiked: isLiked);
                             },
                           ),

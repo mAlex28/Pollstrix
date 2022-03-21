@@ -1,8 +1,13 @@
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants.dart';
-import 'package:pollstrix/custom/custom_menu_list_item.dart';
+import 'package:pollstrix/custom/poll_tile.dart';
+import 'package:pollstrix/screens/user_page.dart';
+import 'package:pollstrix/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ProfileContentPage extends StatefulWidget {
   const ProfileContentPage({Key? key}) : super(key: key);
@@ -12,6 +17,48 @@ class ProfileContentPage extends StatefulWidget {
 }
 
 class _ProfileContentPageState extends State<ProfileContentPage> {
+  final db = FirebaseFirestore.instance;
+  final currentUser = AuthenticationService().getCurrentUserEmail();
+  final urlImage = "assets/images/avatar.png";
+
+  @override
+  void initState() {
+    _getVoteDataOfUsers();
+    super.initState();
+  }
+
+  _getVoteDataOfUsers() async {
+    await db.collection('polls').get().then((value) {
+      value.docs.map((e) {
+        List<dynamic> voteDataList = e.data()['voteData'];
+        print(voteDataList);
+        for (var vote in voteDataList) {
+          if (vote.containsKey('email') ?? false) {
+            if (vote!['email'] == currentUser) {
+              var id = e.data()['pid'];
+              print(id);
+              return;
+            }
+          }
+        }
+      }).toList();
+    });
+  }
+
+  Stream<QuerySnapshot> searchResult() {
+    final userCreatedPolls = db
+        .collection('polls')
+        .where('creatorEmail', isEqualTo: currentUser)
+        .snapshots();
+
+    final userVotedPolls = FirebaseFirestore.instance
+        .collection('polls')
+        .where('voteData', isEqualTo: 'pending')
+        .snapshots();
+
+    return MergeStream([userCreatedPolls, userVotedPolls]);
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(
@@ -23,68 +70,63 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    var profileInfo = Expanded(
-        child: Column(
-      children: <Widget>[
-        Container(
-          height: kSpacingUnit.w * 10,
-          width: kSpacingUnit.w * 10,
-          margin: EdgeInsets.only(top: kSpacingUnit.w * 3),
-          child: Stack(
-            children: <Widget>[
-              CircleAvatar(
-                radius: kSpacingUnit.w * 5,
-                backgroundImage: const AssetImage('assets/images/avatar.png'),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  height: kSpacingUnit.w * 2.5,
-                  width: kSpacingUnit.w * 2.5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    heightFactor: kSpacingUnit.w * 1.5,
-                    widthFactor: kSpacingUnit.w * 1.5,
-                    child: Icon(
-                      Icons.edit,
-                      color: kDarkPrimaryColor,
-                      size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
+    Widget buildProfileInfo(context, snapshot) {
+      return Expanded(
+          child: Column(
+        children: <Widget>[
+          Container(
+            height: kSpacingUnit.w * 10,
+            width: kSpacingUnit.w * 10,
+            margin: EdgeInsets.only(top: kSpacingUnit.w * 3),
+            child: Stack(
+              children: <Widget>[
+                CircleAvatar(
+                  radius: kSpacingUnit.w * 5,
+                  backgroundImage: Provider.of<AuthenticationService>(context)
+                      .getProfileImage(),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const UserPage(),
+                    )),
+                    child: Container(
+                      height: kSpacingUnit.w * 2.5,
+                      width: kSpacingUnit.w * 2.5,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        heightFactor: kSpacingUnit.w * 1.5,
+                        widthFactor: kSpacingUnit.w * 1.5,
+                        child: Icon(
+                          Icons.edit,
+                          color: kDarkPrimaryColor,
+                          size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: kSpacingUnit.w * 2),
-        Text(
-          'Nicolas Adams',
-          style: kTitleTextStyle,
-        ),
-        SizedBox(height: kSpacingUnit.w * 0.5),
-        Text(
-          'nicolasadams@gmail.com',
-          style: kCaptionTextStyle,
-        ),
-        SizedBox(height: kSpacingUnit.w * 2),
-        Container(
-          height: kSpacingUnit * 4,
-          width: kSpacingUnit.w * 20,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(kSpacingUnit.w * 3),
-              color: Theme.of(context).colorScheme.secondary),
-          child: Center(
-            child: Text(
-              'Upgrade to PRO',
-              style: kButtonTextStyle,
+              ],
             ),
           ),
-        )
-      ],
-    ));
+          SizedBox(height: kSpacingUnit.w * 2),
+          Text(
+            '${snapshot.data.displayName ?? "Unkown"}',
+            style: kTitleTextStyle,
+          ),
+          SizedBox(height: kSpacingUnit.w * 0.5),
+          Text(
+            '${snapshot.data.email ?? "Anonymous"}',
+            style: kCaptionTextStyle,
+          ),
+          SizedBox(height: kSpacingUnit.w * 2),
+        ],
+      ));
+    }
 
     var themeSwitcher = ThemeSwitcher(
       builder: (context) {
@@ -99,16 +141,16 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
             onTap: () =>
                 ThemeSwitcher.of(context).changeTheme(theme: kLightTheme),
             child: Icon(
-              Icons.earbuds,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 3),
+              Icons.light_mode_outlined,
+              size: ScreenUtil().setSp(kSpacingUnit.w * 2),
             ),
           ),
           secondChild: GestureDetector(
             onTap: () =>
                 ThemeSwitcher.of(context).changeTheme(theme: kDarkTheme),
             child: Icon(
-              Icons.mood,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 3),
+              Icons.dark_mode_outlined,
+              size: ScreenUtil().setSp(kSpacingUnit.w * 2),
             ),
           ),
         );
@@ -120,25 +162,92 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(width: kSpacingUnit.w * 3),
-        Icon(
-          Icons.settings,
-          size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-        ),
-        profileInfo,
+        FutureBuilder(
+            future:
+                Provider.of<AuthenticationService>(context).getCurrentUser(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return buildProfileInfo(context, snapshot);
+              } else {
+                return const CircularProgressIndicator();
+              }
+            }),
         themeSwitcher,
         SizedBox(width: kSpacingUnit.w * 3),
       ],
     );
 
+    var postedPolls = Column(children: [
+      Flexible(
+          child: StreamBuilder<QuerySnapshot>(
+        stream: db
+            .collection('polls')
+            .where('creatorEmail', isEqualTo: currentUser)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.none ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData) {
+            return const Center(
+              child: Text('No data'),
+            );
+          } else {
+            return ListView(
+              scrollDirection: Axis.vertical,
+              children: snapshot.data!.docs.map((doc) {
+                return PollTile(
+                  doc: doc,
+                );
+              }).toList(),
+            );
+          }
+        },
+      )),
+    ]);
+
+    var votedPolls = Column(children: [
+      Flexible(
+          child: StreamBuilder<QuerySnapshot>(
+        stream: db.collection('polls').where('voteData',
+            arrayContains: {'email': currentUser}).snapshots(),
+        builder: (context, snapshot) {
+          print(snapshot.data);
+          if (snapshot.connectionState == ConnectionState.none ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData) {
+            return const Center(
+              child: Text('No data'),
+            );
+          } else {
+            return ListView(
+              scrollDirection: Axis.vertical,
+              children: snapshot.data!.docs.map((doc) {
+                return PollTile(
+                  doc: doc,
+                );
+              }).toList(),
+            );
+          }
+        },
+      )),
+    ]);
+
     return ThemeSwitchingArea(child: Builder(builder: (context) {
       return DefaultTabController(
-          length: 4,
+          length: 3,
           child: Scaffold(
-              body: Column(
+              body: SingleChildScrollView(
+                  child: Column(
             children: <Widget>[
               SizedBox(height: kSpacingUnit.w * 5),
               header,
-              TabBar(tabs: [
+              const TabBar(tabs: [
                 Tab(
                   text: 'All',
                 ),
@@ -148,12 +257,47 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                 Tab(
                   text: 'Voted',
                 ),
-                Tab(
-                  text: 'Liked',
-                ),
-              ])
+              ]),
+              SizedBox(
+                height: 400,
+                child: TabBarView(children: [
+                  Column(children: [
+                    Flexible(
+                        child: StreamBuilder<QuerySnapshot>(
+                      stream: db
+                          .collection('polls')
+                          .where('creatorEmail', isEqualTo: currentUser)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.none ||
+                            snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return const Center(
+                            child: Text('No data'),
+                          );
+                        } else {
+                          return ListView(
+                            scrollDirection: Axis.vertical,
+                            children: snapshot.data!.docs.map((doc) {
+                              return PollTile(
+                                doc: doc,
+                              );
+                            }).toList(),
+                          );
+                        }
+                      },
+                    )),
+                  ]),
+                  postedPolls,
+                  votedPolls,
+                ]),
+              )
             ],
-          )));
+          ))));
     }));
   }
 }

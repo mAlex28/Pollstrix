@@ -7,22 +7,22 @@ const kDarkPrimaryColor = Color(0xFF212121);
 const kDarkSecondaryColor = Color(0xFF373737);
 const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F7FB);
-const kAccentColor = Color(0xFFFFC107);
+const kAccentColor = Color(0xFF007AE1);
 
 final kTitleTextStyle = TextStyle(
-  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.7),
+  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
   fontWeight: FontWeight.w600,
 );
 
 final kCaptionTextStyle = TextStyle(
-  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.3),
+  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.1),
   fontWeight: FontWeight.w100,
 );
 
 final kButtonTextStyle = TextStyle(
-  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
+  fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.3),
   fontWeight: FontWeight.w400,
-  color: kDarkPrimaryColor,
+  color: kLightPrimaryColor,
 );
 
 final kDarkTheme = ThemeData(

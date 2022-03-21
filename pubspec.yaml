@@ -53,6 +53,7 @@ dependencies:
   toggle_switch: ^1.4.0
   flutter_screenutil: ^5.3.1
   animated_theme_switcher: ^2.0.6
+  rxdart: ^0.27.3
 
 dev_dependencies:
   flutter_test:

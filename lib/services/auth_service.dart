@@ -410,7 +410,6 @@ class AuthenticationService {
     try {
       var totalVotes;
       var voteDetails;
-      var currentVotesOnTheChoice, titleChoice;
 
       await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {
         totalVotes = value.data()!['voteCount'];

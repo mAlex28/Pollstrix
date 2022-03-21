@@ -168,13 +168,15 @@ class _PostPollPageState extends State<PostPollPage> {
                               setState(() {
                                 _isLoading = true;
                               });
-                              await authService.post(
-                                  title: _textEditingController.text,
-                                  choices: _poll.options,
-                                  createdTime: DateTime.now(),
-                                  startDate: _startDate,
-                                  endDate: _endDate,
-                                  context: context);
+                              await authService
+                                  .post(
+                                      title: _textEditingController.text,
+                                      choices: _poll.options,
+                                      createdTime: DateTime.now(),
+                                      startDate: _startDate,
+                                      endDate: _endDate,
+                                      context: context)
+                                  .then((value) => Navigator.of(context).pop());
 
                               setState(() {
                                 _isLoading = false;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
-import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -69,76 +68,43 @@ class _MenuPageState extends State<MenuPage> {
 
     return ThemeSwitchingArea(child: Builder(builder: (context) {
       return Scaffold(
-          body: Column(
+          body: Center(
+              child: Column(
         children: <Widget>[
           SizedBox(height: kSpacingUnit.w * 5),
           header,
           Expanded(
               child: ListView(
             children: <Widget>[
-              CustomMenuListItem(icon: Icons.shield, text: 'Privacy')
+              const CustomMenuListItem(
+                  icon: Icons.translate_outlined, text: 'Language'),
+              const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
+              const CustomMenuListItem(
+                  icon: Icons.question_answer_outlined, text: 'FAQ'),
+              const CustomMenuListItem(
+                  icon: Icons.info_outline_rounded, text: 'About us'),
+              const CustomMenuListItem(
+                  icon: Icons.star_rate_outlined, text: 'Rate us'),
+              CustomMenuListItem(
+                icon: Icons.logout_outlined,
+                text: 'Log out',
+                onTap: () {
+                  Provider.of<AuthenticationService>(context, listen: false)
+                      .signOut(context: context);
+                },
+              ),
+              const SizedBox(height: 20),
+              const Center(
+                child: Text(
+                  'Developed by Alex',
+                  style: TextStyle(fontSize: 12),
+                ),
+              )
             ],
           ))
         ],
-      ));
+      )));
     }));
-
-    //   return ListView(
-    //     children: [
-    //       FutureBuilder(
-    //           future:
-    //               Provider.of<AuthenticationService>(context).getCurrentUser(),
-    //           builder: (context, snapshot) {
-    //             if (snapshot.connectionState == ConnectionState.done) {
-    //               return buildHeader(context, snapshot);
-    //             } else {
-    //               return const CircularProgressIndicator();
-    //             }
-    //           }),
-    //       Container(
-    //         padding: const EdgeInsets.symmetric(horizontal: 20),
-    //         child: Column(
-    //           children: [
-    //             const SizedBox(height: 20),
-    //             CustomMenuListItem(icon: Icons.shield, text: 'Privacy'),
-    //             buildMenuItem(
-    //               text: 'Language',
-    //               icon: Icons.language_rounded,
-    //               onClicked: () => {},
-    //             ),
-    //             buildMenuItem(
-    //               text: 'Settings',
-    //               icon: Icons.settings_rounded,
-    //               onClicked: () => {},
-    //             ),
-    //             buildMenuItem(
-    //               text: 'About us',
-    //               icon: Icons.info_rounded,
-    //               onClicked: () => {},
-    //             ),
-    //             buildMenuItem(
-    //               text: 'Invite',
-    //               icon: Icons.share_rounded,
-    //               onClicked: () => {},
-    //             ),
-    //             buildMenuItem(
-    //                 text: 'Sign out',
-    //                 icon: Icons.logout_rounded,
-    //                 onClicked: () {
-    //                   Provider.of<AuthenticationService>(context, listen: false)
-    //                       .signOut(context: context);
-    //                 }),
-    //             const SizedBox(height: 20),
-    //             const Text(
-    //               'Developed by Alex',
-    //               style: TextStyle(fontSize: 12),
-    //             )
-    //           ],
-    //         ),
-    //       )
-    //     ],
-    //   );
-    // }
 
     // Widget buildHeader(context, snapshot) {
     //   final userData = snapshot.data;
@@ -177,42 +143,6 @@ class _MenuPageState extends State<MenuPage> {
     //           ],
     //         ),
     //       ));
-    // }
-
-    // Widget buildMenuItem(
-    //     {required String text, required IconData icon, VoidCallback? onClicked}) {
-    //   final color = Colors.black;
-    //   final hoverColor = Colors.black;
-
-    //   return ListTile(
-    //     leading: Icon(
-    //       icon,
-    //       color: color,
-    //     ),
-    //     title: Text(
-    //       text,
-    //       style: TextStyle(color: color),
-    //     ),
-    //     hoverColor: hoverColor,
-    //     onTap: onClicked,
-    //   );
-    // }
-
-    // void selectedItem(BuildContext context, int index) {
-    //   Navigator.of(context).pop();
-
-    //   switch (index) {
-    //     case 0:
-    //       // Navigator.of(context).push(MaterialPageRoute(
-    //       //   builder: (context) {},
-    //       // ));
-    //       break;
-    //     case 1:
-    //       // Navigator.of(context).push(MaterialPageRoute(
-    //       //   builder: (context) => const TestPage(),
-    //       // ));
-    //       break;
-    //   }
     // }
   }
 }
