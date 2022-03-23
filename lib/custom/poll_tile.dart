@@ -60,15 +60,15 @@ class _PollTileState extends State<PollTile> {
         .get()
         .then((value) {
       likedPolls = value.data()!['likedPolls'];
-      // if (mounted) {
-      setState(() {
-        likedPolls.map((e) {
-          if (e == widget.doc.id) {
-            isLiked = true;
-          }
-        }).toList();
-      });
-      // }
+      if (mounted) {
+        setState(() {
+          likedPolls.map((e) {
+            if (e == widget.doc.id) {
+              isLiked = true;
+            }
+          }).toList();
+        });
+      }
     });
   }
 

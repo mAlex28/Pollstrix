@@ -7,7 +7,6 @@ import 'package:pollstrix/custom/poll_tile.dart';
 import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 class ProfileContentPage extends StatefulWidget {
   const ProfileContentPage({Key? key}) : super(key: key);
@@ -21,6 +20,8 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   final currentUser = AuthenticationService().getCurrentUserEmail();
   final urlImage = "assets/images/avatar.png";
 
+  var userSelectedOption;
+
   @override
   void initState() {
     _getVoteDataOfUsers();
@@ -31,32 +32,18 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     await db.collection('polls').get().then((value) {
       value.docs.map((e) {
         List<dynamic> voteDataList = e.data()['voteData'];
-        print(voteDataList);
         for (var vote in voteDataList) {
           if (vote.containsKey('email') ?? false) {
-            if (vote!['email'] == currentUser) {
-              var id = e.data()['pid'];
-              print(id);
-              return;
-            }
+            setState(() {
+              if (vote!['email'] == currentUser) {
+                userSelectedOption = vote['option'];
+                return;
+              }
+            });
           }
         }
       }).toList();
     });
-  }
-
-  Stream<QuerySnapshot> searchResult() {
-    final userCreatedPolls = db
-        .collection('polls')
-        .where('creatorEmail', isEqualTo: currentUser)
-        .snapshots();
-
-    final userVotedPolls = FirebaseFirestore.instance
-        .collection('polls')
-        .where('voteData', isEqualTo: 'pending')
-        .snapshots();
-
-    return MergeStream([userCreatedPolls, userVotedPolls]);
   }
 
   @override
@@ -211,10 +198,11 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     var votedPolls = Column(children: [
       Flexible(
           child: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('polls').where('voteData',
-            arrayContains: {'email': currentUser}).snapshots(),
+        stream: db.collection('polls').where('voteData', arrayContains: {
+          'email': currentUser,
+          'option': userSelectedOption
+        }).snapshots(),
         builder: (context, snapshot) {
-          print(snapshot.data);
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -240,7 +228,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
 
     return ThemeSwitchingArea(child: Builder(builder: (context) {
       return DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
               body: SingleChildScrollView(
                   child: Column(
@@ -248,9 +236,6 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               SizedBox(height: kSpacingUnit.w * 5),
               header,
               const TabBar(tabs: [
-                Tab(
-                  text: 'All',
-                ),
                 Tab(
                   text: 'Posted',
                 ),
@@ -261,37 +246,6 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               SizedBox(
                 height: 400,
                 child: TabBarView(children: [
-                  Column(children: [
-                    Flexible(
-                        child: StreamBuilder<QuerySnapshot>(
-                      stream: db
-                          .collection('polls')
-                          .where('creatorEmail', isEqualTo: currentUser)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.none ||
-                            snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (!snapshot.hasData) {
-                          return const Center(
-                            child: Text('No data'),
-                          );
-                        } else {
-                          return ListView(
-                            scrollDirection: Axis.vertical,
-                            children: snapshot.data!.docs.map((doc) {
-                              return PollTile(
-                                doc: doc,
-                              );
-                            }).toList(),
-                          );
-                        }
-                      },
-                    )),
-                  ]),
                   postedPolls,
                   votedPolls,
                 ]),

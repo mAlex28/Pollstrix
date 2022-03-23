@@ -20,7 +20,7 @@ class _PostPollPageState extends State<PostPollPage> {
   final DateRangePickerController _dateRangePickerController =
       DateRangePickerController();
   late Poll _poll;
-  bool _isLoading = false;
+  // bool _isLoading = false;
 
   @override
   void initState() {
@@ -71,11 +71,13 @@ class _PostPollPageState extends State<PostPollPage> {
           )),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12.0),
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : Form(
+        child:
+            //  _isLoading
+            //     ? const Center(
+            //         child: CircularProgressIndicator(),
+            //       )
+            // :
+            Form(
                 key: _formKey,
                 child: Column(
                   children: [
@@ -165,9 +167,9 @@ class _PostPollPageState extends State<PostPollPage> {
                               }
 
                               _poll.isAuth = true;
-                              setState(() {
-                                _isLoading = true;
-                              });
+                              // setState(() {
+                              //   _isLoading = true;
+                              // });
                               await authService
                                   .post(
                                       title: _textEditingController.text,
@@ -178,9 +180,9 @@ class _PostPollPageState extends State<PostPollPage> {
                                       context: context)
                                   .then((value) => Navigator.of(context).pop());
 
-                              setState(() {
-                                _isLoading = false;
-                              });
+                              // setState(() {
+                              //   _isLoading = false;
+                              // });
                             },
                             icon: const Icon(Icons.post_add_rounded),
                             label: const Text('Post'))),

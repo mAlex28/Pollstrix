@@ -39,7 +39,8 @@ final kDarkTheme = ThemeData(
         bodyColor: kLightSecondaryColor,
         displayColor: kLightSecondaryColor,
       ),
-  colorScheme: ColorScheme.fromSwatch().copyWith(secondary: kAccentColor),
+  colorScheme: ColorScheme.fromSwatch()
+      .copyWith(secondary: kAccentColor, brightness: Brightness.dark),
 );
 
 final kLightTheme = ThemeData(
@@ -56,5 +57,6 @@ final kLightTheme = ThemeData(
         bodyColor: kDarkSecondaryColor,
         displayColor: kDarkSecondaryColor,
       ),
-  colorScheme: ColorScheme.fromSwatch().copyWith(secondary: kAccentColor),
+  colorScheme: ColorScheme.fromSwatch()
+      .copyWith(secondary: kAccentColor, brightness: Brightness.light),
 );
