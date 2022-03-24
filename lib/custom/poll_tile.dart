@@ -377,7 +377,6 @@ class _PollTileState extends State<PollTile> {
 
     return endDate.isAfter(_currentDate)
         ? Card(
-            // margin: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
             child: Container(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -492,22 +491,6 @@ class _PollTileState extends State<PollTile> {
                           ),
                           Text(((widget.doc.data() as dynamic)['likes'])
                               .toString()),
-                          // IconButton(
-                          //   icon: const Icon(
-                          //     Icons.thumb_down_alt_rounded,
-                          //     semanticLabel: 'Thumbs down',
-                          //   ),
-                          //   iconSize: 20,
-                          //   color: isDisliked == false
-                          //       ? Colors.grey
-                          //       : Colors.lightBlue[600],
-                          //   tooltip: 'Thumbs down',
-                          //   onPressed: () {
-                          //
-                          // },
-                          // ),
-                          // Text(((widget.doc.data() as dynamic)['dislikes'])
-                          //     .toString()),
                         ],
                       ),
                       TextButton(

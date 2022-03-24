@@ -11,10 +11,13 @@ import 'package:provider/provider.dart';
 import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.removeAfter(initialization);
 
   const firebaseConfig = FirebaseOptions(
     apiKey: 'AIzaSyBNEhcwHGg4XoSrWrPWg1LwZpYgfmoMPMo',

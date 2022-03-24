@@ -33,7 +33,7 @@ class _MenuPageState extends State<MenuPage> {
         SizedBox(
           height: kToolbarHeight * 0.7,
           child: Image.asset(
-            "assets/images/logo_inappt.png",
+            "assets/images/logo_inapp.png",
             color: kAccentColor,
           ),
         ),

@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _isPasswordVisible = false;
+  bool _isPassword = true;
 
   Future<void> _waitAndCheckErrors(
     Future<void> Function() signInFunction,
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                                   return "This field is requied";
                                 }
                               },
-                              password: _isPasswordVisible,
+                              password: _isPassword,
                               textEditingController: _passwordController,
                               label: 'Enter your password',
                               prefixIcon: const Icon(Icons.password_rounded),
@@ -125,10 +125,10 @@ class _LoginPageState extends State<LoginPage> {
                                   iconSize: 18.0,
                                   onPressed: () {
                                     setState(() {
-                                      _isPasswordVisible = !_isPasswordVisible;
+                                      _isPassword = !_isPassword;
                                     });
                                   },
-                                  icon: Icon(_isPasswordVisible
+                                  icon: Icon(_isPassword
                                       ? Icons.visibility_rounded
                                       : Icons.visibility_off_rounded)),
                             ),

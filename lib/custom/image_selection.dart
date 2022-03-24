@@ -109,7 +109,7 @@ class _UserImageState extends State<UserImage> {
       return;
     }
 
-    var file = await ImageCropper.cropImage(
+    var file = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
 

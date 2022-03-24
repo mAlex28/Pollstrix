@@ -270,14 +270,13 @@ class AuthenticationService {
         context: context,
         builder: (BuildContext context) => AlertDialog(
             title: const Text('Email updated'),
-            content:
-                const Text('Please check your inbox change the email address'),
+            content: const Text('Email changed. Please re-login'),
             actions: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => signOut(context: context),
                       child: const Text("OK"))
                 ],
               )
