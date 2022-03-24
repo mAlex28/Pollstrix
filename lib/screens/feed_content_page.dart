@@ -39,189 +39,196 @@ class _FeedContentPageState extends State<FeedContentPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pollstrix'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.search_rounded,
-              color: Colors.white,
+    return ThemeSwitchingArea(child: Builder(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: SizedBox(
+            height: kToolbarHeight * 0.6,
+            child: Image.asset(
+              "assets/images/logo_inapp.png",
+              color: kAccentColor,
             ),
-            onPressed: () {
-              showSearch(context: context, delegate: CustomSearchBarDelegate());
-            },
           ),
-          PopupMenuButton(
-              icon: const Icon(Icons.sort_rounded),
-              elevation: 8.0,
-              itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sorty by Votes (ASC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.search_rounded,
+                color: kAccentColor,
+              ),
+              onPressed: () {
+                showSearch(
+                    context: context, delegate: CustomSearchBarDelegate());
+              },
+            ),
+            PopupMenuButton(
+                icon: const Icon(Icons.sort_rounded, color: kAccentColor),
+                elevation: 8.0,
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sorty by Votes (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 1,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('voteCount')
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 1,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('voteCount')
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sorty by Votes (DESC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sorty by Votes (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 2,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('voteCount', descending: true)
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 2,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('voteCount', descending: true)
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Likes (ASC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Likes (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 3,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('likes')
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 3,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('likes')
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Likes (DESC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Likes (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 4,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('likes', descending: true)
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 4,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('likes', descending: true)
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Date (ASC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Date (ASC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 5,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('createdAt')
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 5,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('createdAt')
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Date (DESC)',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Date (DESC)',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 6,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .orderBy('createdAt', descending: true)
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 6,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .orderBy('createdAt', descending: true)
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Running',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Running',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 7,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .where('finished', isEqualTo: false)
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 7,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .where('finished', isEqualTo: false)
-                              .snapshots();
-                        });
-                      },
-                    ),
-                    PopupMenuItem(
-                      child: const Text(
-                        'Sort by Ended',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      PopupMenuItem(
+                        child: const Text(
+                          'Sort by Ended',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        value: 8,
+                        onTap: () {
+                          setState(() {
+                            stream = db
+                                .collection('polls')
+                                .where('finished', isEqualTo: true)
+                                .snapshots();
+                          });
+                        },
                       ),
-                      value: 8,
-                      onTap: () {
-                        setState(() {
-                          stream = db
-                              .collection('polls')
-                              .where('finished', isEqualTo: true)
-                              .snapshots();
-                        });
-                      },
-                    ),
-                  ]),
-        ],
-      ),
-      body: Column(children: [
-        Flexible(
-            child: StreamBuilder<QuerySnapshot>(
-          stream: stream,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return ListView(
-                scrollDirection: Axis.vertical,
-                children: snapshot.data!.docs.map((doc) {
-                  return PollTile(
-                    doc: doc,
-                  );
-                }).toList(),
-              );
-            }
-          },
-        )),
-      ]),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.lightBlue,
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.add_rounded),
-          onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => const PostPollPage()))
-              .then((_) => setState(() {}))),
-    );
+                    ]),
+          ],
+        ),
+        body: Column(children: [
+          Flexible(
+              child: StreamBuilder<QuerySnapshot>(
+            stream: stream,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                return ListView(
+                  scrollDirection: Axis.vertical,
+                  children: snapshot.data!.docs.map((doc) {
+                    return PollTile(
+                      doc: doc,
+                    );
+                  }).toList(),
+                );
+              }
+            },
+          )),
+        ]),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: kAccentColor,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.add_rounded),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        const PostPollPage())).then((_) => setState(() {}))),
+      );
+    }));
   }
 }
-
-
-// onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-//                 builder: (BuildContext context) => const PostPollPage()))

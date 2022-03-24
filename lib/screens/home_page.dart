@@ -35,35 +35,6 @@ class _HomePageState extends State<HomePage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    var themeSwitcher = ThemeSwitcher(
-      builder: (context) {
-        return AnimatedCrossFade(
-          duration: const Duration(milliseconds: 200),
-          crossFadeState:
-              ThemeModelInheritedNotifier.of(context).theme.brightness ==
-                      Brightness.dark
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
-          firstChild: GestureDetector(
-            onTap: () =>
-                ThemeSwitcher.of(context).changeTheme(theme: kLightTheme),
-            child: Icon(
-              Icons.light_mode_outlined,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 2),
-            ),
-          ),
-          secondChild: GestureDetector(
-            onTap: () =>
-                ThemeSwitcher.of(context).changeTheme(theme: kDarkTheme),
-            child: Icon(
-              Icons.dark_mode_outlined,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 2),
-            ),
-          ),
-        );
-      },
-    );
-
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -71,8 +42,8 @@ class _HomePageState extends State<HomePage> {
         children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.blueAccent[300],
-        unselectedItemColor: Colors.blueGrey[200],
+        selectedItemColor: kAccentColor,
+        unselectedItemColor: kUnselectedItemColor,
         showUnselectedLabels: true,
         onTap: (value) {
           setState(() {
@@ -90,6 +61,5 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-    // }));
   }
 }

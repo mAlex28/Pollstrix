@@ -7,7 +7,9 @@ const kDarkPrimaryColor = Color(0xFF212121);
 const kDarkSecondaryColor = Color(0xFF373737);
 const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F7FB);
-const kAccentColor = Color(0xFF007AE1);
+// const kAccentColor = Color(0xFF195992); //133B5C
+const kAccentColor = Color(0xFF3282B8); //133B5C
+const kUnselectedItemColor = Color(0xFFB0BEC5);
 
 final kTitleTextStyle = TextStyle(
   fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
@@ -31,6 +33,7 @@ final kDarkTheme = ThemeData(
   primaryColor: kDarkPrimaryColor,
   canvasColor: kDarkPrimaryColor,
   backgroundColor: kDarkSecondaryColor,
+  // appBarTheme: AppBarTheme(),
   iconTheme: ThemeData.dark().iconTheme.copyWith(
         color: kLightSecondaryColor,
       ),

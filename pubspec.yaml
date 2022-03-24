@@ -54,6 +54,7 @@ dependencies:
   flutter_screenutil: ^5.3.1
   animated_theme_switcher: ^2.0.6
   rxdart: ^0.27.3
+  flutter_native_splash: ^1.3.2
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,10 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_native_splash:
+  color: "#133b5c"
+  image: assets/images/splash.png
+
 # The following section is specific to Flutter.
 flutter:
   # The following line ensures that the Material Icons font is
@@ -82,6 +87,8 @@ flutter:
     - assets/images/google_logo.png
     - assets/images/avatar.png
     - assets/images/webbackground.png
+    - assets/images/logo_inapp.png
+
 
   #   - images/a_dot_ham.jpeg
 

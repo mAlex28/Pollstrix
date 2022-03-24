@@ -14,8 +14,6 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  final urlImage = "assets/images/avatar.png";
-
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(
@@ -27,41 +25,18 @@ class _MenuPageState extends State<MenuPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    var themeSwitcher = ThemeSwitcher(
-      builder: (context) {
-        return AnimatedCrossFade(
-          duration: const Duration(milliseconds: 200),
-          crossFadeState:
-              ThemeModelInheritedNotifier.of(context).theme.brightness ==
-                      Brightness.dark
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
-          firstChild: GestureDetector(
-            onTap: () =>
-                ThemeSwitcher.of(context).changeTheme(theme: kLightTheme),
-            child: Icon(
-              Icons.earbuds,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-            ),
-          ),
-          secondChild: GestureDetector(
-            onTap: () =>
-                ThemeSwitcher.of(context).changeTheme(theme: kDarkTheme),
-            child: Icon(
-              Icons.mood,
-              size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-            ),
-          ),
-        );
-      },
-    );
-
     var header = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(width: kSpacingUnit.w * 3),
-        themeSwitcher,
+        SizedBox(
+          height: kToolbarHeight * 0.7,
+          child: Image.asset(
+            "assets/images/logo_inappt.png",
+            color: kAccentColor,
+          ),
+        ),
         SizedBox(width: kSpacingUnit.w * 3),
       ],
     );
@@ -105,44 +80,5 @@ class _MenuPageState extends State<MenuPage> {
         ],
       )));
     }));
-
-    // Widget buildHeader(context, snapshot) {
-    //   final userData = snapshot.data;
-
-    //   return InkWell(
-    //       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-    //             builder: (context) => const UserPage(),
-    //           )),
-    //       child: Container(
-    //         color: Colors.lightBlue.shade600,
-    //         padding: const EdgeInsets.symmetric(horizontal: 20).add(
-    //           (const EdgeInsets.symmetric(vertical: 20)),
-    //         ),
-    //         child: Row(
-    //           children: [
-    //             CircleAvatar(
-    //                 radius: 30,
-    //                 backgroundImage: Provider.of<AuthenticationService>(context)
-    //                     .getProfileImage()),
-    //             const SizedBox(width: 20),
-    //             Column(
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [
-    //                 Text(
-    //                   "${userData.displayName ?? "Unkown"}",
-    //                   style: const TextStyle(fontSize: 20, color: Colors.white),
-    //                 ),
-    //                 const SizedBox(height: 4),
-    //                 Text(
-    //                   "${userData.email ?? "Anonymous"}",
-    //                   style: const TextStyle(fontSize: 14, color: Colors.white),
-    //                 ),
-    //               ],
-    //             ),
-    //             const Spacer(),
-    //           ],
-    //         ),
-    //       ));
-    // }
   }
 }

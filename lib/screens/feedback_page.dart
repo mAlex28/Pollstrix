@@ -85,6 +85,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Feedback'),
       ),
       body: StreamBuilder<QuerySnapshot>(

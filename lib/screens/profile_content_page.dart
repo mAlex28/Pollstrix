@@ -90,7 +90,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                         widthFactor: kSpacingUnit.w * 1.5,
                         child: Icon(
                           Icons.edit,
-                          color: kDarkPrimaryColor,
+                          color: kLightPrimaryColor,
                           size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
                         ),
                       ),
