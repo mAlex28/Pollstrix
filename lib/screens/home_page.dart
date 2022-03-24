@@ -64,44 +64,32 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    // return ThemeSwitchingArea(child: Builder(builder: (context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   actions: [
-        //     themeSwitcher,
-        //   ],
-        // ),
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.blueAccent[300],
-          unselectedItemColor: Colors.blueGrey[200],
-          showUnselectedLabels: true,
-          onTap: (value) {
-            setState(() {
-              _pageController.jumpToPage(value);
-            });
-          },
-          currentIndex:
-              _pageController.hasClients ? _pageController.page!.floor() : 0,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded), label: 'Profile'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.menu_rounded), label: 'Menu')
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.lightBlue,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.add_rounded),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => const PostPollPage()))));
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.blueAccent[300],
+        unselectedItemColor: Colors.blueGrey[200],
+        showUnselectedLabels: true,
+        onTap: (value) {
+          setState(() {
+            _pageController.jumpToPage(value);
+          });
+        },
+        currentIndex:
+            _pageController.hasClients ? _pageController.page!.floor() : 0,
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Menu')
+        ],
+      ),
+    );
     // }));
   }
 }

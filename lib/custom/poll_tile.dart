@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
+import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/custom/custom_charts.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/screens/feedback_page.dart';
@@ -424,9 +425,8 @@ class _PollTileState extends State<PollTile> {
                                 value: (e.value['votes']).toDouble());
                           }).toList(),
                           question: Text(
-                            (widget.doc.data() as dynamic)['title'],
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                              (widget.doc.data() as dynamic)['title'],
+                              style: kTitleTextStyle),
                           userChoice: usersWhoVoted[currentUser],
                           onVoteBackgroundColor: Colors.blueGrey,
                           leadingBackgroundColor: Colors.blueAccent,
@@ -528,7 +528,6 @@ class _PollTileState extends State<PollTile> {
             ),
           )
         : Card(
-            // margin: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
             child: Container(
               padding: const EdgeInsets.all(16.0),
               height: 400,
@@ -570,7 +569,7 @@ class _PollTileState extends State<PollTile> {
                   Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 8),
                     child: Text((widget.doc.data() as dynamic)['title'],
-                        style: const TextStyle(fontSize: 16)),
+                        style: kTitleTextStyle),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

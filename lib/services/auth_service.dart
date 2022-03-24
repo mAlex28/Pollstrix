@@ -389,8 +389,6 @@ class AuthenticationService {
         'likes': 0,
         'dislikes': 0,
       });
-
-      Navigator.pop(context);
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));

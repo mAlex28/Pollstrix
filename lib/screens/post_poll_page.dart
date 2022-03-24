@@ -20,7 +20,6 @@ class _PostPollPageState extends State<PostPollPage> {
   final DateRangePickerController _dateRangePickerController =
       DateRangePickerController();
   late Poll _poll;
-  // bool _isLoading = false;
 
   @override
   void initState() {
@@ -71,123 +70,108 @@ class _PostPollPageState extends State<PostPollPage> {
           )),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12.0),
-        child:
-            //  _isLoading
-            //     ? const Center(
-            //         child: CircularProgressIndicator(),
-            //       )
-            // :
-            Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  showDialog<Widget>(
-                                      context: context,
-                                      builder: (BuildContext builder) {
-                                        return AlertDialog(
-                                            backgroundColor: Colors.white,
-                                            content: SizedBox(
-                                              height: 450,
-                                              width: 300,
-                                              child: SfDateRangePicker(
-                                                controller:
-                                                    _dateRangePickerController,
-                                                enablePastDates: false,
-                                                onSubmit: (dynamic value) {
-                                                  setState(() {
-                                                    _startDate =
-                                                        value.startDate;
-                                                    _endDate = value.endDate;
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                                showActionButtons: true,
-                                                // onSelectionChanged:
-                                                //     selectionChanged,
-                                                selectionMode:
-                                                    DateRangePickerSelectionMode
-                                                        .range,
-                                                onCancel: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ));
-                                      });
-                                },
-                                icon: const Icon(
-                                  Icons.calendar_today_rounded,
-                                ),
-                                label: const Text('Date'),
-                              ),
-                              Text(
-                                  '${DateFormat.yMMMEd().format(_startDate)} - ${DateFormat.yMMMEd().format(_endDate)}'),
-                            ])),
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: TextFormField(
-                        onSaved: _saveTitle,
-                        controller: _textEditingController,
-                        keyboardType: TextInputType.multiline,
-                        minLines: 3,
-                        validator: (value) {
-                          if (value!.isEmpty) return 'Title is required';
-                          return null;
-                        },
-                        maxLines: null,
-                        decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: const EdgeInsets.all(10.0),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.grey.shade500, width: 1.5),
-                            ),
-                            hintText: 'Write something here!'),
-                      ),
-                    ),
-                    PollFormOptions(
-                        key: const Key('choice'),
-                        optionTitles: pollChoices,
-                        saveValue: _saveChoices,
-                        initialOptions: _poll.options),
-                    Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: ElevatedButton.icon(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                              }
-
-                              _poll.isAuth = true;
-                              // setState(() {
-                              //   _isLoading = true;
-                              // });
-                              await authService
-                                  .post(
-                                      title: _textEditingController.text,
-                                      choices: _poll.options,
-                                      createdTime: DateTime.now(),
-                                      startDate: _startDate,
-                                      endDate: _endDate,
-                                      context: context)
-                                  .then((value) => Navigator.of(context).pop());
-
-                              // setState(() {
-                              //   _isLoading = false;
-                              // });
+        child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              showDialog<Widget>(
+                                  context: context,
+                                  builder: (BuildContext builder) {
+                                    return AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        content: SizedBox(
+                                          height: 450,
+                                          width: 300,
+                                          child: SfDateRangePicker(
+                                            controller:
+                                                _dateRangePickerController,
+                                            enablePastDates: false,
+                                            onSubmit: (dynamic value) {
+                                              setState(() {
+                                                _startDate = value.startDate;
+                                                _endDate = value.endDate;
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                            showActionButtons: true,
+                                            // onSelectionChanged:
+                                            //     selectionChanged,
+                                            selectionMode:
+                                                DateRangePickerSelectionMode
+                                                    .range,
+                                            onCancel: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ));
+                                  });
                             },
-                            icon: const Icon(Icons.post_add_rounded),
-                            label: const Text('Post'))),
-                  ],
-                )),
+                            icon: const Icon(
+                              Icons.calendar_today_rounded,
+                            ),
+                            label: const Text('Date'),
+                          ),
+                          Text(
+                              '${DateFormat.yMMMEd().format(_startDate)} - ${DateFormat.yMMMEd().format(_endDate)}'),
+                        ])),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: TextFormField(
+                    onSaved: _saveTitle,
+                    controller: _textEditingController,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 3,
+                    validator: (value) {
+                      if (value!.isEmpty) return 'Title is required';
+                      return null;
+                    },
+                    maxLines: null,
+                    decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.all(10.0),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade500, width: 1.5),
+                        ),
+                        hintText: 'Write something here!'),
+                  ),
+                ),
+                PollFormOptions(
+                    key: const Key('choice'),
+                    optionTitles: pollChoices,
+                    saveValue: _saveChoices,
+                    initialOptions: _poll.options),
+                Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ElevatedButton.icon(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                          }
+
+                          await authService
+                              .post(
+                                  title: _textEditingController.text,
+                                  choices: _poll.options,
+                                  createdTime: DateTime.now(),
+                                  startDate: _startDate,
+                                  endDate: _endDate,
+                                  context: context)
+                              .then((_) => Navigator.of(context).pop());
+                        },
+                        icon: const Icon(Icons.post_add_rounded),
+                        label: const Text('Post'))),
+              ],
+            )),
       ),
     );
   }

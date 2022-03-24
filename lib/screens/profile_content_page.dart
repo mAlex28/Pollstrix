@@ -34,12 +34,12 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         List<dynamic> voteDataList = e.data()['voteData'];
         for (var vote in voteDataList) {
           if (vote.containsKey('email') ?? false) {
-            setState(() {
-              if (vote!['email'] == currentUser) {
+            if (vote!['email'] == currentUser) {
+              setState(() {
                 userSelectedOption = vote['option'];
-                return;
-              }
-            });
+              });
+              return;
+            }
           }
         }
       }).toList();

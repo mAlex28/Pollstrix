@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
               '/register': (context) => const RegisterPage(),
               '/forgot-password': (context) => const ForgotPasswordPage(),
               '/reset-password': (context) => const ResetPasswordPage(),
-              '/feedback-page': (context) => const FeedContentPage()
+              '/feedcontent': (context) => const FeedContentPage()
             },
           );
         },
