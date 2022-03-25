@@ -17,8 +17,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FlutterNativeSplash.removeAfter(initialization);
-
   const firebaseConfig = FirebaseOptions(
     apiKey: 'AIzaSyBNEhcwHGg4XoSrWrPWg1LwZpYgfmoMPMo',
     appId: '1:630918106032:web:a36cc8f6d094035f4d2475',
@@ -35,11 +33,9 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  runApp(const MyApp());
-}
+  FlutterNativeSplash.remove();
 
-Future initialization(BuildContext? context) async {
-  await Future.delayed(const Duration(seconds: 3));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

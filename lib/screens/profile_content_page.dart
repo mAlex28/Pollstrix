@@ -17,7 +17,9 @@ class ProfileContentPage extends StatefulWidget {
 
 class _ProfileContentPageState extends State<ProfileContentPage> {
   final db = FirebaseFirestore.instance;
-  final currentUser = AuthenticationService().getCurrentUserEmail();
+  final currentUser = AuthenticationService().getCurrentUID();
+  final currentUserEmail = AuthenticationService().getCurrentUserEmail();
+
   final urlImage = "assets/images/avatar.png";
 
   var userSelectedOption;
@@ -34,7 +36,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         List<dynamic> voteDataList = e.data()['voteData'];
         for (var vote in voteDataList) {
           if (vote.containsKey('email') ?? false) {
-            if (vote!['email'] == currentUser) {
+            if (vote!['email'] == currentUserEmail) {
               setState(() {
                 userSelectedOption = vote['option'];
               });
@@ -169,7 +171,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
           child: StreamBuilder<QuerySnapshot>(
         stream: db
             .collection('polls')
-            .where('creatorEmail', isEqualTo: currentUser)
+            .where('uid', isEqualTo: currentUser)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
@@ -199,7 +201,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       Flexible(
           child: StreamBuilder<QuerySnapshot>(
         stream: db.collection('polls').where('voteData', arrayContains: {
-          'email': currentUser,
+          'email': currentUserEmail,
           'option': userSelectedOption
         }).snapshots(),
         builder: (context, snapshot) {

@@ -4,10 +4,12 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -46,14 +48,23 @@ class _UserImageState extends State<UserImage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
+
     return Column(
       children: [
         if (imageUrl == null)
-          Icon(Icons.image, size: 68, color: Theme.of(context).primaryColor),
+          const Icon(Icons.image, size: 68, color: kAccentColor),
         if (imageUrl != null)
           InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
+            splashColor: Color.fromARGB(232, 212, 25, 25),
+            highlightColor: Color.fromARGB(230, 235, 11, 11),
             onTap: () => _selectPhoto(),
             child: AppRoundImage.url(imageUrl!, height: 80, width: 80),
           ),
@@ -63,9 +74,9 @@ class _UserImageState extends State<UserImage> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               imageUrl != null ? 'Change photo' : 'Select photo',
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold),
+              style: kTitleTextStyle.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         )

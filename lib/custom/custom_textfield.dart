@@ -15,7 +15,7 @@ class CustomTextField extends StatelessWidget {
       {Key? key,
       required this.textEditingController,
       required this.label,
-      this.password = true,
+      this.password = false,
       this.fieldValidator,
       this.keyboardType = TextInputType.text,
       this.prefixIcon,

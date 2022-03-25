@@ -6,6 +6,8 @@ import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
+import 'package:pollstrix/screens/login_page.dart';
+import 'package:provider/provider.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -135,15 +137,9 @@ class AuthenticationService {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      await updateUserProfile(username, credential.user!, photoURL: imageUrl);
-
       final firstName = toBeginningOfSentenceCase(fname);
       final lastName = toBeginningOfSentenceCase(lname);
-
-      await _firebaseFirestore
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
+      _firebaseFirestore.collection('users').doc(credential.user!.uid).set({
         'uid': credential.user!.uid,
         'imageUrl': imageUrl,
         'first_name': firstName,
@@ -156,7 +152,24 @@ class AuthenticationService {
         'dislikedPolls': []
       });
 
+      await credential.user!.updateDisplayName(username);
+      await credential.user!.updatePhotoURL(imageUrl);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Creating Account...'),
+          content: const Text('Please wait you will be redirecteed shortly'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/'),
+                child: const Text("OK"))
+          ],
+        ),
+      );
+
       user = credential.user;
+      return user!.uid;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
@@ -164,8 +177,6 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: 'Error creating account.'));
     }
-
-    return user!.uid;
   }
 
   // update user account
@@ -264,24 +275,28 @@ class AuthenticationService {
   Future updateUserEmail(String email, context) async {
     final currentUser = _firebaseAuth.currentUser!;
     try {
-      await currentUser.updateEmail(email);
+      await _firebaseFirestore.collection('users').doc(currentUser.uid).update({
+        'email': email,
+      });
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-            title: const Text('Email updated'),
-            content: const Text('Email changed. Please re-login'),
-            actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextButton(
-                      onPressed: () => signOut(context: context),
-                      child: const Text("OK"))
-                ],
-              )
-            ]),
-      );
+      await currentUser.updateEmail(email).then((value) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+              title: const Text('Email updated'),
+              content: const Text('Email changed. Please re-login'),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("OK"))
+                  ],
+                )
+              ]),
+        );
+      });
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       FocusManager.instance.primaryFocus?.unfocus();
@@ -294,7 +309,7 @@ class AuthenticationService {
           backgroundColor: Colors.red,
           content: 'Error sending email. Try again.'));
     }
-    await currentUser.reload();
+    // await currentUser.reload();
   }
 
   // delete user account
@@ -400,7 +415,7 @@ class AuthenticationService {
 
   Future onVote(
       {required BuildContext context,
-      required String email,
+      required String userId,
       required int selectedOption,
       required Map<String, dynamic> choices,
       required String pid}) async {
@@ -419,7 +434,7 @@ class AuthenticationService {
           }
         }).toList();
 
-        voteDetails.add({'email': email, 'option': selectedOption});
+        voteDetails.add({'uid': userId, 'option': selectedOption});
 
         _firebaseFirestore.collection('polls').doc(pid).update({
           'voteCount': totalVotes + 1,
@@ -436,16 +451,3 @@ class AuthenticationService {
     }
   }
 }
-
-
- // List<dynamic> choicesList = value.data()!['choices'];
-        // var index;
-
-        // choicesList.asMap().entries.map((e) {
-        //   index = e.key;
-        //   if ((selectedOption - 1) == e.key) {
-        //     titleChoice = e.value['title'];
-        //     currentVotesOnTheChoice = e.value['votes'];
-        //     return;
-        //   }
-        // }).toList();

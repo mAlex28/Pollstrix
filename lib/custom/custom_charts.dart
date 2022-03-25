@@ -18,11 +18,7 @@ class BarChart extends StatelessWidget {
           measureFn: (dynamic series, _) => series.votes,
           labelAccessorFn: (dynamic series, _) =>
               '${series.choice} - ${series.votes} votes',
-          colorFn: (dynamic series, _) => charts.Color(
-                  r: (Random().nextDouble() * 0xFFFFFF).toInt(),
-                  g: (Random().nextDouble() * 0xFFFFFF).toInt(),
-                  b: (Random().nextDouble() * 0xFFFFFF).toInt())
-              .darker)
+          colorFn: (dynamic series, _) => series.barColor)
     ];
 
     return Expanded(
@@ -54,11 +50,7 @@ class PieChart extends StatelessWidget {
           measureFn: (dynamic series, _) => series.votes,
           labelAccessorFn: (dynamic series, _) =>
               '${series.choice} - ${series.votes} votes',
-          colorFn: (dynamic series, _) => charts.Color(
-                  r: (Random().nextDouble() * 0xFFFFFF).toInt(),
-                  g: (Random().nextDouble() * 0xFFFFFF).toInt(),
-                  b: (Random().nextDouble() * 0xFFFFFF).toInt())
-              .darker)
+          colorFn: (dynamic series, _) => series.barColor)
     ];
 
     return Expanded(

@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/custom/custom_searchbar_delegate.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 import 'package:pollstrix/screens/post_poll_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -17,15 +22,57 @@ class FeedContentPage extends StatefulWidget {
 
 class _FeedContentPageState extends State<FeedContentPage> {
   final db = FirebaseFirestore.instance;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  bool _isConnected = true;
   var stream;
 
   @override
   void initState() {
     super.initState();
+    initConnectivity();
     stream = db
         .collection('polls')
         .orderBy('createdAt', descending: true)
         .snapshots();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status $e');
+      return;
+    }
+
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {
+      _connectionStatus = result;
+      if (result != ConnectivityResult.none) {
+        _isConnected = true;
+      } else {
+        _isConnected = false;
+      }
+    });
   }
 
   @override
@@ -202,6 +249,11 @@ class _FeedContentPageState extends State<FeedContentPage> {
               child: StreamBuilder<QuerySnapshot>(
             stream: stream,
             builder: (context, snapshot) {
+              // if (!_isConnected) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //       CustomWidgets.customSnackbar(
+              //           backgroundColor: Colors.red, content: 'No connection'));
+              // }
               if (!snapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),

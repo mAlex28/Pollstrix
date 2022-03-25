@@ -60,35 +60,35 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  Future<void> _waitAndCheckErrors(
-      Future<void> Function() signInFunction, context) async {
-    setState(() => _isLoading = true);
-    try {
-      await signInFunction();
+  // Future<void> _waitAndCheckErrors(
+  //     Future<void> Function() signInFunction, context) async {
+  //   setState(() => _isLoading = true);
+  //   try {
+  //     await signInFunction();
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Creating Account...'),
-          content: const Text('Please wait you will be redirecteed shortly'),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/'),
-                child: const Text("OK"))
-          ],
-        ),
-      );
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red, content: e.toString()));
-      setState(() => _isLoading = false);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error signing in to the account.'));
-      setState(() => _isLoading = false);
-    }
-  }
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => AlertDialog(
+  //         title: const Text('Creating Account...'),
+  //         content: const Text('Please wait you will be redirecteed shortly'),
+  //         actions: [
+  //           TextButton(
+  //               onPressed: () => Navigator.pushNamed(context, '/'),
+  //               child: const Text("OK"))
+  //         ],
+  //       ),
+  //     );
+  //   } on FirebaseException catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+  //         backgroundColor: Colors.red, content: e.toString()));
+  //     setState(() => _isLoading = false);
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+  //         backgroundColor: Colors.red,
+  //         content: 'Error signing in to the account.'));
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -219,10 +219,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                           const EdgeInsets.symmetric(
                                               vertical: 12, horizontal: 40)),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if (_formKey.currentState != null &&
                                           _formKey.currentState!.validate()) {
-                                        final createAccount = authService
+                                        await authService
                                             .createUserWithEmailAndPassword(
                                                 fname: _fnameController.text
                                                     .trim(),
@@ -238,8 +238,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                                     .trim(),
                                                 imageUrl: imageUrl,
                                                 context: context);
-                                        _waitAndCheckErrors(
-                                            () => createAccount, context);
                                       }
                                     },
                                     child: const Text(

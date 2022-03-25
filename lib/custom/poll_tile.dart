@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -365,11 +367,9 @@ class _PollTileState extends State<PollTile> {
   Widget build(BuildContext context) {
     final currentUser =
         Provider.of<AuthenticationService>(context).getCurrentUserEmail();
-    final String currentUserID =
-        Provider.of<AuthenticationService>(context).getCurrentUID();
     final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
     final creater = (widget.doc.data() as dynamic)['creatorEmail'];
-    final creatorID = (widget.doc.data() as dynamic)['uid'];
+    final createrID = (widget.doc.data() as dynamic)['uid'];
     final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
 
     // calculate remaining time left for the poll
@@ -411,10 +411,10 @@ class _PollTileState extends State<PollTile> {
                               context, details,
                               uid: currentUserID,
                               pid: widget.doc.id,
-                              creator: creatorID))
+                              creator: createrID))
                     ],
                   ),
-                  currentUser == creater || _hasUserVoted
+                  currentUserID == createrID || _hasUserVoted
                       ? Polls.viewPolls(
                           children: (widget.doc.data() as dynamic)['choices']
                               .entries
@@ -452,7 +452,7 @@ class _PollTileState extends State<PollTile> {
                                     listen: false)
                                 .onVote(
                                     context: context,
-                                    email: currentUser!,
+                                    userId: currentUserID,
                                     choices: (widget.doc.data()
                                         as dynamic)['choices'],
                                     selectedOption: choice,
@@ -546,7 +546,7 @@ class _PollTileState extends State<PollTile> {
                               context, details,
                               uid: currentUserID,
                               pid: widget.doc.id,
-                              creator: creatorID))
+                              creator: createrID))
                     ],
                   ),
                   Padding(
@@ -610,8 +610,11 @@ class _PollTileState extends State<PollTile> {
                       : PieChart(
                           data: (widget.doc.data() as dynamic)['choices']
                               .map((choice) {
-                          return PollResults(choice['title'], choice['votes'],
-                              charts.ColorUtil.fromDartColor(Colors.green));
+                          return PollResults(
+                              choice['title'],
+                              choice['votes'],
+                              charts.ColorUtil.fromDartColor(
+                                  const Color.fromARGB(255, 32, 96, 170)));
                         }).toList()),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

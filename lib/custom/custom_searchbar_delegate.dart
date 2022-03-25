@@ -1,18 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 
 class CustomSearchBarDelegate extends SearchDelegate {
   final _firebaseFirestore = FirebaseFirestore.instance;
-  List<String> searchItems = [
-    "Apple",
-    "Banana",
-    "Pineapple",
-    "Pear",
-    "Watermelon",
-    "Organe",
-    "Blueberries"
-  ];
 
   // @override
   // ThemeData appBarTheme(BuildContext context) {
@@ -26,7 +18,12 @@ class CustomSearchBarDelegate extends SearchDelegate {
     return [
       IconButton(
           onPressed: () {
-            query = '';
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+              showSuggestions(context);
+            }
           },
           icon: const Icon(Icons.clear_rounded))
     ];
@@ -68,7 +65,8 @@ class CustomSearchBarDelegate extends SearchDelegate {
           child: StreamBuilder<QuerySnapshot>(
             stream: stream,
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+              if (!snapshot.hasData ||
+                  snapshot.connectionState == ConnectionState.waiting) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -101,21 +99,71 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Column();
-    // List<String> matchQuery = [];
+    var stream = _firebaseFirestore
+        .collection('polls')
+        .where('title', isGreaterThanOrEqualTo: query)
+        .where('title', isLessThan: query + 'z')
+        .snapshots();
 
-    // for (var fruit in searchItems) {
-    //   if (fruit.toLowerCase().contains(query.toLowerCase())) {
-    //     matchQuery.add(fruit);
-    //   }
-    // }
-    // return ListView.builder(
-    //     itemCount: matchQuery.length,
-    //     itemBuilder: (context, index) {
-    //       var result = matchQuery[index];
-    //       return ListTile(
-    //         title: Text(result),
-    //       );
-    //     });
+    return Container(
+        color: Colors.white,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: stream,
+          builder: (context, snapshot) {
+            if (query.isEmpty) return buildNoSuggestions();
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError || !snapshot.hasData) {
+              return buildNoSuggestions();
+            } else {
+              return buildSuggestionsSuccess(snapshot.data!.docs);
+            }
+          },
+        ));
   }
+
+  Widget buildNoSuggestions() => const Center(
+        child: Text(
+          'No suggestions',
+          style: TextStyle(fontSize: 18, color: Colors.black),
+        ),
+      );
+
+  Widget buildSuggestionsSuccess(
+          List<QueryDocumentSnapshot<Object?>> suggestions) =>
+      ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+          final queryText = (suggestion.data() as dynamic)['title']
+              .substring(0, query.length);
+          final remainingText =
+              (suggestion.data() as dynamic)['title'].substring(query.length);
+
+          return ListTile(
+              onTap: () {
+                query = (suggestion.data() as dynamic)['title'];
+                showResults(context);
+              },
+              title: RichText(
+                text: TextSpan(
+                    text: queryText,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: remainingText,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ]),
+              ));
+        },
+      );
 }
