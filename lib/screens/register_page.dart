@@ -15,7 +15,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  String imageUrl = '';
+  String imageUrl = 'assets/images/avatar.png';
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
@@ -121,6 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           )),
                                     ],
                                   ),
+                                  // buildImage(),
                                   UserImage(
                                     onFileChanged: (imageUrl) {
                                       setState(() {
@@ -254,4 +255,16 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ))))));
   }
+
+  // Widget buildImage() => GestureDetector(
+  //       child: buildAvatar(),
+  //       onTap: () async {},
+  //     );
+
+  // Widget buildAvatar() {
+  //   final double size = 64;
+
+  //   if (user.)
+
+  // }
 }

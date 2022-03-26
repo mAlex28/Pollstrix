@@ -3,9 +3,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -63,8 +61,8 @@ class _UserImageState extends State<UserImage> {
           const Icon(Icons.image, size: 68, color: kAccentColor),
         if (imageUrl != null)
           InkWell(
-            splashColor: Color.fromARGB(232, 212, 25, 25),
-            highlightColor: Color.fromARGB(230, 235, 11, 11),
+            splashColor: kAccentColor,
+            highlightColor: kAccentColor,
             onTap: () => _selectPhoto(),
             child: AppRoundImage.url(imageUrl!, height: 80, width: 80),
           ),
@@ -120,29 +118,29 @@ class _UserImageState extends State<UserImage> {
       return;
     }
 
-    var file = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
+    // var file = await ImageCropper().cropImage(
+    //     sourcePath: pickedFile.path,
+    //     aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1));
 
-    if (file == null) {
-      return;
-    }
+    // if (file == null) {
+    //   return;
+    // }
 
-    file = await compressImage(file.path, 35);
+    // file = await compressImage(file.path, 35);
 
-    await _uploadFile(file.path);
+    await _uploadFile(pickedFile.path);
   }
 
-  Future<File> compressImage(String path, int quality) async {
-    final targetPath = p.join((await getTemporaryDirectory()).path,
-        '${DateTime.now()}.${p.extension(path)}');
+  // Future<File> compressImage(String path, int quality) async {
+  //   final targetPath = p.join((await getTemporaryDirectory()).path,
+  //       '${DateTime.now()}.${p.extension(path)}');
 
-    final result = await FlutterImageCompress.compressAndGetFile(
-        path, targetPath,
-        quality: quality);
+  //   // final result = await FlutterImageCompress.compressAndGetFile(
+  //   //     path, targetPath,
+  //   //     quality: quality);
 
-    return result!;
-  }
+  //   return targetPath;
+  // }
 
   Future _uploadFile(String path) async {
     final ref = storage.FirebaseStorage.instance

@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/google_signin_button.dart';
@@ -54,6 +56,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
+
     final size = MediaQuery.of(context).size;
     final authService = Provider.of<AuthenticationService>(context);
 
@@ -73,20 +84,13 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Image.asset(
-                              "assets/images/logo.png",
-                              width: size.width * 0.2,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              'Pollstrix',
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.w600),
+                            SizedBox(width: kSpacingUnit.w * 3),
+                            SizedBox(
+                              height: kToolbarHeight * 0.7,
+                              child: Image.asset(
+                                "assets/images/logo_inapp.png",
+                                color: kAccentColor,
+                              ),
                             ),
                             const SizedBox(
                               height: 45,

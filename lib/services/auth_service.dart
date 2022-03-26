@@ -1,13 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
-import 'package:pollstrix/screens/login_page.dart';
-import 'package:provider/provider.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -174,6 +177,7 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: 'Error creating account.'));
     }

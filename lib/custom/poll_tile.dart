@@ -355,7 +355,7 @@ class _PollTileState extends State<PollTile> {
     List<dynamic> votedUsers = (widget.doc.data() as dynamic)['voteData'];
 
     votedUsers.asMap().entries.map((e) {
-      if (e.value['email'] == currentUserEmail) {
+      if (e.value['uid'] == currentUserID) {
         setState(() {
           _hasUserVoted = true;
         });
@@ -444,9 +444,9 @@ class _PollTileState extends State<PollTile> {
                             style: const TextStyle(fontSize: 16),
                           ),
                           voteData: usersWhoVoted,
-                          currentUser: currentUser,
+                          currentUser: currentUserID,
                           creatorID: creater,
-                          userChoice: usersWhoVoted[currentUser],
+                          userChoice: usersWhoVoted[currentUserID],
                           onVote: (choice) async {
                             await Provider.of<AuthenticationService>(context,
                                     listen: false)
@@ -603,16 +603,20 @@ class _PollTileState extends State<PollTile> {
                   _showBarChart
                       ? BarChart(
                           data: (widget.doc.data() as dynamic)['choices']
+                              .entries
                               .map((choice) {
-                          return PollResults(choice['title'], choice['votes'],
+                          return PollResults(
+                              choice.value['title'],
+                              choice.value['votes'] ?? 0,
                               charts.ColorUtil.fromDartColor(Colors.green));
                         }).toList())
                       : PieChart(
                           data: (widget.doc.data() as dynamic)['choices']
+                              .entries
                               .map((choice) {
                           return PollResults(
-                              choice['title'],
-                              choice['votes'],
+                              choice.value['title'],
+                              choice.value['votes'] ?? 0,
                               charts.ColorUtil.fromDartColor(
                                   const Color.fromARGB(255, 32, 96, 170)));
                         }).toList()),

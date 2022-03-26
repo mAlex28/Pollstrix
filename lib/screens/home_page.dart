@@ -1,10 +1,8 @@
-import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/menu_page.dart';
-import 'package:pollstrix/screens/post_poll_page.dart';
 import 'package:pollstrix/screens/profile_content_page.dart';
 
 class HomePage extends StatefulWidget {
