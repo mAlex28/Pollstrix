@@ -102,13 +102,11 @@ class _PostPollPageState extends State<PostPollPage> {
                                               Navigator.pop(context);
                                             },
                                             showActionButtons: true,
-                                            // onSelectionChanged:
-                                            //     selectionChanged,
                                             selectionMode:
                                                 DateRangePickerSelectionMode
                                                     .range,
                                             onCancel: () {
-                                              Navigator.pop(context);
+                                              Navigator.of(context).pop();
                                             },
                                           ),
                                         ));
@@ -158,15 +156,14 @@ class _PostPollPageState extends State<PostPollPage> {
                             _formKey.currentState!.save();
                           }
 
-                          await authService
-                              .post(
-                                  title: _textEditingController.text,
-                                  choices: _poll.options,
-                                  createdTime: DateTime.now(),
-                                  startDate: _startDate,
-                                  endDate: _endDate,
-                                  context: context)
-                              .then((_) => Navigator.of(context).pop());
+                          await authService.post(
+                              title: _textEditingController.text,
+                              choices: _poll.options,
+                              createdTime: DateTime.now(),
+                              startDate: _startDate,
+                              endDate: _endDate,
+                              context: context);
+                          Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.post_add_rounded),
                         label: const Text('Post'))),

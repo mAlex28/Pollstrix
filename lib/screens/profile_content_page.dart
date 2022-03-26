@@ -232,28 +232,98 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       return DefaultTabController(
           length: 2,
           child: Scaffold(
-              body: SingleChildScrollView(
-                  child: Column(
-            children: <Widget>[
-              SizedBox(height: kSpacingUnit.w * 5),
-              header,
-              const TabBar(tabs: [
-                Tab(
-                  text: 'Posted',
+              body: CustomScrollView(
+            slivers: [
+              // SliverAppBar(
+              //   expandedHeight: 400.0,
+              //   floating: false,
+              //   pinned: true,
+              //   flexibleSpace: FlexibleSpaceBar(
+              //     centerTitle: true,
+              //     title: Center(
+              //       child: Column(
+              //         children: [
+              //           //header
+              //           Row(
+              //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: <Widget>[
+              //               // SizedBox(width: kSpacingUnit.w * 3),
+              //               FutureBuilder(
+              //                   future:
+              //                       Provider.of<AuthenticationService>(context)
+              //                           .getCurrentUser(),
+              //                   builder: (context, snapshot) {
+              //                     if (snapshot.connectionState ==
+              //                         ConnectionState.done) {
+              //                       return buildProfileInfo(context, snapshot);
+              //                     } else {
+              //                       return const CircularProgressIndicator();
+              //                     }
+              //                   }),
+              //               themeSwitcher,
+              //               // SizedBox(width: kSpacingUnit.w * 3),
+              //             ],
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              SliverFillRemaining(
+                child: Column(
+                  children: <Widget>[
+                    // SizedBox(height: kSpacingUnit.w * 5),
+                    // header,
+                    const TabBar(tabs: [
+                      Tab(
+                        text: 'Posted',
+                      ),
+                      Tab(
+                        text: 'Voted',
+                      ),
+                    ]),
+                    SizedBox(
+                      height: 400,
+                      child: TabBarView(children: [
+                        postedPolls,
+                        votedPolls,
+                      ]),
+                    )
+                  ],
                 ),
-                Tab(
-                  text: 'Voted',
-                ),
-              ]),
-              SizedBox(
-                height: 400,
-                child: TabBarView(children: [
-                  postedPolls,
-                  votedPolls,
-                ]),
               )
             ],
-          ))));
+          )));
     }));
   }
 }
+
+  //            return ThemeSwitchingArea(child: Builder(builder: (context) {
+  //     return DefaultTabController(
+  //         length: 2,
+  //         child: Scaffold(
+  //             body: SingleChildScrollView(
+  //                 child: Column(
+  //           children: <Widget>[
+  //             SizedBox(height: kSpacingUnit.w * 5),
+  //             header,
+  //             const TabBar(tabs: [
+  //               Tab(
+  //                 text: 'Posted',
+  //               ),
+  //               Tab(
+  //                 text: 'Voted',
+  //               ),
+  //             ]),
+  //             SizedBox(
+  //               height: 400,
+  //               child: TabBarView(children: [
+  //                 postedPolls,
+  //                 votedPolls,
+  //               ]),
+  //             )
+  //           ],
+  //         ))));
+  //   }));
+  // }
