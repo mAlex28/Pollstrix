@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:pollstrix/models/poll_model.dart';
 import 'package:pollstrix/custom/poll_form_options.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -62,10 +63,15 @@ class _PostPollPageState extends State<PostPollPage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Add new Poll'),
+          titleTextStyle: Theme.of(context).appBarTheme.titleTextStyle,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: const Text(
+            'Add new Poll',
+          ),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.close_rounded),
+            color: kAccentColor,
             onPressed: () => Navigator.of(context).pop(),
           )),
       body: SingleChildScrollView(
@@ -81,6 +87,9 @@ class _PostPollPageState extends State<PostPollPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton.icon(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(kAccentColor)),
                             onPressed: () {
                               showDialog<Widget>(
                                   context: context,
@@ -151,6 +160,9 @@ class _PostPollPageState extends State<PostPollPage> {
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: ElevatedButton.icon(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(kAccentColor)),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();

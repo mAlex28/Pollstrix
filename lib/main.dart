@@ -1,18 +1,18 @@
-import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:pollstrix/constants.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,41 +35,42 @@ void main() async {
 
   FlutterNativeSplash.remove();
 
-  runApp(const MyApp());
+  return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // get initialData => null;
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        Provider<AuthenticationService>(create: (_) => AuthenticationService()),
-        Provider(create: (_) => FirebaseFirestore.instance),
-      ],
-      child: ThemeProvider(
-        initTheme: kLightTheme,
-        builder: (context, myTheme) {
-          return MaterialApp(
-            title: 'Pollstrix',
-            debugShowCheckedModeBanner: false,
-            theme: myTheme,
-            initialRoute: '/',
-            routes: {
-              '/': (context) => const AuthenticationWrapper(),
-              '/login': (context) => const LoginPage(),
-              '/register': (context) => const RegisterPage(),
-              '/forgot-password': (context) => const ForgotPasswordPage(),
-              '/reset-password': (context) => const ResetPasswordPage(),
-              '/feedcontent': (context) => const FeedContentPage()
-            },
-          );
-        },
-      ),
-    );
+        providers: [
+          Provider<AuthenticationService>(
+              create: (_) => AuthenticationService()),
+          Provider(create: (_) => FirebaseFirestore.instance),
+        ],
+        child: ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+          builder: (context, _) {
+            final themeProvider = Provider.of<ThemeProvider>(context);
+            return MaterialApp(
+              title: 'Pollstrix',
+              debugShowCheckedModeBanner: false,
+              themeMode: themeProvider.themeMode,
+              theme: MyTheme.lightTheme,
+              darkTheme: MyTheme.darkTheme,
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const AuthenticationWrapper(),
+                '/login': (context) => const LoginPage(),
+                '/register': (context) => const RegisterPage(),
+                '/forgot-password': (context) => const ForgotPasswordPage(),
+                '/reset-password': (context) => const ResetPasswordPage(),
+                '/feedcontent': (context) => const FeedContentPage()
+              },
+            );
+          },
+        ));
   }
 }
 

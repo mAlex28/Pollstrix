@@ -5,6 +5,7 @@ import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
@@ -46,20 +47,6 @@ class _UserPageState extends State<UserPage> {
     return null;
   }
 
-  String? _emailFieldValidator(String? text) {
-    String pattern =
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-    RegExp regExp = RegExp(pattern);
-
-    if (text == null || text.trim().isEmpty) {
-      return 'This field is required';
-    } else if (!regExp.hasMatch(text.trim())) {
-      return 'Invalid email address';
-    }
-
-    return null;
-  }
-
   @override
   void didChangeDependencies() {
     _getUserProfile();
@@ -72,6 +59,8 @@ class _UserPageState extends State<UserPage> {
 
     return Scaffold(
         appBar: AppBar(
+          iconTheme: Theme.of(context).iconTheme,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: const Text('User Profile'),
           actions: [
             IconButton(
@@ -94,10 +83,12 @@ class _UserPageState extends State<UserPage> {
                     });
                   });
                 },
-                icon: const Icon(Icons.done_rounded))
+                icon: const Icon(
+                  Icons.done_rounded,
+                  color: kAccentColor,
+                ))
           ],
         ),
-        backgroundColor: Colors.white,
         body: Center(
             child: SingleChildScrollView(
                 child: isUpdating
@@ -129,13 +120,13 @@ class _UserPageState extends State<UserPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        UserImage(
-                                            onFileChanged: (imageUrl) {
-                                              setState(() {
-                                                this.imageUrl = imageUrl;
-                                              });
-                                            },
-                                            isProfile: true),
+                                        // UserImage(
+                                        //     onFileChanged: (imageUrl) {
+                                        //       setState(() {
+                                        //         this.imageUrl = imageUrl;
+                                        //       });
+                                        //     },
+                                        //     isProfile: true),
                                         const SizedBox(
                                           height: 10,
                                         ),
@@ -144,8 +135,6 @@ class _UserPageState extends State<UserPage> {
                                           maxLines: 5,
                                           textEditingController: _bioController,
                                           label: 'About you...',
-                                          // prefixIcon:
-                                          //     const Icon(Icons.person_rounded),
                                         ),
                                         const SizedBox(
                                           height: 15,
@@ -224,8 +213,15 @@ class _UserPageState extends State<UserPage> {
                                                               ],
                                                             )
                                                           ],
-                                                          title: const Text(
-                                                              'Change your email..'),
+                                                          title: Text(
+                                                              'Change your email..',
+                                                              style:
+                                                                  kTitleTextStyle
+                                                                      .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              )),
                                                           content: TextField(
                                                             onChanged:
                                                                 (value) {},
@@ -243,7 +239,7 @@ class _UserPageState extends State<UserPage> {
                                                   'Change email',
                                                   style: TextStyle(
                                                       fontSize: 14.0,
-                                                      color: Colors.blueAccent),
+                                                      color: kAccentColor),
                                                 ),
                                               ),
                                               prefixIcon: const Icon(

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
-import 'package:pollstrix/constants.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/custom_charts.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/screens/feedback_page.dart';
@@ -202,7 +202,7 @@ class _PollTileState extends State<PollTile> {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16.0),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).backgroundColor,
             content: SizedBox(
               height: 140,
               width: 300,
@@ -428,8 +428,8 @@ class _PollTileState extends State<PollTile> {
                               style: kTitleTextStyle),
                           userChoice: usersWhoVoted[currentUser],
                           onVoteBackgroundColor: Colors.blueGrey,
-                          leadingBackgroundColor: Colors.blueAccent,
-                          backgroundColor: Colors.blue,
+                          leadingBackgroundColor: kAccentColor,
+                          backgroundColor: kAccentColor,
                         )
                       : Polls(
                           children: (widget.doc.data() as dynamic)['choices']
@@ -462,8 +462,9 @@ class _PollTileState extends State<PollTile> {
                             });
                           },
                           onVoteBackgroundColor: Colors.blue,
-                          leadingBackgroundColor: Colors.blue,
-                          backgroundColor: Colors.white,
+                          leadingBackgroundColor: kAccentColor,
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          outlineColor: kAccentColor,
                           allowCreatorVote: false),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -476,9 +477,8 @@ class _PollTileState extends State<PollTile> {
                               semanticLabel: 'Thumbs up',
                             ),
                             iconSize: 20,
-                            color: isLiked
-                                ? Colors.lightBlue[600]
-                                : Colors.blueGrey[100],
+                            color:
+                                isLiked ? kAccentColor : Colors.blueGrey[100],
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(
@@ -574,7 +574,7 @@ class _PollTileState extends State<PollTile> {
                         initialLabelIndex: 1,
                         cornerRadius: 8.0,
                         activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.white,
+                        inactiveBgColor: Theme.of(context).backgroundColor,
                         inactiveFgColor: Colors.blue,
                         totalSwitches: 2,
                         icons: const [

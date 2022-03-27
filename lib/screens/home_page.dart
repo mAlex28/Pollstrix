@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/constants.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/menu_page.dart';
 import 'package:pollstrix/screens/profile_content_page.dart';

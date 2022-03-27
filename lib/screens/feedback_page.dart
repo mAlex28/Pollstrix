@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 import 'package:comment_box/comment/comment.dart';
 
@@ -85,7 +86,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        iconTheme: Theme.of(context).iconTheme,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: const Text('Feedback'),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -110,7 +112,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           height: 50.0,
                           width: 50.0,
                           decoration: const BoxDecoration(
-                              color: Colors.blue,
+                              color: kAccentColor,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50))),
                           child: const CircleAvatar(
@@ -138,7 +140,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     list.clear();
                     _getFeedbackList();
                   });
-
                   _feedbackTextController.clear();
                   FocusScope.of(context).unfocus();
                 } else {
@@ -150,10 +151,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
               },
               formKey: formKey,
               commentController: _feedbackTextController,
-              backgroundColor: Colors.white,
-              textColor: Colors.black,
+              backgroundColor: Theme.of(context).backgroundColor,
+              textColor: Colors.grey,
               sendWidget:
-                  const Icon(Icons.send_sharp, size: 30, color: Colors.blue),
+                  const Icon(Icons.send_sharp, size: 30, color: kAccentColor),
             );
           }
         },

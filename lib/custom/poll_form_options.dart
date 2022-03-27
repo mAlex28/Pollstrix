@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pollstrix/services/theme_service.dart';
 
 class PollFormOptions extends StatefulWidget {
   final List<String> optionTitles;
@@ -95,8 +96,15 @@ class _PollFormOptionsState extends State<PollFormOptions> {
           ),
         if (_canAddOptions)
           OutlinedButton.icon(
-            icon: const Icon(Icons.more_horiz_rounded),
-            label: const Text('Add option'),
+            icon: const Icon(
+              Icons.more_horiz_rounded,
+              color: kAccentColor,
+            ),
+            label: Text(
+              'Add option',
+              style: kCaptionTextStyle.copyWith(
+                  fontWeight: FontWeight.w500, color: kAccentColor),
+            ),
             onPressed: () => setState(_addController),
           ),
       ],
