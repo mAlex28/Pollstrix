@@ -6,6 +6,7 @@ import 'package:pollstrix/custom/change_theme_button.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -15,6 +16,57 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  final RateMyApp _rateMyApp = RateMyApp(
+    preferencesPrefix: 'rateMyApp_',
+    minDays: 3,
+    minLaunches: 7,
+    remindDays: 2,
+    remindLaunches: 5,
+    appStoreIdentifier: 'site.alexthedev.pollstrix',
+    googlePlayIdentifier: 'site.alexthedev.pollstrix',
+  );
+
+  _launchDialog() {
+    _rateMyApp.init().then((_) {
+      if (_rateMyApp.shouldOpenDialog) {
+        _rateMyApp.showStarRateDialog(context,
+            title: 'Enjoying Pollstrix?',
+            message: 'Please leave a rating',
+            ignoreNativeDialog: false,
+            actionsBuilder: (context, stars) {
+              return [
+                TextButton(
+                    onPressed: () async {
+                      if (stars != null) {
+                        await _rateMyApp
+                            .callEvent(RateMyAppEventType.rateButtonPressed);
+                        Navigator.pop<RateMyAppDialogButton>(
+                            context, RateMyAppDialogButton.rate);
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text('OK'))
+              ];
+            },
+            starRatingOptions: const StarRatingOptions(initialRating: 3),
+            onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
+                .laterButtonPressed), // Called when the user dismisse
+            dialogStyle: const DialogStyle(
+              titleAlign: TextAlign.center,
+              messageAlign: TextAlign.center,
+              messagePadding: EdgeInsets.only(bottom: 20),
+            ));
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _launchDialog();
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(
@@ -85,8 +137,11 @@ class _MenuPageState extends State<MenuPage> {
                     ),
                   ),
                 ),
-                const CustomMenuListItem(
-                    icon: Icons.star_rate_outlined, text: 'Rate us'),
+                CustomMenuListItem(
+                  icon: Icons.star_rate_outlined,
+                  text: 'Rate us',
+                  onTap: () => _launchDialog(),
+                ),
                 CustomMenuListItem(
                   icon: Icons.logout_outlined,
                   text: 'Log out',
