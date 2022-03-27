@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
 import 'package:pollstrix/services/theme_service.dart';
@@ -11,6 +12,7 @@ import 'package:pollstrix/screens/feedback_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class PollTile extends StatefulWidget {
@@ -402,16 +404,39 @@ class _PollTileState extends State<PollTile> {
                                   fontSize: 12.0),
                             ),
                           )),
-                      GestureDetector(
-                          child: const Icon(
-                            Icons.more_vert_rounded,
-                            size: 16.0,
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: GestureDetector(
+                              child: Icon(
+                                Icons.share,
+                                color: Theme.of(context).iconTheme.color,
+                                size: ScreenUtil().setSp(kSpacingUnit.w * 1.2),
+                              ),
+                              onTap: () async {
+                                const url = "https://youtu.be/CNUBhb_cM6E";
+
+                                await Share.share('Thedfsdfsdfs $url');
+                              },
+                            ),
                           ),
-                          onTapDown: (details) => _showPopupMenu(
-                              context, details,
-                              uid: currentUserID,
-                              pid: widget.doc.id,
-                              creator: createrID))
+                          Container(
+                              padding: const EdgeInsets.only(left: 0.0),
+                              child: GestureDetector(
+                                  child: Icon(
+                                    Icons.more_vert_rounded,
+                                    color: Theme.of(context).iconTheme.color,
+                                    size: ScreenUtil()
+                                        .setSp(kSpacingUnit.w * 1.2),
+                                  ),
+                                  onTapDown: (details) => _showPopupMenu(
+                                      context, details,
+                                      uid: currentUserID,
+                                      pid: widget.doc.id,
+                                      creator: createrID))),
+                        ],
+                      ),
                     ],
                   ),
                   currentUserID == createrID || _hasUserVoted

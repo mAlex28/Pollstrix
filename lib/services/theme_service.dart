@@ -9,7 +9,8 @@ const kDarkSecondaryColor = Color(0xFF373737);
 const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F7FB);
 const kAccentColor = Color(0xFF3282B8);
-const kUnselectedItemColor = Color(0xFFB0BEC5);
+const kUnselectedItemColor = Color.fromARGB(255, 154, 167, 173);
+const kSmallTextColor = Colors.grey;
 
 final kTitleTextStyle = TextStyle(
   fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
@@ -73,7 +74,7 @@ class ThemeProvider extends ChangeNotifier {
 
 class MyTheme {
   static final darkTheme = ThemeData(
-    scaffoldBackgroundColor: kDarkSecondaryColor,
+    scaffoldBackgroundColor: kDarkPrimaryColor,
     appBarTheme: const AppBarTheme(
       titleTextStyle: TextStyle(
         color: kLightSecondaryColor,
@@ -98,7 +99,7 @@ class MyTheme {
   );
 
   static final lightTheme = ThemeData(
-    scaffoldBackgroundColor: kLightSecondaryColor,
+    scaffoldBackgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
       titleTextStyle: TextStyle(
         color: kDarkSecondaryColor,

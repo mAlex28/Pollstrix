@@ -120,13 +120,13 @@ class _UserPageState extends State<UserPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        // UserImage(
-                                        //     onFileChanged: (imageUrl) {
-                                        //       setState(() {
-                                        //         this.imageUrl = imageUrl;
-                                        //       });
-                                        //     },
-                                        //     isProfile: true),
+                                        UserImage(
+                                            onFileChanged: (imageUrl) {
+                                              setState(() {
+                                                this.imageUrl = imageUrl;
+                                              });
+                                            },
+                                            isProfile: true),
                                         const SizedBox(
                                           height: 10,
                                         ),

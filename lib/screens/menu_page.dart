@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/screens/faq_page.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/change_theme_button.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
@@ -50,18 +51,40 @@ class _MenuPageState extends State<MenuPage> {
         body: Center(
             child: Column(
           children: <Widget>[
-            SizedBox(height: kSpacingUnit.w * 5),
             header,
+            SizedBox(height: kSpacingUnit.w * 4),
             Expanded(
                 child: ListView(
               children: <Widget>[
                 const CustomMenuListItem(
-                    icon: Icons.translate_outlined, text: 'Language'),
+                  icon: Icons.translate_outlined,
+                  text: 'Language',
+                ),
                 const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
-                const CustomMenuListItem(
-                    icon: Icons.question_answer_outlined, text: 'FAQ'),
-                const CustomMenuListItem(
-                    icon: Icons.info_outline_rounded, text: 'About us'),
+                CustomMenuListItem(
+                  icon: Icons.question_answer_outlined,
+                  text: 'FAQ',
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const FAQPage())),
+                ),
+                CustomMenuListItem(
+                  icon: Icons.info_outline_rounded,
+                  text: 'About',
+                  onTap: () => showAboutDialog(
+                    context: context,
+                    applicationName: 'Pollstrix',
+                    applicationVersion: '1.0.0',
+                    applicationLegalese:
+                        'This application is for education purpose only',
+                    applicationIcon: SizedBox(
+                      height: kToolbarHeight * 0.6,
+                      child: Image.asset(
+                        "assets/images/icon.png",
+                        color: kAccentColor,
+                      ),
+                    ),
+                  ),
+                ),
                 const CustomMenuListItem(
                     icon: Icons.star_rate_outlined, text: 'Rate us'),
                 CustomMenuListItem(

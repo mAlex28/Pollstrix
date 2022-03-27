@@ -227,7 +227,6 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       )),
     ]);
 
-    // return ThemeSwitchingArea(child: Builder(builder: (context) {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -253,6 +252,5 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
             )
           ],
         ))));
-    // }));
   }
 }

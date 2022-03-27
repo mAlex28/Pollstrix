@@ -12,7 +12,6 @@ import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +34,7 @@ void main() async {
 
   FlutterNativeSplash.remove();
 
-  return runApp(MyApp());
+  return runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
