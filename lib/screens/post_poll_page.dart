@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:pollstrix/models/poll_model.dart';
 import 'package:pollstrix/custom/poll_form_options.dart';
@@ -58,6 +59,14 @@ class _PostPollPageState extends State<PostPollPage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
     const pollChoices = ['First', 'Second', 'Additional', 'Additional'];
     final authService = Provider.of<AuthenticationService>(context);
 
@@ -95,11 +104,14 @@ class _PostPollPageState extends State<PostPollPage> {
                                   context: context,
                                   builder: (BuildContext builder) {
                                     return AlertDialog(
-                                        backgroundColor: Colors.white,
+                                        backgroundColor:
+                                            Theme.of(context).backgroundColor,
                                         content: SizedBox(
                                           height: 450,
                                           width: 300,
                                           child: SfDateRangePicker(
+                                            todayHighlightColor: kAccentColor,
+                                            selectionColor: kAccentColor,
                                             controller:
                                                 _dateRangePickerController,
                                             enablePastDates: false,

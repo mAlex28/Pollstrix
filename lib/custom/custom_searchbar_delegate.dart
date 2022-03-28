@@ -105,21 +105,20 @@ class CustomSearchBarDelegate extends SearchDelegate {
         .snapshots();
 
     return Container(
-        color: Colors.white,
         child: StreamBuilder<QuerySnapshot>(
-          stream: stream,
-          builder: (context, snapshot) {
-            if (query.isEmpty) return buildNoSuggestions();
+      stream: stream,
+      builder: (context, snapshot) {
+        if (query.isEmpty) return buildNoSuggestions();
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError || !snapshot.hasData) {
-              return buildNoSuggestions();
-            } else {
-              return buildSuggestionsSuccess(snapshot.data!.docs);
-            }
-          },
-        ));
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError || !snapshot.hasData) {
+          return buildNoSuggestions();
+        } else {
+          return buildSuggestionsSuccess(snapshot.data!.docs);
+        }
+      },
+    ));
   }
 
   Widget buildNoSuggestions() => const Center(

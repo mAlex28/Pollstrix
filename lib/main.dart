@@ -34,7 +34,10 @@ void main() async {
 
   FlutterNativeSplash.remove();
 
-  return runApp(const MyApp());
+  return runApp(ChangeNotifierProvider<ThemeProvider>(
+    create: (_) => ThemeProvider(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -43,33 +46,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          Provider<AuthenticationService>(
-              create: (_) => AuthenticationService()),
-          Provider(create: (_) => FirebaseFirestore.instance),
-        ],
-        child: ChangeNotifierProvider(
-          create: (context) => ThemeProvider(),
-          builder: (context, _) {
-            final themeProvider = Provider.of<ThemeProvider>(context);
-            return MaterialApp(
-              title: 'Pollstrix',
-              debugShowCheckedModeBanner: false,
-              themeMode: themeProvider.themeMode,
-              theme: MyTheme.lightTheme,
-              darkTheme: MyTheme.darkTheme,
-              initialRoute: '/',
-              routes: {
-                '/': (context) => const AuthenticationWrapper(),
-                '/login': (context) => const LoginPage(),
-                '/register': (context) => const RegisterPage(),
-                '/forgot-password': (context) => const ForgotPasswordPage(),
-                '/reset-password': (context) => const ResetPasswordPage(),
-                '/feedcontent': (context) => const FeedContentPage()
-              },
-            );
+      providers: [
+        Provider<AuthenticationService>(create: (_) => AuthenticationService()),
+        Provider(create: (_) => FirebaseFirestore.instance),
+      ],
+      child: Consumer<ThemeProvider>(builder: (context, provider, child) {
+        return MaterialApp(
+          title: 'Pollstrix',
+          debugShowCheckedModeBanner: false,
+          themeMode: provider.themeMode,
+          theme: MyTheme.lightTheme,
+          darkTheme: MyTheme.darkTheme,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const AuthenticationWrapper(),
+            '/login': (context) => const LoginPage(),
+            '/register': (context) => const RegisterPage(),
+            '/forgot-password': (context) => const ForgotPasswordPage(),
+            '/reset-password': (context) => const ResetPasswordPage(),
+            '/feedcontent': (context) => const FeedContentPage()
           },
-        ));
+        );
+      }),
+    );
   }
 }
 

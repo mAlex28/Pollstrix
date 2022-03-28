@@ -26,6 +26,37 @@ class _MenuPageState extends State<MenuPage> {
     googlePlayIdentifier: 'site.alexthedev.pollstrix',
   );
 
+  _launchRateDialogOnClick() {
+    _rateMyApp.showStarRateDialog(context,
+        title: 'Enjoying Pollstrix?',
+        message: 'Please leave a rating',
+        ignoreNativeDialog: false,
+        actionsBuilder: (context, stars) {
+          return [
+            TextButton(
+                onPressed: () async {
+                  if (stars != null) {
+                    await _rateMyApp
+                        .callEvent(RateMyAppEventType.rateButtonPressed);
+                    Navigator.pop<RateMyAppDialogButton>(
+                        context, RateMyAppDialogButton.rate);
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('OK'))
+          ];
+        },
+        starRatingOptions: const StarRatingOptions(initialRating: 3),
+        onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
+            .laterButtonPressed), // Called when the user dismisse
+        dialogStyle: const DialogStyle(
+          titleAlign: TextAlign.center,
+          messageAlign: TextAlign.center,
+          messagePadding: EdgeInsets.only(bottom: 20),
+        ));
+  }
+
   _launchDialog() {
     _rateMyApp.init().then((_) {
       if (_rateMyApp.shouldOpenDialog) {
@@ -132,7 +163,6 @@ class _MenuPageState extends State<MenuPage> {
                       height: kToolbarHeight * 0.6,
                       child: Image.asset(
                         "assets/images/icon.png",
-                        color: kAccentColor,
                       ),
                     ),
                   ),
@@ -140,7 +170,7 @@ class _MenuPageState extends State<MenuPage> {
                 CustomMenuListItem(
                   icon: Icons.star_rate_outlined,
                   text: 'Rate us',
-                  onTap: () => _launchDialog(),
+                  onTap: () => _launchRateDialogOnClick(),
                 ),
                 CustomMenuListItem(
                   icon: Icons.logout_outlined,

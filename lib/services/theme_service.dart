@@ -29,45 +29,36 @@ final kButtonTextStyle = TextStyle(
 );
 
 class ThemeProvider extends ChangeNotifier {
-  // ThemeMode _selectedTheme = ThemeMode.system;
+  String currentTheme = 'light';
 
-  // late SharedPreferences prefs;
+  // ThemeMode themeMode = ThemeMode.light;
+  // bool get isDarkMode => themeMode == ThemeMode.dark;
 
-  // ThemeProvider(bool darkThemeOn) {
-  //   _selectedTheme = darkThemeOn ? ThemeMode.dark : ThemeMode.light;
-  // }
+  // void toggleTheme(bool isOn) async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
 
-  // Future<void> toggleTheme() async {
-  //   prefs = await SharedPreferences.getInstance();
-
-  //   if (_selectedTheme == ThemeMode.dark) {
-  //     _selectedTheme = ThemeMode.light;
-  //     await prefs.setBool("darkTheme", false);
+  //   if (isOn) {
+  //     themeMode = ThemeMode.dark;
+  //     preferences.setBool('isDarkTheme', true);
   //   } else {
-  //     _selectedTheme == ThemeMode.dark;
-  //     await prefs.setBool("darkTheme", true);
+  //     themeMode = ThemeMode.light;
+  //     preferences.setBool('isDarkTheme', false);
   //   }
 
+  //   themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
   //   notifyListeners();
   // }
 
-  // ThemeMode? getTheme() => _selectedTheme;
-
-  ThemeMode themeMode = ThemeMode.system;
-  bool get isDarkMode => themeMode == ThemeMode.dark;
-
-  void toggleTheme(bool isOn) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-
-    if (isOn) {
-      themeMode = ThemeMode.dark;
-      preferences.setBool('isDarkTheme', true);
+  ThemeMode get themeMode {
+    if (currentTheme == 'light') {
+      return ThemeMode.light;
     } else {
-      themeMode = ThemeMode.light;
-      preferences.setBool('isDarkTheme', false);
+      return ThemeMode.dark;
     }
+  }
 
-    themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
+  changeTheme(String theme) {
+    currentTheme = theme;
     notifyListeners();
   }
 }
@@ -123,3 +114,26 @@ class MyTheme {
         .copyWith(secondary: kAccentColor, brightness: Brightness.light),
   );
 }
+ // ThemeMode _selectedTheme = ThemeMode.system;
+
+  // late SharedPreferences prefs;
+
+  // ThemeProvider(bool darkThemeOn) {
+  //   _selectedTheme = darkThemeOn ? ThemeMode.dark : ThemeMode.light;
+  // }
+
+  // Future<void> toggleTheme() async {
+  //   prefs = await SharedPreferences.getInstance();
+
+  //   if (_selectedTheme == ThemeMode.dark) {
+  //     _selectedTheme = ThemeMode.light;
+  //     await prefs.setBool("darkTheme", false);
+  //   } else {
+  //     _selectedTheme == ThemeMode.dark;
+  //     await prefs.setBool("darkTheme", true);
+  //   }
+
+  //   notifyListeners();
+  // }
+
+  // ThemeMode? getTheme() => _selectedTheme;
