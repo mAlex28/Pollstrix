@@ -28,6 +28,7 @@ class UserImage extends StatefulWidget {
 class _UserImageState extends State<UserImage> {
   final ImagePicker _imagePicker = ImagePicker();
   String? imageUrl;
+  var _isLoading = false;
 
   _getUserProfile() async {
     if (widget.isProfile) {
@@ -48,40 +49,36 @@ class _UserImageState extends State<UserImage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(
-        BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width,
-            maxHeight: MediaQuery.of(context).size.height),
-        designSize: const Size(360, 690),
-        context: context,
-        minTextAdapt: true,
-        orientation: Orientation.portrait);
-
-    return Column(
-      children: [
-        if (imageUrl == null)
-          Icon(Icons.image, size: 68, color: Theme.of(context).iconTheme.color),
-        if (imageUrl != null)
-          InkWell(
-            splashColor: kAccentColor,
-            highlightColor: kAccentColor,
-            onTap: () => _selectPhoto(),
-            child: AppRoundImage.url(imageUrl!, height: 80, width: 80),
-          ),
-        InkWell(
-          onTap: () => _selectPhoto(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              imageUrl != null ? 'Change photo' : 'Select photo',
-              style: kCaptionTextStyle.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        )
-      ],
-    );
+    return _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Column(
+            children: [
+              if (imageUrl == null)
+                Icon(Icons.image,
+                    size: 68, color: Theme.of(context).iconTheme.color),
+              if (imageUrl != null)
+                InkWell(
+                  splashColor: kAccentColor,
+                  highlightColor: kAccentColor,
+                  onTap: () => _selectPhoto(),
+                  child: AppRoundImage.url(imageUrl!, height: 80, width: 80),
+                ),
+              InkWell(
+                onTap: () => _selectPhoto(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    imageUrl != null ? 'Change photo' : 'Select photo',
+                    style: kCaptionTextStyle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
   }
 
   Future _selectPhoto() async {
@@ -145,6 +142,9 @@ class _UserImageState extends State<UserImage> {
   }
 
   Future _uploadFile(String path) async {
+    setState(() {
+      _isLoading = true;
+    });
     final ref = storage.FirebaseStorage.instance
         .ref()
         .child('user/profile')
@@ -156,6 +156,7 @@ class _UserImageState extends State<UserImage> {
 
     setState(() {
       imageUrl = fileUrl;
+      _isLoading = false;
     });
 
     widget.onFileChanged(fileUrl);

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -55,20 +57,37 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
+
     final authData = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Platform.isIOS
+                ? const Icon(Icons.arrow_back_ios)
+                : const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           iconTheme: Theme.of(context).iconTheme,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: const Text('User Profile'),
+          title: Text(
+            'User Profile',
+            style: kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
+          ),
           actions: [
             IconButton(
                 onPressed: () {
                   setState(() {
                     isUpdating = true;
                   });
-
                   authData
                       .updateUserDetails(
                           fname: _fnameController.text,
@@ -111,7 +130,8 @@ class _UserPageState extends State<UserPage> {
                           }
 
                           return Padding(
-                              padding: const EdgeInsets.all(30),
+                              padding:
+                                  const EdgeInsets.only(left: 30, right: 30),
                               child: Form(
                                   key: _formKey,
                                   child: Column(

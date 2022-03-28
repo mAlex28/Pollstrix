@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 import 'package:pollstrix/screens/user_page.dart';
@@ -21,12 +22,21 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
 
   final urlImage = "assets/images/avatar.png";
 
+  var userImage;
+
   var userSelectedOption;
 
   @override
   void initState() {
-    _getVoteDataOfUsers();
     super.initState();
+    userImage = AuthenticationService().getProfileImage();
+    _getVoteDataOfUsers();
+  }
+
+  @override
+  void didChangeDependencies() {
+    userImage = AuthenticationService().getProfileImage();
+    super.didChangeDependencies();
   }
 
   _getVoteDataOfUsers() async {
@@ -70,8 +80,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               children: <Widget>[
                 CircleAvatar(
                   radius: kSpacingUnit.w * 5,
-                  backgroundImage: Provider.of<AuthenticationService>(context)
-                      .getProfileImage(),
+                  backgroundImage: userImage,
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
