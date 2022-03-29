@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pollstrix/screens/register_page.dart';
@@ -12,6 +15,7 @@ import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,14 +53,26 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
+        ChangeNotifierProvider<LocaleProvider>(
+            create: (context) => LocaleProvider())
       ],
       child: Consumer<ThemeProvider>(builder: (context, provider, child) {
+        final localeProvider = Provider.of<LocaleProvider>(context);
+
         return MaterialApp(
           title: 'Pollstrix',
           debugShowCheckedModeBanner: false,
           themeMode: provider.themeMode,
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
+          locale: localeProvider.locale,
+          supportedLocales: L10n.all,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate
+          ],
           initialRoute: '/',
           routes: {
             '/': (context) => const AuthenticationWrapper(),

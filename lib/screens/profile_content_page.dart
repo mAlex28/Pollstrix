@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 import 'package:pollstrix/screens/user_page.dart';
@@ -124,35 +123,6 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         ],
       ));
     }
-
-    // var themeSwitcher = ThemeSwitcher(
-    //   builder: (context) {
-    //     return AnimatedCrossFade(
-    //       duration: const Duration(milliseconds: 200),
-    //       crossFadeState:
-    //           ThemeModelInheritedNotifier.of(context).theme.brightness ==
-    //                   Brightness.dark
-    //               ? CrossFadeState.showFirst
-    //               : CrossFadeState.showSecond,
-    //       firstChild: GestureDetector(
-    //         onTap: () =>
-    //             ThemeSwitcher.of(context).changeTheme(theme: kLightTheme),
-    //         child: Icon(
-    //           Icons.light_mode_outlined,
-    //           size: ScreenUtil().setSp(kSpacingUnit.w * 2),
-    //         ),
-    //       ),
-    //       secondChild: GestureDetector(
-    //         onTap: () =>
-    //             ThemeSwitcher.of(context).changeTheme(theme: kDarkTheme),
-    //         child: Icon(
-    //           Icons.dark_mode_outlined,
-    //           size: ScreenUtil().setSp(kSpacingUnit.w * 2),
-    //         ),
-    //       ),
-    //     );
-    //   },
-    // );
 
     var header = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

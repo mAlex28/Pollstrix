@@ -31,24 +31,6 @@ final kButtonTextStyle = TextStyle(
 class ThemeProvider extends ChangeNotifier {
   String currentTheme = 'light';
 
-  // ThemeMode themeMode = ThemeMode.light;
-  // bool get isDarkMode => themeMode == ThemeMode.dark;
-
-  // void toggleTheme(bool isOn) async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-
-  //   if (isOn) {
-  //     themeMode = ThemeMode.dark;
-  //     preferences.setBool('isDarkTheme', true);
-  //   } else {
-  //     themeMode = ThemeMode.light;
-  //     preferences.setBool('isDarkTheme', false);
-  //   }
-
-  //   themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
-  //   notifyListeners();
-  // }
-
   ThemeMode get themeMode {
     if (currentTheme == 'light') {
       return ThemeMode.light;

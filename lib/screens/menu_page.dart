@@ -1,12 +1,16 @@
+import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/faq_page.dart';
+import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/change_theme_button.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -139,20 +143,36 @@ class _MenuPageState extends State<MenuPage> {
             Expanded(
                 child: ListView(
               children: <Widget>[
-                const CustomMenuListItem(
+                CustomMenuListItem(
                   icon: Icons.translate_outlined,
-                  text: 'Language',
+                  text: AppLocalizations.of(context)!.language,
+                  onTap: () => showAdaptiveActionSheet(
+                      context: context,
+                      cancelAction: CancelAction(title: const Text('Cancel')),
+                      actions: L10n.all.map((locale) {
+                        final flag = L10n.getLanguage(locale.languageCode);
+                        return BottomSheetAction(
+                            title: Text(
+                              flag,
+                            ),
+                            onPressed: () {
+                              final provider = Provider.of<LocaleProvider>(
+                                  context,
+                                  listen: false);
+                              provider.setLocale(locale);
+                            });
+                      }).toList()),
                 ),
                 const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
                 CustomMenuListItem(
                   icon: Icons.question_answer_outlined,
-                  text: 'FAQ',
+                  text: AppLocalizations.of(context)!.faq,
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => const FAQPage())),
                 ),
                 CustomMenuListItem(
                   icon: Icons.info_outline_rounded,
-                  text: 'About',
+                  text: AppLocalizations.of(context)!.about,
                   onTap: () => showAboutDialog(
                     context: context,
                     applicationName: 'Pollstrix',
@@ -169,12 +189,12 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 CustomMenuListItem(
                   icon: Icons.star_rate_outlined,
-                  text: 'Rate us',
+                  text: AppLocalizations.of(context)!.rateUs,
                   onTap: () => _launchRateDialogOnClick(),
                 ),
                 CustomMenuListItem(
                   icon: Icons.logout_outlined,
-                  text: 'Log out',
+                  text: AppLocalizations.of(context)!.logOut,
                   onTap: () {
                     Provider.of<AuthenticationService>(context, listen: false)
                         .signOut(context: context);
