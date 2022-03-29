@@ -1,11 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -51,6 +46,20 @@ class AuthenticationService {
     }
   }
 
+  Future<String> downlaodDefaultAvatarFromStorage() async {
+    try {
+      final ref = storage.FirebaseStorage.instance
+          .ref()
+          .child('user/profile/avatar.png');
+
+      var downloadUrl = await ref.getDownloadURL();
+
+      return downloadUrl.toString();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<dynamic> signInWithEmailAndPassword(
       {required String email,
       required String password,
@@ -60,7 +69,6 @@ class AuthenticationService {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       user = credential.user;
-      return user!.uid;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
@@ -68,6 +76,7 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: 'Error loging in. Try again'));
     }
+    return user!.uid;
   }
 
 // login with google
@@ -127,13 +136,13 @@ class AuthenticationService {
   }
 
 // create new user
-  Future<dynamic> createUserWithEmailAndPassword(
+  Future<String>? createUserWithEmailAndPassword(
       {required String fname,
       required String lname,
       required String username,
       required String email,
       required String password,
-      required String imageUrl,
+      required var imageUrl,
       required BuildContext context}) async {
     User? user;
     try {
@@ -142,7 +151,11 @@ class AuthenticationService {
 
       final firstName = toBeginningOfSentenceCase(fname);
       final lastName = toBeginningOfSentenceCase(lname);
-      _firebaseFirestore.collection('users').doc(credential.user!.uid).set({
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set({
         'uid': credential.user!.uid,
         'imageUrl': imageUrl,
         'first_name': firstName,
@@ -150,37 +163,24 @@ class AuthenticationService {
         'username': username,
         'email': email,
         'password': password,
-        'bio': '',
+        'bio': 'Hello there!',
         'likedPolls': [],
         'dislikedPolls': []
       });
 
       await credential.user!.updateDisplayName(username);
       await credential.user!.updatePhotoURL(imageUrl);
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Creating Account...'),
-          content: const Text('Please wait you will be redirecteed shortly'),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/'),
-                child: const Text("OK"))
-          ],
-        ),
-      );
-
+      await credential.user!.reload();
       user = credential.user;
-      return user!.uid;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: 'Error creating account.'));
     }
+
+    return user!.uid;
   }
 
   // update user account

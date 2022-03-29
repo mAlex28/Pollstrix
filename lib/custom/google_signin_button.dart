@@ -34,7 +34,8 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             )
           : OutlinedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(kAccentColor),
+                backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).backgroundColor),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(40),
@@ -71,7 +72,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: Text('Sign in with Google',
-                          style: kButtonTextStyle.copyWith(fontSize: 12)),
+                          style: TextStyle(color: Colors.grey.shade600)),
                     )
                   ],
                 ),

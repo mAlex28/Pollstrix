@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pollstrix/custom/comment.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
-import 'package:comment_box/comment/comment.dart';
 
 class FeedbackPage extends StatefulWidget {
   final String pollID;
@@ -23,6 +24,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   List<dynamic> list = [];
   List<dynamic> userProfileImageList = [];
   late String getUser;
+  final DateFormat formatter = DateFormat('EEE, MMM d');
 
   @override
   void initState() {
@@ -63,18 +65,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
         setState(() {});
       }
     }).toList();
-
-    // get photoUrl of the users who has given feedbacks
-    // var userImageslist = await _firebaseFirestore.collection('users').get();
-    // userImageslist.docs.map((e) {
-    //   if (user[i]) {}
-
-    //   // var img = e.data()['imageUrl'];
-    //   // if (img == "") {
-    //   //   img =
-    //   //       "https://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400";
-    //   // }
-    // });
   }
 
   @override
@@ -108,18 +98,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
                       child: ListTile(
-                        leading: Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: const BoxDecoration(
-                              color: kAccentColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50))),
-                          child: const CircleAvatar(
-                              radius: 50,
-                              backgroundImage: NetworkImage(
-                                  "https://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400")),
-                        ),
+                        trailing: Text(
+                            formatter.format(list[i]['createdAt'].toDate()),
+                            style: kCaptionTextStyle.copyWith(fontSize: 12)),
                         title: Text(
                           list[i]['username'],
                           style: const TextStyle(fontWeight: FontWeight.bold),

@@ -151,21 +151,14 @@ class _LoginPageState extends State<LoginPage> {
                                       vertical: 12, horizontal: 40)),
                             ),
                             onPressed: () async {
-                              final signInFunction =
-                                  authService.signInWithEmailAndPassword(
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                      context: context);
-
-                              _waitAndCheckErrors(() => signInFunction);
+                              await authService.signInWithEmailAndPassword(
+                                  email: _emailController.text.trim(),
+                                  password: _passwordController.text.trim(),
+                                  context: context);
                             },
                             child: const Text(
                               "Sign In",
                               textAlign: TextAlign.center,
-                              // style: TextStyle(
-                              //   fontSize: 20,
-                              //   color: Colors.white,
-                              // ),
                             ),
                           ),
                           const SizedBox(

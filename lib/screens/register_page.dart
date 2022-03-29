@@ -104,7 +104,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return Scaffold(
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  Text('Registing user...')
+                ],
+              ))
             : Center(
                 child: SingleChildScrollView(
                     child: Padding(
@@ -204,6 +210,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                           vertical: 12, horizontal: 40)),
                                 ),
                                 onPressed: () async {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
                                     await authService
@@ -216,7 +225,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                             password:
                                                 _passwordController.text.trim(),
                                             imageUrl: imageUrl,
-                                            context: context);
+                                            context: context)!
+                                        .then((value) {
+                                      Navigator.pushNamed(context, '/');
+                                    });
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
                                   }
                                 },
                                 child: Text(

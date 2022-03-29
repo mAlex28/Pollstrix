@@ -40,13 +40,13 @@ class _PollTileState extends State<PollTile> {
 
   @override
   void initState() {
+    super.initState();
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
     _findLikedPollsOfTheUser();
     _checkFinishedStatus();
     _checkUserVoteStatus();
-    super.initState();
   }
 
   @override
@@ -367,6 +367,14 @@ class _PollTileState extends State<PollTile> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
     final currentUser =
         Provider.of<AuthenticationService>(context).getCurrentUserEmail();
     final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();

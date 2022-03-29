@@ -48,7 +48,6 @@ dependencies:
   intl: ^0.17.0
   syncfusion_flutter_datepicker: ^19.4.52
   polls: ^1.0.1
-  comment_box: ^0.0.17
   charts_flutter: ^0.12.0
   toggle_switch: ^1.4.0
   flutter_screenutil: ^5.3.1
