@@ -20,7 +20,6 @@ class _FeedContentPageState extends State<FeedContentPage> {
   @override
   void initState() {
     super.initState();
-
     stream = db
         .collection('polls')
         .orderBy('createdAt', descending: true)

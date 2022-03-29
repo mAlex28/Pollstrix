@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
@@ -59,7 +60,8 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(builder: (context, provider, child) {
         final localeProvider = Provider.of<LocaleProvider>(context);
 
-        return MaterialApp(
+        return OverlaySupport.global(
+            child: MaterialApp(
           title: 'Pollstrix',
           debugShowCheckedModeBanner: false,
           themeMode: provider.themeMode,
@@ -82,7 +84,7 @@ class MyApp extends StatelessWidget {
             '/reset-password': (context) => const ResetPasswordPage(),
             '/feedcontent': (context) => const FeedContentPage()
           },
-        );
+        ));
       }),
     );
   }

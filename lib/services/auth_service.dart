@@ -111,6 +111,29 @@ class AuthenticationService {
         final UserCredential userCredential =
             await _firebaseAuth.signInWithCredential(credential);
 
+        var displayName = userCredential.user!.displayName;
+        var photoURL = userCredential.user!.photoURL;
+
+        await _firebaseFirestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'uid': userCredential.user!.uid,
+          'imageUrl': userCredential.user!.photoURL,
+          'first_name': '',
+          'last_name': '',
+          'username': userCredential.user!.displayName,
+          'email': userCredential.user!.email,
+          'password': '',
+          'bio': 'Hello there!',
+          'likedPolls': [],
+          'dislikedPolls': []
+        }, SetOptions(merge: true));
+
+        await userCredential.user!.updateDisplayName(displayName);
+        await userCredential.user!.updatePhotoURL(photoURL);
+        await userCredential.user!.reload();
+
         user = userCredential.user;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'account-exists-with-different-credential') {
@@ -143,6 +166,7 @@ class AuthenticationService {
       required String email,
       required String password,
       required var imageUrl,
+      required var deviceId,
       required BuildContext context}) async {
     User? user;
     try {
@@ -166,7 +190,11 @@ class AuthenticationService {
         'bio': 'Hello there!',
         'likedPolls': [],
         'dislikedPolls': []
-      });
+      }, SetOptions(merge: true));
+
+      await _firebaseFirestore.collection('deviceIDs').doc(deviceId).set(
+          {'deviceID': deviceId, 'uid': credential.user!.uid},
+          SetOptions(merge: true));
 
       await credential.user!.updateDisplayName(username);
       await credential.user!.updatePhotoURL(imageUrl);
@@ -333,7 +361,7 @@ class AuthenticationService {
         _firebaseFirestore
             .collection('achievedUsers')
             .doc(getCurrentUID())
-            .set(value.data()!);
+            .set(value.data()!, SetOptions(merge: true));
       });
 
       // delete the data related to the current logged in user from firestore
@@ -406,7 +434,7 @@ class AuthenticationService {
         'voteData': [],
         'likes': 0,
         'dislikes': 0,
-      });
+      }, SetOptions(merge: true));
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));

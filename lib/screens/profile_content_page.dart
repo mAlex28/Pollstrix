@@ -18,16 +18,14 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   final db = FirebaseFirestore.instance;
   final currentUser = AuthenticationService().getCurrentUID();
   final currentUserEmail = AuthenticationService().getCurrentUserEmail();
-
   final urlImage = "assets/images/avatar.png";
-
   var userImage;
-
   var userSelectedOption;
 
   @override
   void initState() {
     super.initState();
+
     userImage = AuthenticationService().getProfileImage();
     _getVoteDataOfUsers();
   }

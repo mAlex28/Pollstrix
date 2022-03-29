@@ -1,10 +1,16 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -18,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String imageUrl = '';
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  var deviceId;
 
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _lnameController = TextEditingController();
@@ -60,35 +67,52 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  // Future<void> _waitAndCheckErrors(
-  //     Future<void> Function() signInFunction, context) async {
-  //   setState(() => _isLoading = true);
-  //   try {
-  //     await signInFunction();
+  Future<String> getDeviceIdentifier() async {
+    String deviceIdentifier = "unknown";
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) => AlertDialog(
-  //         title: const Text('Creating Account...'),
-  //         content: const Text('Please wait you will be redirecteed shortly'),
-  //         actions: [
-  //           TextButton(
-  //               onPressed: () => Navigator.pushNamed(context, '/'),
-  //               child: const Text("OK"))
-  //         ],
-  //       ),
-  //     );
-  //   } on FirebaseException catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-  //         backgroundColor: Colors.red, content: e.toString()));
-  //     setState(() => _isLoading = false);
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-  //         backgroundColor: Colors.red,
-  //         content: 'Error signing in to the account.'));
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
+    if (kIsWeb) {
+      WebBrowserInfo webBrowserInfo = await deviceInfoPlugin.webBrowserInfo;
+      // create a unique identifier for web
+      deviceIdentifier = webBrowserInfo.vendor! +
+          webBrowserInfo.userAgent! +
+          webBrowserInfo.hardwareConcurrency.toString();
+    } else {
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidDeviceInfo =
+            await deviceInfoPlugin.androidInfo;
+        deviceIdentifier = androidDeviceInfo.androidId!;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
+        deviceIdentifier = iosDeviceInfo.identifierForVendor!;
+      }
+    }
+
+    return deviceIdentifier;
+  }
+
+  _checkIfDeviceIsRegistered() async {
+    bool _isRegistered = false;
+    await FirebaseFirestore.instance
+        .collection('deviceIDs')
+        .doc()
+        .get()
+        .then((value) {
+      if (deviceId == value.data()!['deviceID']) {
+        _isRegistered = true;
+      } else {
+        _isRegistered = false;
+      }
+    });
+
+    return _isRegistered;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    deviceId = getDeviceIdentifier();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +130,8 @@ class _RegisterPageState extends State<RegisterPage> {
         body: _isLoading
             ? Center(
                 child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: const [
                   CircularProgressIndicator(),
                   Text('Registing user...')
@@ -213,25 +239,38 @@ class _RegisterPageState extends State<RegisterPage> {
                                   setState(() {
                                     _isLoading = true;
                                   });
+
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
-                                    await authService
-                                        .createUserWithEmailAndPassword(
-                                            fname: _fnameController.text.trim(),
-                                            lname: _lnameController.text.trim(),
-                                            username:
-                                                _usernameController.text.trim(),
-                                            email: _emailController.text.trim(),
-                                            password:
-                                                _passwordController.text.trim(),
-                                            imageUrl: imageUrl,
-                                            context: context)!
-                                        .then((value) {
-                                      Navigator.pushNamed(context, '/');
-                                    });
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
+                                    if (_checkIfDeviceIsRegistered()) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          CustomWidgets.customSnackbar(
+                                              backgroundColor: Colors.red,
+                                              content:
+                                                  'Device is already registered'));
+                                    } else {
+                                      await authService
+                                          .createUserWithEmailAndPassword(
+                                              fname:
+                                                  _fnameController.text.trim(),
+                                              lname:
+                                                  _lnameController.text.trim(),
+                                              username: _usernameController.text
+                                                  .trim(),
+                                              email:
+                                                  _emailController.text.trim(),
+                                              password: _passwordController.text
+                                                  .trim(),
+                                              imageUrl: imageUrl,
+                                              deviceId: deviceId,
+                                              context: context)!
+                                          .then((value) {
+                                        Navigator.pushNamed(context, '/');
+                                      });
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                    }
                                   }
                                 },
                                 child: Text(
