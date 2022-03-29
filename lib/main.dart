@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:path/path.dart';
+import 'package:pollstrix/custom/custom_error_page.dart';
 import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/connectivity_provider.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +58,9 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
         ChangeNotifierProvider<LocaleProvider>(
-            create: (context) => LocaleProvider())
+            create: (context) => LocaleProvider()),
+        // ChangeNotifierProvider<ConnectivityProvider>(
+        //     create: (context) => ConnectivityProvider())
       ],
       child: Consumer<ThemeProvider>(builder: (context, provider, child) {
         final localeProvider = Provider.of<LocaleProvider>(context);
@@ -76,6 +81,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate
           ],
           initialRoute: '/',
+          // onGenerateRoute: CustomRoute.allRoutes,
           routes: {
             '/': (context) => const AuthenticationWrapper(),
             '/login': (context) => const LoginPage(),
@@ -112,5 +118,46 @@ class AuthenticationWrapper extends StatelessWidget {
             );
           }
         });
+  }
+}
+
+class CustomRoute {
+  static Route<dynamic> allRoutes(RouteSettings settings) {
+    return MaterialPageRoute(builder: (context) {
+      final isOnline = Provider.of<ConnectivityProvider>(context).isOnline;
+
+      if (!isOnline) {
+        return const ErrorPage(
+          message: 'No connection',
+          icon: Icon(
+            Icons.wifi_off_rounded,
+            color: Colors.red,
+            size: 30,
+          ),
+        );
+      }
+
+      switch (settings.name) {
+        case '/login':
+          return const LoginPage();
+        case '/register':
+          return const RegisterPage();
+        case '/forgot-password':
+          return const ForgotPasswordPage();
+        case '/reset-password':
+          return const ResetPasswordPage();
+        case '/feedcontent':
+          return const FeedContentPage();
+      }
+
+      return const ErrorPage(
+        message: 'Under Construction',
+        icon: Icon(
+          Icons.error_outline_rounded,
+          color: Colors.red,
+          size: 30,
+        ),
+      );
+    });
   }
 }
