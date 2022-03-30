@@ -4,6 +4,7 @@ import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/menu_page.dart';
 import 'package:pollstrix/screens/profile_content_page.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,7 +19,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
     _pageController = PageController();
   }
 
@@ -32,12 +32,25 @@ class _HomePageState extends State<HomePage> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-
     return Scaffold(
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
+        children: [
+          ShowCaseWidget(
+            builder: Builder(builder: (_) => const FeedContentPage()),
+            autoPlay: true,
+            autoPlayDelay: const Duration(seconds: 3),
+          ),
+          ShowCaseWidget(
+              builder: Builder(builder: (_) => const ProfileContentPage()),
+              autoPlay: true,
+              autoPlayDelay: const Duration(seconds: 3)),
+          ShowCaseWidget(
+              builder: Builder(builder: (_) => const MenuPage()),
+              autoPlay: true,
+              autoPlayDelay: const Duration(seconds: 3)),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: kAccentColor,

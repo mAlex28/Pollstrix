@@ -10,7 +10,7 @@ import 'package:pollstrix/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -143,63 +143,63 @@ class _MenuPageState extends State<MenuPage> {
             Expanded(
                 child: ListView(
               children: <Widget>[
-                CustomMenuListItem(
-                  icon: Icons.translate_outlined,
-                  text: AppLocalizations.of(context)!.language,
-                  onTap: () => showAdaptiveActionSheet(
-                      context: context,
-                      cancelAction: CancelAction(title: const Text('Cancel')),
-                      actions: L10n.all.map((locale) {
-                        final flag = L10n.getLanguage(locale.languageCode);
-                        return BottomSheetAction(
-                            title: Text(
-                              flag,
-                            ),
-                            onPressed: () {
-                              final provider = Provider.of<LocaleProvider>(
-                                  context,
-                                  listen: false);
-                              provider.setLocale(locale);
-                            });
-                      }).toList()),
-                ),
-                const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
-                CustomMenuListItem(
-                  icon: Icons.question_answer_outlined,
-                  text: AppLocalizations.of(context)!.faq,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const FAQPage())),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.info_outline_rounded,
-                  text: AppLocalizations.of(context)!.about,
-                  onTap: () => showAboutDialog(
-                    context: context,
-                    applicationName: 'Pollstrix',
-                    applicationVersion: '1.0.0',
-                    applicationLegalese:
-                        'This application is for education purpose only',
-                    applicationIcon: SizedBox(
-                      height: kToolbarHeight * 0.6,
-                      child: Image.asset(
-                        "assets/images/icon.png",
-                      ),
-                    ),
-                  ),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.star_rate_outlined,
-                  text: AppLocalizations.of(context)!.rateUs,
-                  onTap: () => _launchRateDialogOnClick(),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.logout_outlined,
-                  text: AppLocalizations.of(context)!.logOut,
-                  onTap: () {
-                    Provider.of<AuthenticationService>(context, listen: false)
-                        .signOut(context: context);
-                  },
-                ),
+                // CustomMenuListItem(
+                //   icon: Icons.translate_outlined,
+                //   text: AppLocalizations.of(context)!.language,
+                //   onTap: () => showAdaptiveActionSheet(
+                //       context: context,
+                //       cancelAction: CancelAction(title: const Text('Cancel')),
+                //       actions: L10n.all.map((locale) {
+                //         final flag = L10n.getLanguage(locale.languageCode);
+                //         return BottomSheetAction(
+                //             title: Text(
+                //               flag,
+                //             ),
+                //             onPressed: () {
+                //               final provider = Provider.of<LocaleProvider>(
+                //                   context,
+                //                   listen: false);
+                //               provider.setLocale(locale);
+                //             });
+                //       }).toList()),
+                // ),
+                // const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
+                // CustomMenuListItem(
+                //   icon: Icons.question_answer_outlined,
+                //   text: AppLocalizations.of(context)!.faq,
+                //   onTap: () => Navigator.push(context,
+                //       MaterialPageRoute(builder: (context) => const FAQPage())),
+                // ),
+                // CustomMenuListItem(
+                //   icon: Icons.info_outline_rounded,
+                //   text: AppLocalizations.of(context)!.about,
+                //   onTap: () => showAboutDialog(
+                //     context: context,
+                //     applicationName: 'Pollstrix',
+                //     applicationVersion: '1.0.0',
+                //     applicationLegalese:
+                //         'This application is for education purpose only',
+                //     applicationIcon: SizedBox(
+                //       height: kToolbarHeight * 0.6,
+                //       child: Image.asset(
+                //         "assets/images/icon.png",
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // CustomMenuListItem(
+                //   icon: Icons.star_rate_outlined,
+                //   text: AppLocalizations.of(context)!.rateUs,
+                //   onTap: () => _launchRateDialogOnClick(),
+                // ),
+                // CustomMenuListItem(
+                //   icon: Icons.logout_outlined,
+                //   text: AppLocalizations.of(context)!.logOut,
+                //   onTap: () {
+                //     Provider.of<AuthenticationService>(context, listen: false)
+                //         .signOut(context: context);
+                //   },
+                // ),
                 const SizedBox(height: 20),
                 const Center(
                   child: Text(

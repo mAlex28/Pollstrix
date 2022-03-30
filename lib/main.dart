@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:path/path.dart';
 import 'package:pollstrix/custom/custom_error_page.dart';
 import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
@@ -19,7 +18,7 @@ import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/reset_password_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,7 +74,7 @@ class MyApp extends StatelessWidget {
           locale: localeProvider.locale,
           supportedLocales: L10n.all,
           localizationsDelegates: const [
-            AppLocalizations.delegate,
+            // AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate
