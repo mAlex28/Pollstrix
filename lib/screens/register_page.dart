@@ -24,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String imageUrl = '';
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  bool _isRegistered = false;
   var deviceId;
 
   final TextEditingController _fnameController = TextEditingController();
@@ -67,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  Future<String> getDeviceIdentifier() async {
+  Future<void> getDeviceIdentifier() async {
     String deviceIdentifier = "unknown";
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
@@ -87,31 +88,32 @@ class _RegisterPageState extends State<RegisterPage> {
         deviceIdentifier = iosDeviceInfo.identifierForVendor!;
       }
     }
-
-    return deviceIdentifier;
+    setState(() {
+      deviceId = deviceIdentifier;
+    });
   }
 
   _checkIfDeviceIsRegistered() async {
-    bool _isRegistered = false;
     await FirebaseFirestore.instance
         .collection('deviceIDs')
-        .doc()
         .get()
         .then((value) {
-      if (deviceId == value.data()!['deviceID']) {
-        _isRegistered = true;
-      } else {
-        _isRegistered = false;
-      }
+      value.docs.map((e) {
+        setState(() {
+          if (e.id == deviceId) {
+            _isRegistered = true;
+          }
+          print(_isRegistered);
+        });
+      }).toList();
     });
-
-    return _isRegistered;
   }
 
   @override
   void initState() {
     super.initState();
-    deviceId = getDeviceIdentifier();
+    getDeviceIdentifier();
+    _checkIfDeviceIsRegistered();
   }
 
   @override
@@ -134,7 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: const [
                   CircularProgressIndicator(),
-                  Text('Registing user...')
+                  Text('Registering user...')
                 ],
               ))
             : Center(
@@ -242,12 +244,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
-                                    if (_checkIfDeviceIsRegistered()) {
+                                    if (_isRegistered) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                           CustomWidgets.customSnackbar(
                                               backgroundColor: Colors.red,
                                               content:
                                                   'Device is already registered'));
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
                                     } else {
                                       await authService
                                           .createUserWithEmailAndPassword(
@@ -263,10 +268,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   .trim(),
                                               imageUrl: imageUrl,
                                               deviceId: deviceId,
-                                              context: context)!
-                                          .then((value) {
-                                        Navigator.pushNamed(context, '/');
-                                      });
+                                              context: context);
+
+                                      Navigator.pushNamed(context, '/');
+
                                       setState(() {
                                         _isLoading = false;
                                       });

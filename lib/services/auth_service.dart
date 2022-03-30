@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:flutter/material.dart';
@@ -79,6 +82,30 @@ class AuthenticationService {
     return user!.uid;
   }
 
+  Future<String> getDeviceIdentifier() async {
+    String deviceIdentifier = "unknown";
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+    if (kIsWeb) {
+      WebBrowserInfo webBrowserInfo = await deviceInfoPlugin.webBrowserInfo;
+      // create a unique identifier for web
+      deviceIdentifier = webBrowserInfo.vendor! +
+          webBrowserInfo.userAgent! +
+          webBrowserInfo.hardwareConcurrency.toString();
+    } else {
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidDeviceInfo =
+            await deviceInfoPlugin.androidInfo;
+        deviceIdentifier = androidDeviceInfo.androidId!;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
+        deviceIdentifier = iosDeviceInfo.identifierForVendor!;
+      }
+    }
+
+    return deviceIdentifier;
+  }
+
 // login with google
   Future<String> signInWithGoogle({required BuildContext context}) async {
     User? user;
@@ -129,6 +156,13 @@ class AuthenticationService {
           'likedPolls': [],
           'dislikedPolls': []
         }, SetOptions(merge: true));
+
+        var deviceId = getDeviceIdentifier();
+        await _firebaseFirestore
+            .collection('deviceIDs')
+            .doc(deviceId.toString())
+            .set({'deviceID': deviceId, 'uid': userCredential.user!.uid},
+                SetOptions(merge: true));
 
         await userCredential.user!.updateDisplayName(displayName);
         await userCredential.user!.updatePhotoURL(photoURL);
