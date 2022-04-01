@@ -19,6 +19,10 @@
     "@logOut": {
       "description": "Logout from the app"
     },
+    "go": "Go",
+    "@go": {
+      "description": "go somewhere"
+    },
     "hello": "Hello {username}",
     "@hello": {
       "description": "A welcome message",
