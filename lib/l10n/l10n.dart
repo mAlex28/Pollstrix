@@ -10,12 +10,12 @@ class L10n {
   static String getLanguage(String code) {
     switch (code) {
       case 'si':
-        return '🇱🇰';
+        return '🇱🇰 - Sinhala';
       case 'ta':
-        return '🇮🇳';
+        return '🇮🇳 - Tamil';
       case 'en':
       default:
-        return '🇱🇰';
+        return '🇬🇧 - English';
     }
   }
 }

@@ -107,9 +107,11 @@ class AuthenticationWrapper extends StatelessWidget {
         stream: authService.onAuthStateChanges,
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
-            final bool signedIn = snapshot.hasData;
-
-            return signedIn ? const HomePage() : const LoginPage();
+            if (snapshot.hasData) {
+              return HomePage();
+            } else {
+              return LoginPage();
+            }
           } else {
             return const Scaffold(
               body: Center(

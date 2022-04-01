@@ -63,22 +63,15 @@ class AuthenticationService {
     }
   }
 
-  Future<dynamic> signInWithEmailAndPassword(
+  Future<String> signInWithEmailAndPassword(
       {required String email,
       required String password,
       required BuildContext context}) async {
     User? user;
-    try {
-      final credential = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
-      user = credential.user;
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red, content: 'Error loging in. Try again'));
-    }
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+    user = credential.user;
+
     return user!.uid;
   }
 

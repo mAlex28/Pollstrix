@@ -74,8 +74,9 @@ class _PostPollPageState extends State<PostPollPage> {
       appBar: AppBar(
           titleTextStyle: Theme.of(context).appBarTheme.titleTextStyle,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: const Text(
+          title: Text(
             'Add new Poll',
+            style: kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
           leading: IconButton(
@@ -178,16 +179,15 @@ class _PostPollPageState extends State<PostPollPage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
+                            await authService.post(
+                                title: _textEditingController.text,
+                                choices: _poll.options,
+                                createdTime: DateTime.now(),
+                                startDate: _startDate,
+                                endDate: _endDate,
+                                context: context);
+                            Navigator.of(context).pop();
                           }
-
-                          await authService.post(
-                              title: _textEditingController.text,
-                              choices: _poll.options,
-                              createdTime: DateTime.now(),
-                              startDate: _startDate,
-                              endDate: _endDate,
-                              context: context);
-                          Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.post_add_rounded),
                         label: const Text('Post'))),

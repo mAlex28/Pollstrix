@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -151,10 +152,27 @@ class _LoginPageState extends State<LoginPage> {
                                       vertical: 12, horizontal: 40)),
                             ),
                             onPressed: () async {
-                              await authService.signInWithEmailAndPassword(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text.trim(),
-                                  context: context);
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                try {
+                                  await authService.signInWithEmailAndPassword(
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text.trim(),
+                                      context: context);
+                                  // Navigator.push(context, '/');
+                                } on FirebaseAuthException catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      CustomWidgets.customSnackbar(
+                                          backgroundColor: Colors.red,
+                                          content: e.message.toString()));
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      CustomWidgets.customSnackbar(
+                                          backgroundColor: Colors.red,
+                                          content:
+                                              'Error loging in. Try again'));
+                                }
+                              }
                             },
                             child: const Text(
                               "Sign In",
