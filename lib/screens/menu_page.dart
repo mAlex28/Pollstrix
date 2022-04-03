@@ -177,8 +177,6 @@ class _MenuPageState extends State<MenuPage> {
                     context: context,
                     applicationName: 'Pollstrix',
                     applicationVersion: '1.0.0',
-                    applicationLegalese:
-                        'This application is for education purpose only',
                     applicationIcon: SizedBox(
                       height: kToolbarHeight * 0.6,
                       child: Image.asset(

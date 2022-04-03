@@ -60,8 +60,6 @@ class MyApp extends StatelessWidget {
         Provider(create: (_) => FirebaseFirestore.instance),
         ChangeNotifierProvider<LocaleProvider>(
             create: (context) => LocaleProvider()),
-        // ChangeNotifierProvider<ConnectivityProvider>(
-        //     create: (context) => ConnectivityProvider())
       ],
       child: Consumer<ThemeProvider>(builder: (context, provider, child) {
         final localeProvider = Provider.of<LocaleProvider>(context);
@@ -122,47 +120,3 @@ class AuthenticationWrapper extends StatelessWidget {
         });
   }
 }
-
-// class CustomRoute {
-//   static Route<dynamic> allRoutes(RouteSettings settings) {
-//     return MaterialPageRoute(builder: (context) {
-//       final isOnline = Provider.of<ConnectivityProvider>(context).isOnline;
-
-//       if (!isOnline) {
-//         return const ErrorPage(
-//           message: 'No connection',
-//           icon: Icon(
-//             Icons.wifi_off_rounded,
-//             color: Colors.red,
-//             size: 30,
-//           ),
-//         );
-//       }
-
-//       switch (settings.name) {
-//         case '/login':
-//           return const LoginPage();
-//         case '/register':
-//           return const RegisterPage();
-//         case '/forgot-password':
-//           return const ForgotPasswordPage();
-//         case '/reset-password':
-//           return const ResetPasswordPage();
-//         case '/feedcontent':
-//           return const FeedContentPage();
-//       }
-
-//       return const ErrorPage(
-//         message: 'Under Construction',
-//         icon: Icon(
-//           Icons.error_outline_rounded,
-//           color: Colors.red,
-//           size: 30,
-//         ),
-//       );
-//     });
-//   }
-// }
-
-
-            // AppLocalizations.delegate,

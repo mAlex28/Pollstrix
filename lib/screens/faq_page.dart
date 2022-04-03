@@ -10,17 +10,25 @@ class FAQPage extends StatefulWidget {
 }
 
 class _FAQPageState extends State<FAQPage> {
-  static const loremIpsum =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur scelerisque, orci vel placerat sodales, lorem arcu bibendum eros, eu ultricies enim velit id nisi. Maecenas quis mollis neque, non bibendum sapien. Nulla eu posuere quam. Nunc lobortis facilisis velit vel malesuada. Nam aliquam tortor in tellus ultricies vehicula. Nullam vestibulum posuere tristique. Sed aliquet metus eu leo blandit, ut viverra nisl vehicula. Phasellus justo ex, ultricies eget nibh at, pulvinar tristique ante. Morbi iaculis hendrerit ultricies. Curabitur egestas, quam id rutrum convallis, nibh erat pellentesque risus, quis pretium tortor ex non mauris. Aenean faucibus dolor sed porttitor ullamcorper. ";
-
   List<Item> items = [
     Item(
-        header: 'How to use this app?',
-        body: 'You can post a question on app within'),
-    Item(header: 'What happens after the date expired?', body: loremIpsum),
-    Item(header: 'Item 3', body: loremIpsum),
-    Item(header: 'Item 4', body: loremIpsum),
-    Item(header: 'Item 5', body: loremIpsum),
+        header: 'What is the purpose of this application?',
+        body:
+            'The old system of conducting surveys is to visit the area and meet people face to face. This process takes time and cost. Pollstrix application allows to conduct surveys online and without cost. '),
+    Item(
+        header: 'What happens after a poll expired?',
+        body:
+            'After the poll date expired the results of the poll will be calculated. The calculated results can be view as bar charts or pie charts'),
+    Item(
+        header: 'Can other user see my voted polls?',
+        body: 'No, You are the only one who can view your polls.'),
+    Item(
+        header: 'How can I report a poll?',
+        body:
+            'You can click on the menu button on the poll and choose report option. Our admins will review the poll and delete if they are considered as spam or malicious'),
+    Item(
+        header: 'Can I create collection of polls?',
+        body: 'Not yet. But this is one of the upcoming features'),
   ];
 
   @override
@@ -62,9 +70,8 @@ class _FAQPageState extends State<FAQPage> {
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           item.body,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.3),
+                          style: kCaptionTextStyle.copyWith(
+                            fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.15),
                           ),
                         ),
                       ),
