@@ -106,9 +106,9 @@ class AuthenticationWrapper extends StatelessWidget {
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
-              return HomePage();
+              return const HomePage();
             } else {
-              return LoginPage();
+              return const LoginPage();
             }
           } else {
             return const Scaffold(

@@ -163,7 +163,16 @@ class _MenuPageState extends State<MenuPage> {
                             });
                       }).toList()),
                 ),
-                const CustomMenuListItem(icon: Icons.share, text: 'Invite'),
+                CustomMenuListItem(
+                  icon: Icons.share,
+                  text: 'Invite',
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext builder) => const AlertDialog(
+                            content:
+                                Text('This feature is still under contruction'),
+                          )),
+                ),
                 CustomMenuListItem(
                   icon: Icons.question_answer_outlined,
                   text: AppLocalizations.of(context)!.faq,
