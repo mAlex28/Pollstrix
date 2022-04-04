@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth_service.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 
 class GoogleSignInButton extends StatefulWidget {

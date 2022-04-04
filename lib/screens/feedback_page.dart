@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 class FeedbackPage extends StatefulWidget {
   final String pollID;
   final String userID;
+
   const FeedbackPage({Key? key, required this.pollID, required this.userID})
       : super(key: key);
 

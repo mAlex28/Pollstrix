@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
@@ -10,7 +11,6 @@ import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -25,6 +25,8 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   bool _isRegistered = false;
+
+  // ignore: prefer_typing_uninitialized_variables
   var deviceId;
 
   final TextEditingController _fnameController = TextEditingController();
@@ -103,7 +105,6 @@ class _RegisterPageState extends State<RegisterPage> {
           if (e.id == deviceId) {
             _isRegistered = true;
           }
-          print(_isRegistered);
         });
       }).toList();
     });

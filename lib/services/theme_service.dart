@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const kSpacingUnit = 10;
 
@@ -96,26 +95,26 @@ class MyTheme {
         .copyWith(secondary: kAccentColor, brightness: Brightness.light),
   );
 }
- // ThemeMode _selectedTheme = ThemeMode.system;
+// ThemeMode _selectedTheme = ThemeMode.system;
 
-  // late SharedPreferences prefs;
+// late SharedPreferences prefs;
 
-  // ThemeProvider(bool darkThemeOn) {
-  //   _selectedTheme = darkThemeOn ? ThemeMode.dark : ThemeMode.light;
-  // }
+// ThemeProvider(bool darkThemeOn) {
+//   _selectedTheme = darkThemeOn ? ThemeMode.dark : ThemeMode.light;
+// }
 
-  // Future<void> toggleTheme() async {
-  //   prefs = await SharedPreferences.getInstance();
+// Future<void> toggleTheme() async {
+//   prefs = await SharedPreferences.getInstance();
 
-  //   if (_selectedTheme == ThemeMode.dark) {
-  //     _selectedTheme = ThemeMode.light;
-  //     await prefs.setBool("darkTheme", false);
-  //   } else {
-  //     _selectedTheme == ThemeMode.dark;
-  //     await prefs.setBool("darkTheme", true);
-  //   }
+//   if (_selectedTheme == ThemeMode.dark) {
+//     _selectedTheme = ThemeMode.light;
+//     await prefs.setBool("darkTheme", false);
+//   } else {
+//     _selectedTheme == ThemeMode.dark;
+//     await prefs.setBool("darkTheme", true);
+//   }
 
-  //   notifyListeners();
-  // }
+//   notifyListeners();
+// }
 
-  // ThemeMode? getTheme() => _selectedTheme;
+// ThemeMode? getTheme() => _selectedTheme;

@@ -15,6 +15,7 @@ class CommentBox extends StatelessWidget {
   bool withBorder;
   Widget? header;
   FocusNode? focusNode;
+
   CommentBox(
       {Key? key,
       this.child,

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/poll_tile.dart';
 import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 
 class ProfileContentPage extends StatefulWidget {
@@ -19,7 +19,11 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   final currentUser = AuthenticationService().getCurrentUID();
   final currentUserEmail = AuthenticationService().getCurrentUserEmail();
   final urlImage = "assets/images/avatar.png";
+
+  // ignore: prefer_typing_uninitialized_variables
   var userImage;
+
+  // ignore: prefer_typing_uninitialized_variables
   var userSelectedOption;
 
   @override

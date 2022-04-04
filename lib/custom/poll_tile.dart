@@ -1,17 +1,17 @@
 import 'dart:async';
 
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/custom_charts.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/screens/feedback_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 

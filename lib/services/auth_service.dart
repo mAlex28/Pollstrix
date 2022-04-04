@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:flutter/material.dart';
-import 'package:pollstrix/custom/custom_snackbar.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:pollstrix/custom/custom_snackbar.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -112,7 +112,9 @@ class AuthenticationService {
 
         user = userCredential.user;
       } catch (e) {
-        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+            backgroundColor: Colors.red,
+            content: 'Error occurred while accessing credentials. Try again.'));
       }
     }
 
@@ -479,7 +481,9 @@ class AuthenticationService {
       required Map<String, dynamic> choices,
       required String pid}) async {
     try {
+      // ignore: prefer_typing_uninitialized_variables
       var totalVotes;
+      // ignore: prefer_typing_uninitialized_variables
       var voteDetails;
 
       await _firebaseFirestore.collection('polls').doc(pid).get().then((value) {

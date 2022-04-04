@@ -1,16 +1,16 @@
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/l10n/l10n.dart';
-import 'package:pollstrix/screens/faq_page.dart';
-import 'package:pollstrix/services/locale_service.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/change_theme_button.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
+import 'package:pollstrix/l10n/l10n.dart';
+import 'package:pollstrix/screens/faq_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/locale_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -52,8 +52,9 @@ class _MenuPageState extends State<MenuPage> {
           ];
         },
         starRatingOptions: const StarRatingOptions(initialRating: 3),
-        onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
-            .laterButtonPressed), // Called when the user dismisse
+        onDismissed: () =>
+            _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
+        // Called when the user dismisse
         dialogStyle: const DialogStyle(
           titleAlign: TextAlign.center,
           messageAlign: TextAlign.center,
@@ -85,8 +86,9 @@ class _MenuPageState extends State<MenuPage> {
               ];
             },
             starRatingOptions: const StarRatingOptions(initialRating: 3),
-            onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
-                .laterButtonPressed), // Called when the user dismisse
+            onDismissed: () =>
+                _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
+            // Called when the user dismisse
             dialogStyle: const DialogStyle(
               titleAlign: TextAlign.center,
               messageAlign: TextAlign.center,

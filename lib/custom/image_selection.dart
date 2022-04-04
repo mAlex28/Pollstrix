@@ -8,8 +8,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 
 class UserImage extends StatefulWidget {

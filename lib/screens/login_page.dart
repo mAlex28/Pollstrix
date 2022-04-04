@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/custom/custom_snackbar.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/google_signin_button.dart';
+import 'package:pollstrix/custom/terms_of_user.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,32 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool _isPassword = true;
-
-  Future<void> _waitAndCheckErrors(
-    Future<void> Function() signInFunction,
-  ) async {
-    setState(() => _isLoading = true);
-    try {
-      await signInFunction();
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red, content: e.toString()));
-      setState(() => _isLoading = false);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error signing in to the account.'));
-      setState(() => _isLoading = false);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
 
   @override
   void dispose() {
@@ -116,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                           CustomTextField(
                             fieldValidator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return "This field is requied";
+                                return "This field is required";
                               }
                             },
                             password: _isPassword,
@@ -245,6 +220,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const GoogleSignInButton(),
+                          SizedBox(width: kSpacingUnit.h * 3),
+                          const TermsOfUse(),
                         ],
                       ),
                     ),
