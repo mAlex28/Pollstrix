@@ -118,6 +118,8 @@ class AuthenticationService {
       }
     }
 
+    //TODO: #1 check if the google user is already registered
+
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();
 

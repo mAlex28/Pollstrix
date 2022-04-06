@@ -72,6 +72,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          automaticallyImplyLeading: false,
           title: SizedBox(
             height: kToolbarHeight * 0.6,
             child: Image.asset(

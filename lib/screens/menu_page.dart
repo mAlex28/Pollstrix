@@ -133,6 +133,7 @@ class _MenuPageState extends State<MenuPage> {
 
     return Scaffold(
         appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             actions: const [
               ChangeThemeButtonWidget(),

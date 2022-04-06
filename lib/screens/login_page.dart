@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             },
                             textEditingController: _emailController,
-                            label: 'Enter your email',
+                            label: 'Email',
                             prefixIcon: const Icon(Icons.person_rounded),
                             keyboardType: TextInputType.emailAddress,
                           ),
@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             password: _isPassword,
                             textEditingController: _passwordController,
-                            label: 'Enter your password',
+                            label: 'Password',
                             prefixIcon: const Icon(Icons.password_rounded),
                             suffixIcon: IconButton(
                                 iconSize: 18.0,
