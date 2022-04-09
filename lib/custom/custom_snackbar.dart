@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomWidgets {
+class CustomSnackbar {
   static SnackBar customSnackbar(
       {required String content, required Color backgroundColor}) {
     return SnackBar(

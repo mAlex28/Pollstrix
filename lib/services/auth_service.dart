@@ -112,9 +112,11 @@ class AuthenticationService {
 
         user = userCredential.user;
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-            backgroundColor: Colors.red,
-            content: 'Error occurred while accessing credentials. Try again.'));
+        ScaffoldMessenger.of(context).showSnackBar(
+            CustomSnackbar.customSnackbar(
+                backgroundColor: Colors.red,
+                content:
+                    'Error occurred while accessing credentials. Try again.'));
       }
     }
 
@@ -168,21 +170,23 @@ class AuthenticationService {
         user = userCredential.user;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'account-exists-with-different-credential') {
-          ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-              backgroundColor: Colors.red,
-              content:
-                  'The account already exists with a different credential.'));
+          ScaffoldMessenger.of(context).showSnackBar(
+              CustomSnackbar.customSnackbar(
+                  backgroundColor: Colors.red,
+                  content:
+                      'The account already exists with a different credential.'));
         } else if (e.code == 'invalid-credential') {
           ScaffoldMessenger.of(context).showSnackBar(
-              CustomWidgets.customSnackbar(
+              CustomSnackbar.customSnackbar(
                   backgroundColor: Colors.red,
                   content:
                       'Error occurred while accessing credentials. Try again.'));
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
-            backgroundColor: Colors.red,
-            content: 'Error occurred using Google Sign-In. Try again.'));
+        ScaffoldMessenger.of(context).showSnackBar(
+            CustomSnackbar.customSnackbar(
+                backgroundColor: Colors.red,
+                content: 'Error occurred using Google Sign-In. Try again.'));
       }
     }
 
@@ -231,11 +235,13 @@ class AuthenticationService {
       await credential.user!.updatePhotoURL(imageUrl);
       await credential.user!.reload();
       user = credential.user;
+
+      Navigator.pushNamed(context, '/');
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: 'Error creating account.'));
     }
 
@@ -263,10 +269,10 @@ class AuthenticationService {
         'bio': bio,
       });
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: 'Error creating account.'));
     }
   }
@@ -285,10 +291,10 @@ class AuthenticationService {
       // other sign out methods
       await _firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error Signing out. Try again.'));
     }
@@ -318,10 +324,10 @@ class AuthenticationService {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error sending email. Try again.'));
     }
@@ -363,12 +369,12 @@ class AuthenticationService {
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       FocusManager.instance.primaryFocus?.unfocus();
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
       Navigator.pop(context);
       FocusManager.instance.primaryFocus?.unfocus();
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error sending email. Try again.'));
     }
@@ -401,10 +407,10 @@ class AuthenticationService {
           .doc(getCurrentUID())
           .delete();
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error sending email. Try again.'));
     }
@@ -467,10 +473,10 @@ class AuthenticationService {
         'dislikes': 0,
       }, SetOptions(merge: true));
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error creating a poll. Try again.'));
     }
@@ -508,10 +514,10 @@ class AuthenticationService {
         });
       });
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.message.toString()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomWidgets.customSnackbar(
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red, content: e.toString()));
     }
   }

@@ -247,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       _formKey.currentState!.validate()) {
                                     if (_isRegistered) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                          CustomWidgets.customSnackbar(
+                                          CustomSnackbar.customSnackbar(
                                               backgroundColor: Colors.red,
                                               content:
                                                   'Device is already registered'));
@@ -271,7 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                               deviceId: deviceId,
                                               context: context);
 
-                                      Navigator.pushNamed(context, '/');
+                                      // Navigator.pushNamed(context, '/');
 
                                       setState(() {
                                         _isLoading = false;

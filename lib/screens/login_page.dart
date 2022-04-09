@@ -137,12 +137,12 @@ class _LoginPageState extends State<LoginPage> {
                                   // Navigator.push(context, '/');
                                 } on FirebaseAuthException catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      CustomWidgets.customSnackbar(
+                                      CustomSnackbar.customSnackbar(
                                           backgroundColor: Colors.red,
                                           content: e.message.toString()));
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      CustomWidgets.customSnackbar(
+                                      CustomSnackbar.customSnackbar(
                                           backgroundColor: Colors.red,
                                           content:
                                               'Error loging in. Try again'));

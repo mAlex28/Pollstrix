@@ -250,7 +250,7 @@ class _PollTileState extends State<PollTile> {
                   onPressed: () async {
                     if (_reportTextController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          CustomWidgets.customSnackbar(
+                          CustomSnackbar.customSnackbar(
                               backgroundColor: Colors.red,
                               content: 'Cannot submit an empty report'));
                     } else {
@@ -260,7 +260,7 @@ class _PollTileState extends State<PollTile> {
                         'report': _reportTextController.text.trim(),
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
-                          CustomWidgets.customSnackbar(
+                          CustomSnackbar.customSnackbar(
                               backgroundColor: Colors.green,
                               content: 'Successfully submited'));
                     }
@@ -296,13 +296,13 @@ class _PollTileState extends State<PollTile> {
                           .delete()
                           .whenComplete(() {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            CustomWidgets.customSnackbar(
+                            CustomSnackbar.customSnackbar(
                                 backgroundColor: Colors.green,
                                 content: 'Successfully deleted'));
                         Navigator.of(context).pop();
                       }).onError((error, stackTrace) => ScaffoldMessenger.of(
                                   context)
-                              .showSnackBar(CustomWidgets.customSnackbar(
+                              .showSnackBar(CustomSnackbar.customSnackbar(
                                   backgroundColor: Colors.red,
                                   content:
                                       'Unkown error! Please try again later')));
