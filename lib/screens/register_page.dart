@@ -6,12 +6,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/services/auth/auth_exceptions.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/users/firebase_user_functions.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/utilities/custom/image_selection.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -21,20 +22,18 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  late final FirebaseUserFunctions _userService;
+  late final TextEditingController _fnameController;
+  late final TextEditingController _lnameController;
+  late final TextEditingController _displayNameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
   String imageUrl = '';
-  bool _isLoading = false;
   bool _isPasswordVisible = false;
-  bool _isRegistered = false;
+  bool _isLoading = false;
 
-  // ignore: prefer_typing_uninitialized_variables
   var deviceId;
-
-  final TextEditingController _fnameController = TextEditingController();
-  final TextEditingController _lnameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   String? _formFieldsValidator(String? text) {
     if (text == null || text.trim().isEmpty) {
@@ -71,30 +70,30 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  Future<void> getDeviceIdentifier() async {
-    String deviceIdentifier = "unknown";
-    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  // Future<void> getDeviceIdentifier() async {
+  //   String deviceIdentifier = "unknown";
+  //   DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
-    if (kIsWeb) {
-      WebBrowserInfo webBrowserInfo = await deviceInfoPlugin.webBrowserInfo;
-      // create a unique identifier for web
-      deviceIdentifier = webBrowserInfo.vendor! +
-          webBrowserInfo.userAgent! +
-          webBrowserInfo.hardwareConcurrency.toString();
-    } else {
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidDeviceInfo =
-            await deviceInfoPlugin.androidInfo;
-        deviceIdentifier = androidDeviceInfo.androidId!;
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
-        deviceIdentifier = iosDeviceInfo.identifierForVendor!;
-      }
-    }
-    setState(() {
-      deviceId = deviceIdentifier;
-    });
-  }
+  //   if (kIsWeb) {
+  //     WebBrowserInfo webBrowserInfo = await deviceInfoPlugin.webBrowserInfo;
+  //     // create a unique identifier for web
+  //     deviceIdentifier = webBrowserInfo.vendor! +
+  //         webBrowserInfo.userAgent! +
+  //         webBrowserInfo.hardwareConcurrency.toString();
+  //   } else {
+  //     if (Platform.isAndroid) {
+  //       AndroidDeviceInfo androidDeviceInfo =
+  //           await deviceInfoPlugin.androidInfo;
+  //       deviceIdentifier = androidDeviceInfo.androidId!;
+  //     } else if (Platform.isIOS) {
+  //       IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
+  //       deviceIdentifier = iosDeviceInfo.identifierForVendor!;
+  //     }
+  //   }
+  //   setState(() {
+  //     deviceId = deviceIdentifier;
+  //   });
+  // }
 
   _checkIfDeviceIsRegistered() async {
     await FirebaseFirestore.instance
@@ -104,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
       value.docs.map((e) {
         setState(() {
           if (e.id == deviceId) {
-            _isRegistered = true;
+            _isLoading = true;
           }
         });
       }).toList();
@@ -113,9 +112,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState() {
+    _userService = FirebaseUserFunctions();
+    _fnameController = TextEditingController();
+    _lnameController = TextEditingController();
+    _displayNameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
     super.initState();
-    getDeviceIdentifier();
-    _checkIfDeviceIsRegistered();
+    // getDeviceIdentifier();
+    // _checkIfDeviceIsRegistered();
   }
 
   @override
@@ -128,17 +133,16 @@ class _RegisterPageState extends State<RegisterPage> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-    final authService = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
         body: _isLoading
             ? Center(
                 child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: const [
-                  CircularProgressIndicator(),
-                  Text('Registering user...')
+                  CircularProgressIndicator(
+                    color: kAccentColor,
+                  ),
+                  Text('Registering user. Please wait...')
                 ],
               ))
             : Center(
@@ -190,8 +194,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               CustomTextField(
                                   fieldValidator: _formFieldsValidator,
-                                  textEditingController: _usernameController,
-                                  label: 'Enter your username',
+                                  textEditingController: _displayNameController,
+                                  label: 'Enter your displayname',
                                   prefixIcon: const Icon(Icons.person_rounded)),
                               const SizedBox(
                                 height: 20,
@@ -240,47 +244,65 @@ class _RegisterPageState extends State<RegisterPage> {
                                           vertical: 12, horizontal: 40)),
                                 ),
                                 onPressed: () async {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
                                     final email = _emailController.text.trim();
                                     final password =
                                         _passwordController.text.trim();
+                                    final firstName =
+                                        _fnameController.text.trim();
+                                    final lastName =
+                                        _lnameController.text.trim();
+                                    final displayName =
+                                        _displayNameController.text.trim();
 
-                                    if (_isRegistered) {
+                                    try {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      // create a new user
+                                      await AuthService.firebase().createUser(
+                                          email: email,
+                                          password: password,
+                                          displayName: displayName,
+                                          firstName: firstName,
+                                          lastName: lastName,
+                                          imageUrl: imageUrl);
+
+                                      // send email veification to the user
+                                      await AuthService.firebase()
+                                          .sendEmailVerification();
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      Navigator.of(context)
+                                          .pushNamed(verifyEmailRoute);
+                                    } on WeakPasswordAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content: 'Weak password'));
+                                    } on EmailAlreadyInUseAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content:
+                                                      'Email already in use'));
+                                    } on InvalidEmailAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content:
+                                                      'Invalid email address'));
+                                    } on GenericAuthException {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                           CustomSnackbar.customSnackbar(
                                               backgroundColor: Colors.red,
                                               content:
-                                                  'Device is already registered'));
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    } else {
-                                      await authService
-                                          .createUserWithEmailAndPassword(
-                                              fname:
-                                                  _fnameController.text.trim(),
-                                              lname:
-                                                  _lnameController.text.trim(),
-                                              username: _usernameController.text
-                                                  .trim(),
-                                              email:
-                                                  _emailController.text.trim(),
-                                              password: _passwordController.text
-                                                  .trim(),
-                                              imageUrl: imageUrl,
-                                              deviceId: deviceId,
-                                              context: context);
-
-                                      // Navigator.pushNamed(context, '/');
-
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
+                                                  'Oops! Something went wrong'));
                                     }
                                   }
                                 },

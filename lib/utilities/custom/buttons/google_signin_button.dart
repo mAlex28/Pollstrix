@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,6 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-    final authService = Provider.of<AuthenticationService>(context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -42,16 +42,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 ),
               ),
               onPressed: () async {
-                setState(() {
-                  _isSigningIn = true;
-                });
-
-                authService.signInWithGoogle(context: context);
-
-                setState(() {
-                  _isSigningIn = false;
-                });
-
+                await AuthService.firebase().signInWithGoogle();
                 // if (user != null) {
                 //   Navigator.of(context).pushReplacement(MaterialPageRoute(
                 //     builder: (context) => const HomePage(),

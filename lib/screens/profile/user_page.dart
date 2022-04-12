@@ -203,67 +203,6 @@ class _UserPageState extends State<UserPage> {
                                               TextInputType.emailAddress,
                                           controller: _emailController,
                                           decoration: InputDecoration(
-                                              suffix: GestureDetector(
-                                                onTap: () {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          actions: [
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: <
-                                                                  Widget>[
-                                                                TextButton(
-                                                                    onPressed: () =>
-                                                                        Navigator.pop(
-                                                                            context),
-                                                                    child: const Text(
-                                                                        "Cancel")),
-                                                                TextButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      await authData.updateUserEmail(
-                                                                          _emailController
-                                                                              .text,
-                                                                          context);
-                                                                    },
-                                                                    child: const Text(
-                                                                        "Confirm"))
-                                                              ],
-                                                            )
-                                                          ],
-                                                          title: Text(
-                                                              'Change your email..',
-                                                              style:
-                                                                  kTitleTextStyle
-                                                                      .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              )),
-                                                          content: TextField(
-                                                            onChanged:
-                                                                (value) {},
-                                                            controller:
-                                                                _emailController,
-                                                            decoration:
-                                                                const InputDecoration(
-                                                                    hintText:
-                                                                        "Email here..."),
-                                                          ),
-                                                        );
-                                                      });
-                                                },
-                                                child: const Text(
-                                                  'Change email',
-                                                  style: TextStyle(
-                                                      fontSize: 14.0,
-                                                      color: kAccentColor),
-                                                ),
-                                              ),
                                               prefixIcon: const Icon(
                                                   Icons.email_rounded),
                                               hintText: "Enter your email",

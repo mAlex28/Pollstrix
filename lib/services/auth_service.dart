@@ -341,47 +341,6 @@ class AuthenticationService {
     await currentUser.reload();
   }
 
-  // update username
-  Future updateUserEmail(String email, context) async {
-    final currentUser = _firebaseAuth.currentUser!;
-    try {
-      await _firebaseFirestore.collection('users').doc(currentUser.uid).update({
-        'email': email,
-      });
-
-      await currentUser.updateEmail(email).then((value) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-              title: const Text('Email updated'),
-              content: const Text('Email changed. Please re-login'),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("OK"))
-                  ],
-                )
-              ]),
-        );
-      });
-    } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
-      FocusManager.instance.primaryFocus?.unfocus();
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      Navigator.pop(context);
-      FocusManager.instance.primaryFocus?.unfocus();
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error sending email. Try again.'));
-    }
-    // await currentUser.reload();
-  }
-
   // delete user account
   Future deleteAccount(BuildContext context) async {
     try {

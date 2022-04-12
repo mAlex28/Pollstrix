@@ -7,9 +7,7 @@ import 'package:pollstrix/utilities/custom/buttons/google_signin_button.dart';
 import 'package:pollstrix/utilities/custom/terms_of_user.dart';
 import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,10 +18,17 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
   final bool _isLoading = false;
   bool _isPassword = true;
+
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -44,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
         orientation: Orientation.portrait);
 
     final size = MediaQuery.of(context).size;
-    final authService = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
         body: _isLoading

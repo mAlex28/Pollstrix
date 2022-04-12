@@ -12,7 +12,7 @@ class CloudUser {
   final String displayName;
   final String firstName;
   final String lastName;
-  final String imageUrl;
+  final dynamic imageUrl;
   final String bio;
   final List<String> likedPolls;
   final List<String> dislikedPolls;

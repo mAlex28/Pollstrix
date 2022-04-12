@@ -5,20 +5,39 @@ import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_provider.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pollstrix/services/cloud/users/firebase_user_functions.dart';
 
 class FirebaseAuthProvider implements AuthProvider {
+  final FirebaseUserFunctions _userService = FirebaseUserFunctions();
+
   @override
-  Future<AuthUser> createUser({
-    required String email,
-    required String password,
-  }) async {
+  Future<AuthUser> createUser(
+      {required String email,
+      required String password,
+      required String displayName,
+      required String firstName,
+      required String lastName,
+      required String imageUrl}) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final instance =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      await instance.user!.updateDisplayName(displayName);
+      await instance.user!.updatePhotoURL(imageUrl);
+
+      // create user in the cloudstore
+      await _userService.createUserInFirebase(
+          userId: instance.user!.uid,
+          email: email,
+          displayName: displayName,
+          firstName: firstName,
+          lastName: lastName,
+          imageUrl: imageUrl);
 
       final user = currentUser;
+
       if (user != null) {
         return user;
       } else {
@@ -34,7 +53,7 @@ class FirebaseAuthProvider implements AuthProvider {
       } else {
         throw GenericAuthException();
       }
-    } catch (_) {
+    } catch (e) {
       throw GenericAuthException();
     }
   }
