@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
-import 'package:pollstrix/custom/charts/custom_charts.dart';
-import 'package:pollstrix/custom/charts/custom_charts.dart';
-import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
+
 import 'package:pollstrix/screens/feedback_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/charts/custom_charts.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';

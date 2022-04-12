@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pollstrix/custom/comment.dart';
-import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
+import 'package:pollstrix/utilities/custom/comment.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';

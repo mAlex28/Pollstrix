@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:pollstrix/constants/routes.dart';
-import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;

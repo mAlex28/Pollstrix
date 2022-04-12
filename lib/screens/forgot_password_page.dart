@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pollstrix/constants/routes.dart';
-import 'package:pollstrix/custom/custom_textfield.dart';
+import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants/routes.dart';
-import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
-import 'package:pollstrix/custom/custom_textfield.dart';
-import 'package:pollstrix/custom/buttons/google_signin_button.dart';
-import 'package:pollstrix/custom/terms_of_user.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
+import 'package:pollstrix/utilities/custom/custom_textfield.dart';
+import 'package:pollstrix/utilities/custom/buttons/google_signin_button.dart';
+import 'package:pollstrix/utilities/custom/terms_of_user.dart';
 import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';

@@ -98,7 +98,7 @@ class TermsOfUse extends StatelessWidget {
                             );
                           });
                     },
-                  style: TextStyle(fontWeight: FontWeight.w500))
+                  style: const TextStyle(fontWeight: FontWeight.w500))
             ]),
       ),
     );
