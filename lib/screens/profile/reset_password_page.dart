@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/dialogs/password_reset_dialog.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
+import 'package:timer_button/timer_button.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({Key? key}) : super(key: key);
@@ -78,9 +82,19 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                       vertical: 12, horizontal: 40)),
                             ),
                             onPressed: () async {
-                              await authService.resetPassword(
-                                  email: _emailController.text.trim(),
-                                  context: context);
+                              try {
+                                await AuthService.firebase().resetPassword(
+                                    email: _emailController.text.trim());
+
+                                await showChangePasswordDialog(context,
+                                    'Check your inbox and follow the link to verify the password');
+                              } catch (_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    CustomSnackbar.customSnackbar(
+                                        backgroundColor: Colors.red,
+                                        content:
+                                            'Too many request! Try agian later'));
+                              }
                             },
                             child: Text(
                               "Send Email",

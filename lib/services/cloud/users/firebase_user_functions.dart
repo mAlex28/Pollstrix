@@ -28,7 +28,6 @@ class FirebaseUserFunctions {
         dislikedPollsField: []
       }, SetOptions(merge: true));
     } catch (e) {
-      print('database: $e');
       throw CouldNotCreateUserException();
     }
   }

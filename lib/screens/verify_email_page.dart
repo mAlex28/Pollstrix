@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/theme_service.dart';
+import 'package:timer_button/timer_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({Key? key}) : super(key: key);
@@ -13,29 +15,59 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verify email'),
-      ),
-      body: Column(
-        children: [
+        body: Center(
+            child: SingleChildScrollView(
+                child: Padding(
+      padding: const EdgeInsets.all(30),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        verticalDirection: VerticalDirection.down,
+        children: <Widget>[
+          SizedBox(
+            height: kToolbarHeight * 0.7,
+            child: Image.asset(
+              "assets/images/logo_inapp.png",
+              color: kAccentColor,
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          const Text('Please check your inbox to verify the email!'),
           const Text(
-              "We've sent you a verification mail. Please check your inbox"),
-          const Text(
-              "If you haven't received a verification email yet, press the button below"),
-          TextButton(
+              "If you haven't received an email yet press the button below to request a new vefication link"),
+          const SizedBox(
+            height: 20,
+          ),
+          TimerButton(
+              label: 'Re-Send email',
+              buttonType: ButtonType.TextButton,
+              disabledColor: Colors.grey,
+              color: kAccentColor,
               onPressed: () async {
                 await AuthService.firebase().sendEmailVerification();
               },
-              child: const Text('Send verification email')),
+              timeOutInSeconds: 60),
           TextButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50))),
+                elevation: MaterialStateProperty.all(8),
+                padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 40)),
+              ),
               onPressed: () async {
                 await AuthService.firebase().logOut();
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
-              child: const Text('Restart'))
+              child: Text(
+                "Logout",
+                textAlign: TextAlign.center,
+                style: kButtonTextStyle,
+              )),
         ],
       ),
-    );
+    ))));
   }
 }

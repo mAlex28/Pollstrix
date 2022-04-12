@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/dialogs/password_reset_dialog.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -74,9 +77,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                       vertical: 12, horizontal: 40)),
                             ),
                             onPressed: () async {
-                              await authService.resetPassword(
-                                  email: _emailController.text.trim(),
-                                  context: context);
+                              try {
+                                await AuthService.firebase().forgotPassword(
+                                    email: _emailController.text.trim());
+
+                                await showChangePasswordDialog(context,
+                                    'Check your inbox and follow the link to verify the password');
+                              } on Exception catch (_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    CustomSnackbar.customSnackbar(
+                                        backgroundColor: Colors.red,
+                                        content:
+                                            'Too many request! Try agian later'));
+                              }
                             },
                             child: Text(
                               "Send Email",

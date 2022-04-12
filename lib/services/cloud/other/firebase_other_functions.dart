@@ -30,7 +30,7 @@ class FirebaseOtherFunctions {
   }
 
   Future<bool> checkIfTheCurrentDeviceIsRegistered(
-      {required String deviceId, required String userId}) async {
+      {required String deviceId}) async {
     try {
       final result =
           await devices.where(deviceIdField, isEqualTo: deviceId).get();

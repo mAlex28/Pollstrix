@@ -65,6 +65,7 @@ dependencies:
   tutorial_coach_mark: ^1.2.1
   showcaseview: ^1.1.5
   flutter_markdown: ^0.6.9+1
+  timer_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:
