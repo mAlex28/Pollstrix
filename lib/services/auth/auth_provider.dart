@@ -6,7 +6,6 @@ abstract class AuthProvider {
   // optionally return the current user
   AuthUser? get currentUser;
 
-  // common methods for all providers
   Future<AuthUser> logIn({
     required String email,
     required String password,
@@ -19,4 +18,7 @@ abstract class AuthProvider {
 
   Future<void> logOut();
   Future<void> sendEmailVerification();
+  Future<void> resetPassword({required String email});
+  Future<void> forgotPassword({required String email});
+  Future<AuthUser> signInWithGoogle();
 }

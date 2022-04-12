@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/feed_content_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
@@ -80,10 +81,10 @@ class MyApp extends StatelessWidget {
           initialRoute: '/',
           routes: {
             '/': (context) => const AuthenticationWrapper(),
-            '/login': (context) => const LoginPage(),
-            '/register': (context) => const RegisterPage(),
-            '/forgot-password': (context) => const ForgotPasswordPage(),
-            '/reset-password': (context) => const ResetPasswordPage(),
+            loginRoute: (context) => const LoginPage(),
+            registerRoute: (context) => const RegisterPage(),
+            forgotPasswordRoute: (context) => const ForgotPasswordPage(),
+            resetPasswordRoute: (context) => const ResetPasswordPage(),
             '/feedcontent': (context) => const FeedContentPage()
           },
         ));

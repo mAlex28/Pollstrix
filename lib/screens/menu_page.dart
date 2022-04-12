@@ -2,7 +2,7 @@ import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/change_theme_button.dart';
+import 'package:pollstrix/custom/buttons/custom_theme_button.dart';
 import 'package:pollstrix/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/faq_page.dart';
@@ -136,7 +136,7 @@ class _MenuPageState extends State<MenuPage> {
             automaticallyImplyLeading: false,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             actions: const [
-              ChangeThemeButtonWidget(),
+              CustomThemeButtonWidget(),
             ]),
         body: Center(
             child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
@@ -100,8 +101,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                           fit: FlexFit.loose,
                                           child: TextButton(
                                               onPressed: () =>
-                                                  Navigator.pushNamed(
-                                                      context, '/login'),
+                                                  Navigator.of(context)
+                                                      .pushNamedAndRemoveUntil(
+                                                          loginRoute,
+                                                          (route) => false),
                                               child: const Text(
                                                 'Have an account?',
                                               )))
@@ -114,8 +117,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                           fit: FlexFit.loose,
                                           child: TextButton(
                                               onPressed: () =>
-                                                  Navigator.pushNamed(
-                                                      context, '/register'),
+                                                  Navigator.of(context)
+                                                      .pushNamedAndRemoveUntil(
+                                                          registerRoute,
+                                                          (route) => false),
                                               child: const Text(
                                                 'Create a new account',
                                               )))

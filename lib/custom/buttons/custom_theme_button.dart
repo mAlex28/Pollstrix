@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
 
-class ChangeThemeButtonWidget extends StatefulWidget {
-  const ChangeThemeButtonWidget({Key? key}) : super(key: key);
+class CustomThemeButtonWidget extends StatefulWidget {
+  const CustomThemeButtonWidget({Key? key}) : super(key: key);
 
   @override
-  _ChangeThemeButtonWidgetState createState() =>
-      _ChangeThemeButtonWidgetState();
+  _CustomThemeButtonWidgetState createState() =>
+      _CustomThemeButtonWidgetState();
 }
 
-class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
+class _CustomThemeButtonWidgetState extends State<CustomThemeButtonWidget> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);

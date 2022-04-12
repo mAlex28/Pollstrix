@@ -8,7 +8,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-import 'package:pollstrix/custom/custom_snackbar.dart';
+import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -306,7 +307,7 @@ class AuthenticationService {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
 
-      showDialog(
+      await showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Email sent'),
@@ -386,7 +387,7 @@ class AuthenticationService {
     try {
       await _firebaseAuth.currentUser!.delete();
       // redirect the user to login page
-      Navigator.pushNamed(context, '/login');
+      Navigator.pushNamed(context, loginRoute);
       await _firebaseAuth.currentUser!.reload();
 
       // get the data related to the current user to achieve it

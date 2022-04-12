@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
@@ -294,9 +295,10 @@ class _UserPageState extends State<UserPage> {
                                                         fit: FlexFit.loose,
                                                         child: TextButton(
                                                             onPressed: () =>
-                                                                Navigator.pushNamed(
-                                                                    context,
-                                                                    '/reset-password'),
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pushNamed(
+                                                                        resetPasswordRoute),
                                                             child: const Text(
                                                               'Change password',
                                                             )))

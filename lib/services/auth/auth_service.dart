@@ -40,4 +40,15 @@ class AuthService implements AuthProvider {
 
   @override
   Future<void> initialize() => provider.initialize();
+
+  @override
+  Future<void> resetPassword({required String email}) =>
+      provider.resetPassword(email: email);
+
+  @override
+  Future<void> forgotPassword({required String email}) =>
+      provider.forgotPassword(email: email);
+
+  @override
+  Future<AuthUser> signInWithGoogle() => provider.signInWithGoogle();
 }

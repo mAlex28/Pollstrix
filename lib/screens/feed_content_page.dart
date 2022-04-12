@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/custom_searchbar_delegate.dart';
-import 'package:pollstrix/custom/poll_tile.dart';
+import 'package:pollstrix/custom/searchbar/custom_searchbar_delegate.dart';
+import 'package:pollstrix/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/post_poll_page.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';

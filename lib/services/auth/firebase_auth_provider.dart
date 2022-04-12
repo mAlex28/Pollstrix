@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart'
-    show FirebaseAuth, FirebaseAuthException;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_provider.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FirebaseAuthProvider implements AuthProvider {
   @override
@@ -101,7 +102,82 @@ class FirebaseAuthProvider implements AuthProvider {
 
   @override
   Future<void> initialize() async {
-    //TODO: implement web initialization
-    await Firebase.initializeApp();
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+          options: const FirebaseOptions(
+        apiKey: 'AIzaSyBNEhcwHGg4XoSrWrPWg1LwZpYgfmoMPMo',
+        appId: '1:630918106032:web:a36cc8f6d094035f4d2475',
+        messagingSenderId: '630918106032',
+        projectId: 'pollstrix-ec795',
+        authDomain: 'pollstrix-ec795.firebaseapp.com',
+        storageBucket: 'pollstrix-ec795.appspot.com',
+        measurementId: 'G-Q0Z2QZ54QK',
+      ));
+    } else {
+      await Firebase.initializeApp();
+    }
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    final instance = FirebaseAuth.instance;
+    final user = instance.currentUser;
+
+    if (user != null) {
+      await instance.sendPasswordResetEmail(email: email);
+    } else {
+      throw UserNotLoggedInAuthException();
+    }
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    final instance = FirebaseAuth.instance;
+
+    try {
+      await instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw UserNotLoggedInAuthException();
+    }
+  }
+
+  @override
+  Future<AuthUser> signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleSignInAuthentication.accessToken,
+            idToken: googleSignInAuthentication.idToken);
+
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        var displayName = userCredential.user!.displayName;
+        var photoURL = userCredential.user!.photoURL;
+
+        await userCredential.user!.updateDisplayName(displayName);
+        await userCredential.user!.updatePhotoURL(photoURL);
+        // await userCredential.user!.reload();
+
+        final user = currentUser;
+        if (user != null) {
+          return user;
+        } else {
+          throw UserNotLoggedInAuthException();
+        }
+      } else {
+        throw GenericAuthException();
+      }
+    } on FirebaseAuthException catch (e) {
+      throw CouldNotSignInWithGoogle();
+    } catch (e) {
+      throw GenericAuthException();
+    }
   }
 }

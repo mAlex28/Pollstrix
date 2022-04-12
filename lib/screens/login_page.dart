@@ -1,10 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/custom_snackbar.dart';
+import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
-import 'package:pollstrix/custom/google_signin_button.dart';
+import 'package:pollstrix/custom/buttons/google_signin_button.dart';
 import 'package:pollstrix/custom/terms_of_user.dart';
+import 'package:pollstrix/services/auth/auth_exceptions.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
@@ -129,24 +131,65 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
+                                final email = _emailController.text.trim();
+                                final password =
+                                    _passwordController.text.trim();
+
                                 try {
-                                  await authService.signInWithEmailAndPassword(
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                      context: context);
+                                  await AuthService.firebase()
+                                      .logIn(email: email, password: password);
+
+                                  final user =
+                                      AuthService.firebase().currentUser;
+
+                                  if (user?.isEmailVerified ?? false) {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                      pollsRoute,
+                                      (route) => false,
+                                    );
+                                  } else {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                      verifyEmailRoute,
+                                      (route) => false,
+                                    );
+                                  }
+
+                                  // await authService.signInWithEmailAndPassword(
+                                  //     email: _emailController.text.trim(),
+                                  //     password: _passwordController.text.trim(),
+                                  //     context: context);
                                   // Navigator.push(context, '/');
-                                } on FirebaseAuthException catch (e) {
+                                } on UserNotFoundAuthException {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       CustomSnackbar.customSnackbar(
                                           backgroundColor: Colors.red,
-                                          content: e.message.toString()));
-                                } catch (e) {
+                                          content: 'User not found'));
+                                } on WrongPasswordAuthException {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      CustomSnackbar.customSnackbar(
+                                          backgroundColor: Colors.red,
+                                          content: 'Wrong password'));
+                                } on GenericAuthException {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       CustomSnackbar.customSnackbar(
                                           backgroundColor: Colors.red,
                                           content:
-                                              'Error loging in. Try again'));
+                                              'Oops! something went wrong'));
                                 }
+                                // } on FirebaseAuthException catch (e) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //       CustomSnackbar.customSnackbar(
+                                //           backgroundColor: Colors.red,
+                                //           content: e.message.toString()));
+                                // } catch (e) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //       CustomSnackbar.customSnackbar(
+                                //           backgroundColor: Colors.red,
+                                //           content:
+                                //               'Error loging in. Try again'));
+                                // }
                               }
                             },
                             child: const Text(
@@ -171,8 +214,10 @@ class _LoginPageState extends State<LoginPage> {
                                           fit: FlexFit.loose,
                                           child: TextButton(
                                               onPressed: () =>
-                                                  Navigator.pushNamed(context,
-                                                      '/forgot-password'),
+                                                  Navigator.of(context)
+                                                      .pushNamedAndRemoveUntil(
+                                                          forgotPasswordRoute,
+                                                          (route) => false),
                                               child: const Text(
                                                 'Forgot password',
                                               )))
@@ -185,8 +230,10 @@ class _LoginPageState extends State<LoginPage> {
                                           fit: FlexFit.loose,
                                           child: TextButton(
                                               onPressed: () =>
-                                                  Navigator.pushNamed(
-                                                      context, '/register'),
+                                                  Navigator.of(context)
+                                                      .pushNamedAndRemoveUntil(
+                                                          registerRoute,
+                                                          (route) => false),
                                               child: const Text(
                                                 'Create a new account',
                                               )))

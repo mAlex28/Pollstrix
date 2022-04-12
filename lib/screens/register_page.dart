@@ -5,7 +5,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/custom_snackbar.dart';
+import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/custom/snackbar/custom_snackbar.dart';
 import 'package:pollstrix/custom/custom_textfield.dart';
 import 'package:pollstrix/custom/image_selection.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -245,6 +246,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
+                                    final email = _emailController.text.trim();
+                                    final password =
+                                        _passwordController.text.trim();
+
                                     if (_isRegistered) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                           CustomSnackbar.customSnackbar(
@@ -290,8 +295,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   TextButton(
-                                      onPressed: () => Navigator.pushNamed(
-                                          context, '/login'),
+                                      onPressed: () => Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                              loginRoute, (route) => false),
                                       child: const Text(
                                         'Have an account? Login',
                                       )),

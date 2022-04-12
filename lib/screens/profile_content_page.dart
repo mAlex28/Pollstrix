@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pollstrix/custom/poll_tile.dart';
+import 'package:pollstrix/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
