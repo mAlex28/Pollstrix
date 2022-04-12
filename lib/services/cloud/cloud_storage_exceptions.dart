@@ -9,6 +9,8 @@ class CouldNotGetAllPollsException extends PollRelatedException {}
 
 class CouldNotDeletePollException extends PollRelatedException {}
 
+class CouldNotVotePollException extends PollRelatedException {}
+
 class CouldNotReportPollException extends PollRelatedException {}
 
 class CouldNotLikePollException extends PollRelatedException {}

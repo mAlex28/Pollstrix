@@ -33,15 +33,40 @@ class FirebaseUserFunctions {
   }
 
   // update user
+  Future<void> updateUserInFirebase(
+      {required String documentId,
+      required String displayName,
+      required String firstName,
+      required String lastName,
+      required String imageUrl,
+      required String bio}) async {
+    try {
+      await users.doc(documentId).update({
+        displayNameField: displayName,
+        firstNameField: firstName,
+        lastNameField: lastName,
+        imageUrlField: imageUrl,
+        bioField: bio
+      });
+    } catch (e) {
+      throw CouldNotUpdateUserException();
+    }
+  }
 
   // delete user
+  Future<void> deleteUserInFirebase({
+    required String documentId,
+  }) async {
+    try {
+      await users.doc(documentId).delete();
+    } catch (e) {
+      throw CouldNotDeleteUserException();
+    }
+  }
 
   // retrieve user
-  // Future<Iterable<CloudUser>>  getUser({required String userId})async {
-  //   try {
 
-  //   }
-  // }
+  // retrieve all users
 
   // singleton
   static final FirebaseUserFunctions _shared =

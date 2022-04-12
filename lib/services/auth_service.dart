@@ -64,18 +64,6 @@ class AuthenticationService {
     }
   }
 
-  Future<String> signInWithEmailAndPassword(
-      {required String email,
-      required String password,
-      required BuildContext context}) async {
-    User? user;
-    final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    user = credential.user;
-
-    return user!.uid;
-  }
-
   Future<String> getDeviceIdentifier() async {
     String deviceIdentifier = "unknown";
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -100,7 +88,7 @@ class AuthenticationService {
     return deviceIdentifier;
   }
 
-// login with google
+  // login with google
   Future<String> signInWithGoogle({required BuildContext context}) async {
     User? user;
 
@@ -194,61 +182,6 @@ class AuthenticationService {
     return user!.uid;
   }
 
-// create new user
-  Future<String>? createUserWithEmailAndPassword(
-      {required String fname,
-      required String lname,
-      required String username,
-      required String email,
-      required String password,
-      required var imageUrl,
-      required var deviceId,
-      required BuildContext context}) async {
-    User? user;
-    try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
-
-      final firstName = toBeginningOfSentenceCase(fname);
-      final lastName = toBeginningOfSentenceCase(lname);
-
-      await _firebaseFirestore
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
-        'uid': credential.user!.uid,
-        'imageUrl': imageUrl,
-        'first_name': firstName,
-        'last_name': lastName,
-        'username': username,
-        'email': email,
-        'password': password,
-        'bio': 'Hello there!',
-        'likedPolls': [],
-        'dislikedPolls': []
-      }, SetOptions(merge: true));
-
-      await _firebaseFirestore.collection('deviceIDs').doc(deviceId).set(
-          {'deviceID': deviceId, 'uid': credential.user!.uid},
-          SetOptions(merge: true));
-
-      await credential.user!.updateDisplayName(username);
-      await credential.user!.updatePhotoURL(imageUrl);
-      await credential.user!.reload();
-      user = credential.user;
-
-      Navigator.pushNamed(context, '/');
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: 'Error creating account.'));
-    }
-
-    return user!.uid;
-  }
-
   // update user account
   Future updateUserDetails(
       {required String fname,
@@ -278,7 +211,7 @@ class AuthenticationService {
     }
   }
 
-// sign out
+  // sign out
   Future<void> signOut({required BuildContext context}) async {
     try {
       if (!kIsWeb) {
@@ -298,39 +231,6 @@ class AuthenticationService {
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
           backgroundColor: Colors.red,
           content: 'Error Signing out. Try again.'));
-    }
-  }
-
-// reset password
-  Future<void> resetPassword(
-      {required String email, required BuildContext context}) async {
-    try {
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
-
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Email sent'),
-          content: const Text('Please check your inbox to reset the password'),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("OK"))
-              ],
-            )
-          ],
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error sending email. Try again.'));
     }
   }
 
@@ -374,16 +274,6 @@ class AuthenticationService {
           backgroundColor: Colors.red,
           content: 'Error sending email. Try again.'));
     }
-  }
-
-  Future convertUserWithEmail(
-      String email, String password, String name) async {
-    final currentUser = _firebaseAuth.currentUser;
-
-    final credential =
-        EmailAuthProvider.credential(email: email, password: password);
-    await currentUser!.linkWithCredential(credential);
-    await updateUserProfile(name, currentUser);
   }
 
   Future convertWithGoogle() async {
