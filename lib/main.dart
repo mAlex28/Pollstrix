@@ -8,13 +8,14 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/l10n/l10n.dart';
-import 'package:pollstrix/screens/feed_content_page.dart';
+import 'package:pollstrix/screens/polls/feed_content_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
-import 'package:pollstrix/screens/reset_password_page.dart';
-import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/screens/profile/reset_password_page.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+// import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AuthenticationService>(create: (_) => AuthenticationService()),
+        // Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
         ChangeNotifierProvider<LocaleProvider>(
             create: (context) => LocaleProvider()),
@@ -93,28 +94,57 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// class AuthenticationWrapper extends StatelessWidget {
+//   const AuthenticationWrapper({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final AuthenticationService authService = Provider.of(context);
+
+//     return StreamBuilder<String>(
+//         stream: authService.onAuthStateChanges,
+//         builder: (context, AsyncSnapshot<String> snapshot) {
+//           if (snapshot.connectionState == ConnectionState.active) {
+//             if (snapshot.hasData) {
+//               return const HomePage();
+//             } else {
+//               return const LoginPage();
+//             }
+//           } else {
+//             return const Scaffold(
+//               body: Center(
+//                 child: CircularProgressIndicator(),
+//               ),
+//             );
+//           }
+//         });
+//   }
+// }
+
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticationService authService = Provider.of(context);
-
-    return StreamBuilder<String>(
-        stream: authService.onAuthStateChanges,
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.connectionState == ConnectionState.active) {
-            if (snapshot.hasData) {
-              return const HomePage();
-            } else {
-              return const LoginPage();
-            }
-          } else {
-            return const Scaffold(
-              body: Center(
+    return FutureBuilder(
+        future: AuthService.firebase().initialize(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              final user = AuthService.firebase().currentUser;
+              if (user != null) {
+                if (user.isEmailVerified) {
+                  return const HomePage();
+                } else {
+                  return Text('please verify your email');
+                }
+              } else {
+                return const LoginPage();
+              }
+            default:
+              return const Center(
                 child: CircularProgressIndicator(),
-              ),
-            );
+              );
           }
         });
   }

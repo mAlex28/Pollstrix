@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
 
-import 'package:pollstrix/screens/feedback_page.dart';
+import 'package:pollstrix/screens/polls/feedback_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/charts/custom_charts.dart';

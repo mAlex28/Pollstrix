@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/utilities/custom/buttons/custom_theme_button.dart';
 import 'package:pollstrix/utilities/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/l10n/l10n.dart';
-import 'package:pollstrix/screens/faq_page.dart';
+import 'package:pollstrix/screens/menu/faq_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
