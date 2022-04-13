@@ -66,7 +66,6 @@ class _FeedContentPageState extends State<FeedContentPage> {
                 .startShowCase([_searchKey, _filterKey, _postPollKey]));
       }
     });
-
     ScreenUtil.init(
         BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width,
@@ -276,6 +275,10 @@ class _FeedContentPageState extends State<FeedContentPage> {
                         final poll = allPolls.elementAt(index);
                         return PollTile(doc: poll);
                       },
+                    );
+                  } else if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
                   } else {
                     return const Center(

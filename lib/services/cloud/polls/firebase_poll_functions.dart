@@ -131,11 +131,11 @@ class FirebasePollFunctions {
     });
   }
 
-  // retrive all polls posted by the current user as a stream
+  // // retrive all polls posted by the current user as a stream
   Stream<Iterable<CloudPoll>> getAllPolls({required String currentUserId}) =>
       polls.snapshots().map((events) => events.docs
           .map((doc) => CloudPoll.fromSnapshot(doc))
-          .where((note) => note.creatorId == currentUserId));
+          .where((poll) => poll.creatorId == currentUserId));
 
   // retrive all polls posted by the current user as a iterable future
   Future<Iterable<CloudPoll>> getNotes({required String currentUserId}) async {

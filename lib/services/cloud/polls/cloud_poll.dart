@@ -36,11 +36,14 @@ class CloudPoll {
 
   CloudPoll.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
-        creatorId = snapshot.data()[creatorIdField],
+        creatorId = snapshot.data()[creatorIdField] as String,
         title = snapshot.data()[titleField] as String,
-        createdAt = snapshot.data()[createdAtField],
-        startDate = snapshot.data()[startDateField],
-        endDate = snapshot.data()[endDateField],
+        createdAt =
+            DateTime.parse(snapshot.data()[createdAtField].toDate().toString()),
+        startDate =
+            DateTime.parse(snapshot.data()[startDateField].toDate().toString()),
+        endDate =
+            DateTime.parse(snapshot.data()[endDateField].toDate().toString()),
         voteCount = snapshot.data()[voteCountField] as int,
         likes = snapshot.data()[likesField] as int,
         dislikes = snapshot.data()[dislikesField] as int,
