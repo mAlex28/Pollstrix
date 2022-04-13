@@ -10,15 +10,15 @@ class CloudPoll {
   final String documentId;
   final String creatorId;
   final String title;
-  final Timestamp createdAt;
-  final Timestamp startDate;
-  final Timestamp endDate;
+  final DateTime createdAt;
+  final DateTime startDate;
+  final DateTime endDate;
   final int voteCount;
   final int likes;
   final int dislikes;
   final bool isFinished;
   final Map<String, dynamic> choices;
-  final List<Map<String, dynamic>> voteData;
+  final List voteData;
 
   const CloudPoll(
       {required this.documentId,

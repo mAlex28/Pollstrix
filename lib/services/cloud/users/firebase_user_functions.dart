@@ -64,9 +64,9 @@ class FirebaseUserFunctions {
     }
   }
 
-  // retrieve user
+  //  TODO: retrieve user
 
-  // retrieve all users
+  //  TODO: retrieve all users
 
   // singleton
   static final FirebaseUserFunctions _shared =

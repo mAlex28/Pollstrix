@@ -29,7 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late final FirebaseOtherFunctions _deviceService;
   final _formKey = GlobalKey<FormState>();
   String imageUrl = '';
-  bool _isPasswordVisible = false;
+  bool _isPassword = true;
   bool _isLoading = false;
 
   // common field validator
@@ -156,8 +156,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   color: kAccentColor,
                                 ),
                               ),
-                              SizedBox(width: kSpacingUnit.h * 3),
-                              SizedBox(width: kSpacingUnit.h * 3),
+                              SizedBox(height: kSpacingUnit.h * 3),
                               UserImage(
                                 onFileChanged: (imageUrl) {
                                   setState(() {
@@ -207,25 +206,22 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               CustomTextField(
                                   fieldValidator: _passwordFieldValidator,
-                                  password: _isPasswordVisible,
+                                  password: _isPassword,
                                   suffixIcon: IconButton(
                                       iconSize: 18.0,
                                       onPressed: () {
                                         setState(() {
-                                          _isPasswordVisible =
-                                              !_isPasswordVisible;
+                                          _isPassword = !_isPassword;
                                         });
                                       },
-                                      icon: Icon(_isPasswordVisible
+                                      icon: Icon(_isPassword
                                           ? Icons.visibility_rounded
                                           : Icons.visibility_off_rounded)),
                                   textEditingController: _passwordController,
                                   label: 'Enter your password',
                                   prefixIcon:
                                       const Icon(Icons.password_rounded)),
-                              const SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: kSpacingUnit.h * 3),
                               ElevatedButton(
                                 style: ButtonStyle(
                                   backgroundColor:

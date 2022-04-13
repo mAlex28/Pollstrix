@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_form_options.dart';
 import 'package:pollstrix/models/poll_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -16,24 +20,26 @@ class PostPollPage extends StatefulWidget {
 }
 
 class _PostPollPageState extends State<PostPollPage> {
+  late final FirebasePollFunctions _pollService;
   late GlobalKey<FormState> _formKey;
   late DateTime _startDate, _endDate;
   late TextEditingController _textEditingController;
   final DateRangePickerController _dateRangePickerController =
       DateRangePickerController();
   late Poll _poll;
+  final DateTime today = DateTime.now();
 
   @override
   void initState() {
-    super.initState();
+    _pollService = FirebasePollFunctions();
     _formKey = GlobalKey<FormState>();
     _textEditingController = TextEditingController();
     _poll = Poll();
-    final DateTime today = DateTime.now();
     _startDate = today;
     _endDate = today.add(const Duration(days: 7));
     _dateRangePickerController.selectedRange =
         PickerDateRange(today, today.add(const Duration(days: 7)));
+    super.initState();
   }
 
   @override
@@ -179,14 +185,28 @@ class _PostPollPageState extends State<PostPollPage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            await authService.post(
-                                title: _textEditingController.text,
-                                choices: _poll.options,
-                                createdTime: DateTime.now(),
-                                startDate: _startDate,
-                                endDate: _endDate,
-                                context: context);
-                            Navigator.of(context).pop();
+
+                            try {
+                              final currentUserId =
+                                  AuthService.firebase().currentUser!.userId;
+                              await _pollService.createPoll(
+                                  currentUserId: currentUserId,
+                                  title: _textEditingController.text.trim(),
+                                  choices: _poll.options,
+                                  createdTime: DateTime.now(),
+                                  startDate: _startDate,
+                                  endDate: _endDate);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  CustomSnackbar.customSnackbar(
+                                      content: 'Poll posted',
+                                      backgroundColor: Colors.green));
+                            } catch (e) {
+                              print(e);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  CustomSnackbar.customSnackbar(
+                                      content: 'Oops! Something went wrong',
+                                      backgroundColor: Colors.red));
+                            }
                           }
                         },
                         icon: const Icon(Icons.post_add_rounded),

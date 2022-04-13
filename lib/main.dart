@@ -12,6 +12,7 @@ import 'package:pollstrix/screens/polls/feed_content_page.dart';
 import 'package:pollstrix/screens/forgot_password_page.dart';
 import 'package:pollstrix/screens/home_page.dart';
 import 'package:pollstrix/screens/login_page.dart';
+import 'package:pollstrix/screens/polls/post_poll_page.dart';
 import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/profile/reset_password_page.dart';
 import 'package:pollstrix/screens/verify_email_page.dart';
@@ -88,40 +89,15 @@ class MyApp extends StatelessWidget {
             forgotPasswordRoute: (context) => const ForgotPasswordPage(),
             resetPasswordRoute: (context) => const ResetPasswordPage(),
             verifyEmailRoute: (context) => const VerifyEmailPage(),
-            pollsRoute: (context) => const HomePage()
+            homeRoute: (context) => const HomePage(),
+            feedContentRoute: (context) => const FeedContentPage(),
+            postNewPollRoute: (context) => const PostPollPage()
           },
         ));
       }),
     );
   }
 }
-
-// class AuthenticationWrapper extends StatelessWidget {
-//   const AuthenticationWrapper({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final AuthenticationService authService = Provider.of(context);
-
-//     return StreamBuilder<String>(
-//         stream: authService.onAuthStateChanges,
-//         builder: (context, AsyncSnapshot<String> snapshot) {
-//           if (snapshot.connectionState == ConnectionState.active) {
-//             if (snapshot.hasData) {
-//               return const HomePage();
-//             } else {
-//               return const LoginPage();
-//             }
-//           } else {
-//             return const Scaffold(
-//               body: Center(
-//                 child: CircularProgressIndicator(),
-//               ),
-//             );
-//           }
-//         });
-//   }
-// }
 
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);

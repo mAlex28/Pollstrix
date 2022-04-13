@@ -193,7 +193,7 @@ class FirebaseAuthProvider implements AuthProvider {
       } else {
         throw GenericAuthException();
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (_) {
       throw CouldNotSignInWithGoogle();
     } catch (e) {
       throw GenericAuthException();

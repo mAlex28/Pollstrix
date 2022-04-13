@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/profile/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -16,8 +19,7 @@ class ProfileContentPage extends StatefulWidget {
 
 class _ProfileContentPageState extends State<ProfileContentPage> {
   final db = FirebaseFirestore.instance;
-  final currentUser = AuthenticationService().getCurrentUID();
-  final currentUserEmail = AuthenticationService().getCurrentUserEmail();
+  final currentUserId = AuthService.firebase().currentUser!.userId;
   final urlImage = "assets/images/avatar.png";
 
   // ignore: prefer_typing_uninitialized_variables
@@ -28,10 +30,9 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
 
   @override
   void initState() {
-    super.initState();
-
     userImage = AuthenticationService().getProfileImage();
     _getVoteDataOfUsers();
+    super.initState();
   }
 
   @override
@@ -43,12 +44,12 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   _getVoteDataOfUsers() async {
     await db.collection('polls').get().then((value) {
       value.docs.map((e) {
-        List<dynamic> voteDataList = e.data()['voteData'];
+        List<dynamic> voteDataList = e.data()[voteDataField];
         for (var vote in voteDataList) {
-          if (vote.containsKey('uid') ?? false) {
-            if (vote!['uid'] == currentUser) {
+          if (vote.containsKey(userIdField) ?? false) {
+            if (vote![userIdField] == currentUserId) {
               setState(() {
-                userSelectedOption = vote['option'];
+                userSelectedOption = vote[optionField];
               });
               return;
             }
@@ -149,60 +150,83 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     var postedPolls = Column(children: [
       Flexible(
           child: StreamBuilder<QuerySnapshot>(
-        stream: db
-            .collection('polls')
-            .where('uid', isEqualTo: currentUser)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (!snapshot.hasData) {
-            return const Center(
-              child: Text('No data'),
-            );
-          } else {
-            return ListView(
-              scrollDirection: Axis.vertical,
-              children: snapshot.data!.docs.map((doc) {
-                return PollTile(
-                  doc: doc,
-                );
-              }).toList(),
-            );
-          }
-        },
-      )),
+              stream: db
+                  .collection('polls')
+                  .where(userIdField, isEqualTo: currentUserId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                    if (snapshot.hasData) {
+                      final allPolls = snapshot.data as Iterable<CloudPoll>;
+                      return ListView.builder(
+                        itemCount: allPolls.length,
+                        itemBuilder: (context, index) {
+                          final poll = allPolls.elementAt(index);
+                          return PollTile(doc: poll);
+                        },
+                      );
+                    } else if (!snapshot.hasData) {
+                      return const Center(
+                        child: Text('No polls available'),
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                  default:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                }
+                // ListView(
+                //   scrollDirection: Axis.vertical,
+                //   children: snapshot.data!.docs.map((doc) {
+                //     return PollTile(
+                //       doc: doc,
+                //     );
+                //   }).toList(),
+                // );
+              })),
     ]);
 
     var votedPolls = Column(children: [
       Flexible(
           child: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('polls').where('voteData', arrayContains: {
-          'uid': currentUser,
-          'option': userSelectedOption
+        stream: db.collection('polls').where(voteDataField, arrayContains: {
+          userIdField: currentUserId,
+          optionField: userSelectedOption
         }).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (!snapshot.hasData) {
-            return const Center(
-              child: Text('No data'),
-            );
-          } else {
-            return ListView(
-              scrollDirection: Axis.vertical,
-              children: snapshot.data!.docs.map((doc) {
-                return PollTile(
-                  doc: doc,
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (snapshot.hasData) {
+                final allPolls = snapshot.data as Iterable<CloudPoll>;
+                return ListView.builder(
+                  itemCount: allPolls.length,
+                  itemBuilder: (context, index) {
+                    final poll = allPolls.elementAt(index);
+                    return PollTile(doc: poll);
+                  },
                 );
-              }).toList(),
-            );
+              } else if (!snapshot.hasData) {
+                return const Center(
+                  child: Text('No polls available'),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+            default:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
           }
         },
       )),

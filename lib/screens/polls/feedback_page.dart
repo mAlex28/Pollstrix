@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/comment.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:pollstrix/services/auth_service.dart';
@@ -22,6 +23,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   final formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late TextEditingController _feedbackTextController;
+  late final FirebasePollFunctions _pollService;
   List<dynamic> list = [];
   List<dynamic> userProfileImageList = [];
   late String getUser;
@@ -29,9 +31,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   @override
   void initState() {
-    super.initState();
-    _getFeedbackList();
+    // _getFeedbackList();
     _feedbackTextController = TextEditingController();
+    _pollService = FirebasePollFunctions();
+    super.initState();
   }
 
   @override
@@ -40,17 +43,17 @@ class _FeedbackPageState extends State<FeedbackPage> {
     super.dispose();
   }
 
-  _commentFeedbacks(uid, username, pid, feedback) async {
-    await _firebaseFirestore.collection('feedbacks').doc().set(
-      {
-        'user': uid,
-        'username': username,
-        'pid': pid,
-        'feedback': feedback,
-        'createdAt': DateTime.now().toUtc()
-      },
-    );
-  }
+  // _commentFeedbacks(uid, username, pid, feedback) async {
+  //   await _firebaseFirestore.collection('feedbacks').doc().set(
+  //     {
+  //       'user': uid,
+  //       'username': username,
+  //       'pid': pid,
+  //       'feedback': feedback,
+  //       'createdAt': DateTime.now().toUtc()
+  //     },
+  //   );
+  // }
 
   _getFeedbackList() async {
     var user = [];
@@ -116,8 +119,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
               errorText: 'Comment cannot be blank',
               sendButtonMethod: () async {
                 if (formKey.currentState!.validate()) {
-                  await _commentFeedbacks(widget.userID, currentUserEmail,
-                      widget.pollID, _feedbackTextController.text);
+                  await _pollService.commentFeedbacks(
+                      currentUserId: widget.userID,
+                      displayName: currentUserEmail!,
+                      pollId: widget.pollID,
+                      feedback: _feedbackTextController.text.trim());
+                  // await _commentFeedbacks(widget.userID, currentUserEmail,
+                  //     widget.pollID, _feedbackTextController.text);
                   setState(() {
                     list.clear();
                     _getFeedbackList();

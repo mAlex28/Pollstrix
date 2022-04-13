@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 
 class CustomSearchBarDelegate extends SearchDelegate {
@@ -54,8 +56,8 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
     var stream = _firebaseFirestore
         .collection('polls')
-        .where('title', isGreaterThanOrEqualTo: query)
-        .where('title', isLessThan: query + 'z')
+        .where(titleField, isGreaterThanOrEqualTo: query)
+        .where(titleField, isLessThan: query + 'z')
         .snapshots();
 
     return Column(
@@ -64,30 +66,39 @@ class CustomSearchBarDelegate extends SearchDelegate {
           child: StreamBuilder<QuerySnapshot>(
             stream: stream,
             builder: (context, snapshot) {
-              if (!snapshot.hasData ||
-                  snapshot.connectionState == ConnectionState.waiting) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    Center(child: CircularProgressIndicator()),
-                  ],
-                );
-              } else if (snapshot.data!.size == 0) {
-                return Column(
-                  children: const <Widget>[
-                    Text(
-                      "No Results Found.",
-                    ),
-                  ],
-                );
-              } else {
-                return ListView(
-                  scrollDirection: Axis.vertical,
-                  children: snapshot.data!.docs.map((doc) {
-                    return PollTile(doc: doc);
-                  }).toList(),
-                );
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                case ConnectionState.active:
+                  if (snapshot.hasData) {
+                    final allPolls = snapshot.data as Iterable<CloudPoll>;
+                    return ListView.builder(
+                      itemCount: allPolls.length,
+                      itemBuilder: (context, index) {
+                        final poll = allPolls.elementAt(index);
+                        return PollTile(doc: poll);
+                      },
+                    );
+                  } else if (snapshot.data!.size == 0) {
+                    return Column(
+                      children: const <Widget>[
+                        Text(
+                          "No Results Found.",
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const <Widget>[
+                        Center(child: CircularProgressIndicator()),
+                      ],
+                    );
+                  }
+                default:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
               }
             },
           ),
@@ -104,8 +115,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
         .where('title', isLessThan: query + 'z')
         .snapshots();
 
-    return Container(
-        child: StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: stream,
       builder: (context, snapshot) {
         if (query.isEmpty) return buildNoSuggestions();
@@ -118,7 +128,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
           return buildSuggestionsSuccess(snapshot.data!.docs);
         }
       },
-    ));
+    );
   }
 
   Widget buildNoSuggestions() => const Center(

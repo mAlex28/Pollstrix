@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                                   if (user?.isEmailVerified ?? false) {
                                     Navigator.of(context)
                                         .pushNamedAndRemoveUntil(
-                                      pollsRoute,
+                                      feedContentRoute,
                                       (route) => false,
                                     );
                                   } else {
@@ -159,12 +159,6 @@ class _LoginPageState extends State<LoginPage> {
                                       (route) => false,
                                     );
                                   }
-
-                                  // await authService.signInWithEmailAndPassword(
-                                  //     email: _emailController.text.trim(),
-                                  //     password: _passwordController.text.trim(),
-                                  //     context: context);
-                                  // Navigator.push(context, '/');
                                 } on UserNotFoundAuthException {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       CustomSnackbar.customSnackbar(
@@ -182,18 +176,6 @@ class _LoginPageState extends State<LoginPage> {
                                           content:
                                               'Oops! something went wrong'));
                                 }
-                                // } on FirebaseAuthException catch (e) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //       CustomSnackbar.customSnackbar(
-                                //           backgroundColor: Colors.red,
-                                //           content: e.message.toString()));
-                                // } catch (e) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //       CustomSnackbar.customSnackbar(
-                                //           backgroundColor: Colors.red,
-                                //           content:
-                                //               'Error loging in. Try again'));
-                                // }
                               }
                             },
                             child: const Text(
@@ -247,9 +229,6 @@ class _LoginPageState extends State<LoginPage> {
                               )
                             ],
                           ),
-                          const SizedBox(
-                            height: 15,
-                          ),
                           Container(
                             margin: EdgeInsets.symmetric(
                                 vertical: size.height * 0.02),
@@ -271,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const GoogleSignInButton(),
-                          SizedBox(width: kSpacingUnit.h * 3),
+                          SizedBox(height: kSpacingUnit.h * 3),
                           const TermsOfUse(),
                         ],
                       ),

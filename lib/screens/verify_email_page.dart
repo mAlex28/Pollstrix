@@ -33,9 +33,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           const SizedBox(
             height: 30,
           ),
-          const Text('Please check your inbox to verify the email!'),
           const Text(
-              "If you haven't received an email yet press the button below to request a new vefication link"),
+            "Please check your inbox to verify the email! If you haven't received an email yet press the button below to request a new vefication link.",
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -48,11 +49,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 await AuthService.firebase().sendEmailVerification();
               },
               timeOutInSeconds: 60),
+          const Text(
+            "Already verifed? Press the below button and login to continue",
+            textAlign: TextAlign.center,
+          ),
           TextButton(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50))),
-                elevation: MaterialStateProperty.all(8),
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 40)),
               ),
@@ -61,10 +63,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
-              child: Text(
-                "Logout",
+              child: const Text(
+                "Login",
                 textAlign: TextAlign.center,
-                style: kButtonTextStyle,
               )),
         ],
       ),

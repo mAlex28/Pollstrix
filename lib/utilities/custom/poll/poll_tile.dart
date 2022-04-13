@@ -8,7 +8,10 @@ import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
 
 import 'package:pollstrix/screens/polls/feedback_page.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/charts/custom_charts.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
@@ -17,7 +20,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class PollTile extends StatefulWidget {
-  final QueryDocumentSnapshot<Object?> doc;
+  final CloudPoll doc;
 
   const PollTile({Key? key, required this.doc}) : super(key: key);
 
@@ -45,7 +48,7 @@ class _PollTileState extends State<PollTile> {
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
-    _findLikedPollsOfTheUser();
+    // _findLikedPollsOfTheUser();
     _checkFinishedStatus();
     _checkUserVoteStatus();
   }
@@ -57,35 +60,35 @@ class _PollTileState extends State<PollTile> {
   }
 
   // find polls that are liked by the user and show them in blue colour
-  _findLikedPollsOfTheUser() async {
-    List<dynamic> likedPolls = [];
+  // _findLikedPollsOfTheUser() async {
+  //   List<dynamic> likedPolls = [];
 
-    await _firebaseFirestore
-        .collection('users')
-        .doc(currentUserID)
-        .get()
-        .then((value) {
-      likedPolls = value.data()!['likedPolls'];
-      if (mounted) {
-        setState(() {
-          likedPolls.map((e) {
-            if (e == widget.doc.id) {
-              isLiked = true;
-            }
-          }).toList();
-        });
-      }
-    });
-  }
+  //   await _firebaseFirestore
+  //       .collection('users')
+  //       .doc(currentUserID)
+  //       .get()
+  //       .then((value) {
+  //     likedPolls = value.data()!['likedPolls'];
+  //     if (mounted) {
+  //       setState(() {
+  //         likedPolls.map((e) {
+  //           if (e == widget.doc.id) {
+  //             isLiked = true;
+  //           }
+  //         }).toList();
+  //       });
+  //     }
+  //   });
+  // }
 
   // check if the poll has ended and update the 'finished' status of the poll
   _checkFinishedStatus() async {
-    final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
+    final DateTime endDate = widget.doc.endDate.toLocal();
     if (endDate.isBefore(_currentDate)) {
       await _firebaseFirestore
           .collection('polls')
-          .doc(widget.doc.id)
-          .update({'finished': true});
+          .doc(widget.doc.documentId)
+          .update({isFinishedField: true});
     }
   }
 
@@ -355,10 +358,10 @@ class _PollTileState extends State<PollTile> {
 
   // Check if the current user has already voted on the poll
   _checkUserVoteStatus() async {
-    List<dynamic> votedUsers = (widget.doc.data() as dynamic)['voteData'];
+    List<dynamic> votedUsers = widget.doc.voteData;
 
     votedUsers.asMap().entries.map((e) {
-      if (e.value['uid'] == currentUserID) {
+      if (e.value[userIdField] == currentUserID) {
         setState(() {
           _hasUserVoted = true;
         });
@@ -376,15 +379,21 @@ class _PollTileState extends State<PollTile> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-    final currentUser =
-        Provider.of<AuthenticationService>(context).getCurrentUserEmail();
-    final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
-    final creater = (widget.doc.data() as dynamic)['creatorEmail'];
-    final createrID = (widget.doc.data() as dynamic)['uid'];
-    final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
+
+    final currentUserId = AuthService.firebase().currentUser!.userId;
+    final usersWhoVoted = widget.doc.voteData.asMap();
+    final creatorId = widget.doc.creatorId;
+    final DateTime endDate = widget.doc.endDate.toLocal();
+    final range = endDate.difference(_currentDate.toLocal()).inDays;
+
+    // final currentUser =
+    //     Provider.of<AuthenticationService>(context).getCurrentUserEmail();
+    // final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
+    // final creater = (widget.doc.data() as dynamic)['creatorEmail'];
+    // final createrID = (widget.doc.data() as dynamic)['uid'];
+    // final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
 
     // calculate remaining time left for the poll
-    final range = endDate.toLocal().difference(_currentDate.toLocal()).inDays;
 
     return endDate.isAfter(_currentDate)
         ? Card(
@@ -442,55 +451,49 @@ class _PollTileState extends State<PollTile> {
                                   onTapDown: (details) => _showPopupMenu(
                                       context, details,
                                       uid: currentUserID,
-                                      pid: widget.doc.id,
-                                      creator: createrID))),
+                                      pid: widget.doc.documentId,
+                                      creator: creatorId))),
                         ],
                       ),
                     ],
                   ),
-                  currentUserID == createrID || _hasUserVoted
+                  currentUserID == creatorId || _hasUserVoted
                       ? Polls.viewPolls(
-                          children: (widget.doc.data() as dynamic)['choices']
-                              .entries
-                              .map((e) {
+                          children: widget.doc.choices.entries.map((e) {
                             return Polls.options(
-                                title: '${e.value['title']}',
-                                value: (e.value['votes']).toDouble());
+                                title: '${e.value[titleField]}',
+                                value: (e.value[votesField]).toDouble());
                           }).toList(),
-                          question: Text(
-                              (widget.doc.data() as dynamic)['title'],
-                              style: kTitleTextStyle),
-                          userChoice: usersWhoVoted[currentUser],
+                          question:
+                              Text(widget.doc.title, style: kTitleTextStyle),
+                          userChoice: usersWhoVoted[currentUserId],
                           onVoteBackgroundColor: Colors.blueGrey,
                           leadingBackgroundColor: kAccentColor,
                           backgroundColor: kAccentColor,
                         )
                       : Polls(
-                          children: (widget.doc.data() as dynamic)['choices']
-                              .entries
-                              .map((choice) {
+                          children: widget.doc.choices.entries.map((choice) {
                             return Polls.options(
                                 title: '${choice.value['title']}',
                                 value: (choice.value['votes']).toDouble());
                           }).toList(),
                           question: Text(
-                            (widget.doc.data() as dynamic)['title'],
+                            widget.doc.title,
                             style: const TextStyle(fontSize: 16),
                           ),
                           voteData: usersWhoVoted,
                           currentUser: currentUserID,
-                          creatorID: creater,
-                          userChoice: usersWhoVoted[currentUserID],
+                          creatorID: creatorId,
+                          userChoice: usersWhoVoted[currentUserId],
                           onVote: (choice) async {
                             await Provider.of<AuthenticationService>(context,
                                     listen: false)
                                 .onVote(
                                     context: context,
                                     userId: currentUserID,
-                                    choices: (widget.doc.data()
-                                        as dynamic)['choices'],
+                                    choices: widget.doc.choices,
                                     selectedOption: choice,
-                                    pid: widget.doc.id);
+                                    pid: widget.doc.documentId);
                             setState(() {
                               _hasUserVoted = true;
                             });
@@ -516,15 +519,13 @@ class _PollTileState extends State<PollTile> {
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(
-                                  likes:
-                                      (widget.doc.data() as dynamic)['likes'],
-                                  pid: widget.doc.id,
+                                  likes: widget.doc.likes,
+                                  pid: widget.doc.documentId,
                                   uid: currentUserID,
                                   isPollLiked: isLiked);
                             },
                           ),
-                          Text(((widget.doc.data() as dynamic)['likes'])
-                              .toString()),
+                          Text(widget.doc.likes.toString()),
                         ],
                       ),
                       TextButton(
@@ -535,8 +536,8 @@ class _PollTileState extends State<PollTile> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => FeedbackPage(
-                                        pollID: widget.doc.id,
-                                        userID: currentUser!,
+                                        pollID: widget.doc.documentId,
+                                        userID: currentUserId,
                                       )))),
                     ],
                   ),
@@ -579,24 +580,20 @@ class _PollTileState extends State<PollTile> {
                           onTapDown: (details) => _showPopupMenu(
                               context, details,
                               uid: currentUserID,
-                              pid: widget.doc.id,
-                              creator: createrID))
+                              pid: widget.doc.documentId,
+                              creator: creatorId))
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 8),
-                    child: Text((widget.doc.data() as dynamic)['title'],
-                        style: kTitleTextStyle),
+                    child: Text(widget.doc.title, style: kTitleTextStyle),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 5.0),
-                        child: Text(
-                            ((widget.doc.data() as dynamic)['voteCount'])
-                                    .toString() +
-                                ' votes',
+                        child: Text(widget.doc.voteCount.toString() + ' votes',
                             style: TextStyle(
                                 fontSize: 12.0, color: Colors.grey[800])),
                       ),
@@ -636,18 +633,14 @@ class _PollTileState extends State<PollTile> {
                   ),
                   _showBarChart
                       ? BarChart(
-                          data: (widget.doc.data() as dynamic)['choices']
-                              .entries
-                              .map((choice) {
+                          data: widget.doc.choices.entries.map((choice) {
                           return PollResults(
                               choice.value['title'],
                               choice.value['votes'] ?? 0,
                               charts.ColorUtil.fromDartColor(Colors.green));
                         }).toList())
                       : PieChart(
-                          data: (widget.doc.data() as dynamic)['choices']
-                              .entries
-                              .map((choice) {
+                          data: widget.doc.choices.entries.map((choice) {
                           return PollResults(
                               choice.value['title'],
                               choice.value['votes'] ?? 0,
@@ -670,15 +663,13 @@ class _PollTileState extends State<PollTile> {
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(
-                                  likes:
-                                      (widget.doc.data() as dynamic)['likes'],
-                                  pid: widget.doc.id,
+                                  likes: widget.doc.likes,
+                                  pid: widget.doc.documentId,
                                   uid: currentUserID,
                                   isPollLiked: isLiked);
                             },
                           ),
-                          Text(((widget.doc.data() as dynamic)['likes'])
-                              .toString()),
+                          Text(widget.doc.likes.toString()),
                         ],
                       ),
                       TextButton(
@@ -689,8 +680,8 @@ class _PollTileState extends State<PollTile> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => FeedbackPage(
-                                        pollID: widget.doc.id,
-                                        userID: currentUser!,
+                                        pollID: widget.doc.documentId,
+                                        userID: currentUserId,
                                       )))),
                     ],
                   ),

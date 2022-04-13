@@ -10,7 +10,7 @@ class TempPage extends StatefulWidget {
 class _TempPageState extends State<TempPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Text('temp page'),
     );
   }

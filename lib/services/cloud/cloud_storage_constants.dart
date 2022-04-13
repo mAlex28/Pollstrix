@@ -25,3 +25,6 @@ const dislikedPollsField = 'disliked_polls';
 const pollIdField = 'poll_id';
 const reportTextField = 'report';
 const deviceIdField = 'device_id';
+const votesField = 'votes';
+const optionField = 'option';
+const feedbackField = 'feedback';

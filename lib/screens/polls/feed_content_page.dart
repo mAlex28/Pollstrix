@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/screens/polls/post_poll_page.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/utilities/custom/searchbar/custom_searchbar_delegate.dart';
@@ -22,14 +26,17 @@ class _FeedContentPageState extends State<FeedContentPage> {
   final GlobalKey _searchKey = GlobalKey();
   final GlobalKey _filterKey = GlobalKey();
   final GlobalKey _postPollKey = GlobalKey();
+  late final FirebasePollFunctions _pollService;
 
   @override
   void initState() {
-    super.initState();
+    _pollService = FirebasePollFunctions();
+
     stream = db
         .collection('polls')
         .orderBy('createdAt', descending: true)
         .snapshots();
+    super.initState();
   }
 
   @override
@@ -254,25 +261,32 @@ class _FeedContentPageState extends State<FeedContentPage> {
         ),
         body: Column(children: [
           Flexible(
-              child: StreamBuilder<QuerySnapshot>(
-            stream: stream,
+              child: StreamBuilder(
+            stream: _pollService.getAllPolls(
+                currentUserId: AuthService.firebase().currentUser!.userId),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return PollTile(doc: snapshot.data!.docs[index]);
-                  },
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                case ConnectionState.active:
+                  if (snapshot.hasData) {
+                    final allPolls = snapshot.data as Iterable<CloudPoll>;
+                    return ListView.builder(
+                      itemCount: allPolls.length,
+                      itemBuilder: (context, index) {
+                        final poll = allPolls.elementAt(index);
+                        return PollTile(doc: poll);
+                      },
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                default:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
               }
             },
           )),
@@ -288,16 +302,38 @@ class _FeedContentPageState extends State<FeedContentPage> {
           ),
           overlayColor: Colors.white,
           overlayOpacity: 0.7,
-          description: 'Add a new poll',
+          description: 'Add new poll',
           child: FloatingActionButton(
-              backgroundColor: kAccentColor,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add_rounded),
-              onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          const PostPollPage()))),
+            backgroundColor: kAccentColor,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.add_rounded),
+            onPressed: () => Navigator.of(context).pushNamed(postNewPollRoute),
+          ),
         ));
   }
 }
+
+
+// StreamBuilder(
+//             stream: _pollService.getAllPolls(
+//                 currentUserId: AuthService.firebase().currentUser!.userId),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 return const Center(
+//                   child: CircularProgressIndicator(),
+//                 );
+//               }
+//               if (snapshot.hasData) {
+//                 return ListView.builder(
+//                   itemCount: snapshot.data!.docs.length,
+//                   itemBuilder: (BuildContext context, int index) {
+//                     return PollTile(doc: snapshot.data!.docs[index]);
+//                   },
+//                 );
+//               } else {
+//                 return const Center(
+//                   child: CircularProgressIndicator(),
+//                 );
+//               }
+//             },
+//           )
