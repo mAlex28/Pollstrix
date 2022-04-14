@@ -62,12 +62,9 @@ class FirebasePollFunctions {
       required Map<String, dynamic> choices,
       required String pollId}) async {
     try {
-      int totalVotes = 0;
-      var voteDetails;
-
       await polls.doc(pollId).get().then((value) async {
-        totalVotes = value.data()![voteCountField];
-        voteDetails = value.data()![voteDataField];
+        var totalVotes = value.data()![voteCountField];
+        var voteDetails = value.data()![voteDataField];
 
         choices.entries.map((e) {
           if (int.parse(e.key) == (selectedOption - 1)) {
@@ -131,8 +128,20 @@ class FirebasePollFunctions {
     });
   }
 
-  // // retrive all polls posted by the current user as a stream
-  Stream<Iterable<CloudPoll>> getAllPolls({required String currentUserId}) =>
+  // retrive all polls posted by every user with order by
+  Stream<Iterable<CloudPoll>> getAllPolls(
+          {required String orderBy, bool isDescending = false}) =>
+      polls.orderBy(orderBy, descending: isDescending).snapshots().map(
+          (events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
+
+  Stream<Iterable<CloudPoll>> getAllPollsWithWhere(
+          {required Object fieldName, Object? object}) =>
+      polls.where(fieldName, isEqualTo: object).snapshots().map(
+          (events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
+
+  // retrive all polls posted by the current user as a stream
+  Stream<Iterable<CloudPoll>> getAllPollsOfTheUser(
+          {required String currentUserId}) =>
       polls.snapshots().map((events) => events.docs
           .map((doc) => CloudPoll.fromSnapshot(doc))
           .where((poll) => poll.creatorId == currentUserId));

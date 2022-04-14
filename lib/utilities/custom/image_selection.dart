@@ -9,9 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:provider/provider.dart';
 
 class UserImage extends StatefulWidget {
   final Function(String imageUrl) onFileChanged;
@@ -40,8 +38,6 @@ class _UserImageState extends State<UserImage> {
   _getUserProfile() async {
     if (widget.isProfile) {
       final profile = _authService.currentUser;
-// final profile =
-      //     await Provider.of<AuthenticationService>(context).getCurrentUser();
       setState(() {
         imageUrl = profile!.imageUrl;
       });

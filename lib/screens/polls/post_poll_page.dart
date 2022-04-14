@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_form_options.dart';
 import 'package:pollstrix/models/poll_model.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class PostPollPage extends StatefulWidget {
@@ -74,7 +71,6 @@ class _PostPollPageState extends State<PostPollPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
     const pollChoices = ['First', 'Second', 'Additional', 'Additional'];
-    final authService = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -196,12 +192,12 @@ class _PostPollPageState extends State<PostPollPage> {
                                   createdTime: DateTime.now(),
                                   startDate: _startDate,
                                   endDate: _endDate);
+                              Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
                                   CustomSnackbar.customSnackbar(
                                       content: 'Poll posted',
                                       backgroundColor: Colors.green));
                             } catch (e) {
-                              print(e);
                               ScaffoldMessenger.of(context).showSnackBar(
                                   CustomSnackbar.customSnackbar(
                                       content: 'Oops! Something went wrong',

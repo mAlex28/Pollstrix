@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants/routes.dart';
-import 'package:pollstrix/screens/polls/post_poll_page.dart';
-import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
@@ -20,22 +18,18 @@ class FeedContentPage extends StatefulWidget {
 }
 
 class _FeedContentPageState extends State<FeedContentPage> {
-  final db = FirebaseFirestore.instance;
+  late final FirebasePollFunctions _pollService = FirebasePollFunctions();
   late var stream =
-      db.collection('polls').orderBy('createdAt', descending: true).snapshots();
+      _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
   final GlobalKey _searchKey = GlobalKey();
   final GlobalKey _filterKey = GlobalKey();
   final GlobalKey _postPollKey = GlobalKey();
-  late final FirebasePollFunctions _pollService;
 
   @override
   void initState() {
-    _pollService = FirebasePollFunctions();
-
-    stream = db
-        .collection('polls')
-        .orderBy('createdAt', descending: true)
-        .snapshots();
+    // _pollService = FirebasePollFunctions();
+    // stream =
+    //     _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
     super.initState();
   }
 
@@ -135,10 +129,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 1,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('voteCount')
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                  orderBy: voteCountField,
+                                );
                               });
                             },
                           ),
@@ -151,10 +144,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 2,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('voteCount', descending: true)
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                    orderBy: voteCountField,
+                                    isDescending: true);
                               });
                             },
                           ),
@@ -167,10 +159,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 3,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('likes')
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                  orderBy: likesField,
+                                );
                               });
                             },
                           ),
@@ -183,10 +174,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 4,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('likes', descending: true)
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                    orderBy: likesField, isDescending: true);
                               });
                             },
                           ),
@@ -199,10 +188,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 5,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('createdAt')
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                  orderBy: createdAtField,
+                                );
                               });
                             },
                           ),
@@ -215,10 +203,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 6,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .orderBy('createdAt', descending: true)
-                                    .snapshots();
+                                stream = _pollService.getAllPolls(
+                                    orderBy: createdAtField,
+                                    isDescending: true);
                               });
                             },
                           ),
@@ -231,10 +218,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 7,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .where('finished', isEqualTo: false)
-                                    .snapshots();
+                                stream = _pollService.getAllPollsWithWhere(
+                                    fieldName: isFinishedField, object: false);
                               });
                             },
                           ),
@@ -247,10 +232,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
                             value: 8,
                             onTap: () {
                               setState(() {
-                                stream = db
-                                    .collection('polls')
-                                    .where('finished', isEqualTo: true)
-                                    .snapshots();
+                                stream = _pollService.getAllPollsWithWhere(
+                                    fieldName: isFinishedField, object: true);
                               });
                             },
                           ),
@@ -261,8 +244,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
         body: Column(children: [
           Flexible(
               child: StreamBuilder(
-            stream: _pollService.getAllPolls(
-                currentUserId: AuthService.firebase().currentUser!.userId),
+            stream: stream,
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:

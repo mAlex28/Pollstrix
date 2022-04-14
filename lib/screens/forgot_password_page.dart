@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/dialogs/password_reset_dialog.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -22,7 +20,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthenticationService>(context);
     return Scaffold(
         body: Center(
             child: SingleChildScrollView(
@@ -55,6 +52,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               } else if (!regExp.hasMatch(value.trim())) {
                                 return 'Invalid email address';
                               }
+                              return null;
                             },
                             textEditingController: _emailController,
                             label: 'Enter your email here',

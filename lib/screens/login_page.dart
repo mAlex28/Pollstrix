@@ -85,6 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                               } else if (!regExp.hasMatch(value.trim())) {
                                 return 'Invalid email address';
                               }
+
+                              return null;
                             },
                             textEditingController: _emailController,
                             label: 'Email',
@@ -99,6 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (value == null || value.trim().isEmpty) {
                                 return "This field is required";
                               }
+                              return null;
                             },
                             password: _isPassword,
                             textEditingController: _passwordController,

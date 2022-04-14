@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/dialogs/password_reset_dialog.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:provider/provider.dart';
-import 'package:timer_button/timer_button.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({Key? key}) : super(key: key);
@@ -31,7 +28,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    final authService = Provider.of<AuthenticationService>(context);
     return Scaffold(
         appBar: AppBar(
           iconTheme: Theme.of(context).iconTheme,
@@ -60,6 +56,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               } else if (!regExp.hasMatch(value.trim())) {
                                 return 'Invalid email address';
                               }
+
+                              return null;
                             },
                             textEditingController: _emailController,
                             label: 'Enter your email here',
