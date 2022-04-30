@@ -19,6 +19,14 @@ abstract class AuthProvider {
       required String lastName,
       required String imageUrl});
 
+  Future<AuthUser> updateUser(
+      {required String documentId,
+      required String displayName,
+      required String firstName,
+      required String lastName,
+      required String imageUrl,
+      required String bio});
+
   Future<void> logOut();
   Future<void> sendEmailVerification();
   Future<void> resetPassword({required String email});

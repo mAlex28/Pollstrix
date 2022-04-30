@@ -23,30 +23,8 @@ class AuthenticationService {
     return _firebaseAuth.currentUser!.uid;
   }
 
-  String? getCurrentUserEmail() {
-    return _firebaseAuth.currentUser!.email;
-  }
-
-  String? getCurrentUserDisplayName() {
-    return _firebaseAuth.currentUser!.displayName;
-  }
-
   Future getCurrentUser() async {
     return _firebaseAuth.currentUser;
-  }
-
-  String? getCurrentUserImageUrl() {
-    return _firebaseAuth.currentUser!.photoURL;
-  }
-
-  getProfileImage() {
-    if (_firebaseAuth.currentUser?.photoURL != null) {
-      return NetworkImage(
-        _firebaseAuth.currentUser!.photoURL!,
-      );
-    } else {
-      return AssetImage(urlImage);
-    }
   }
 
   Future<String> downlaodDefaultAvatarFromStorage() async {
@@ -181,58 +159,6 @@ class AuthenticationService {
     return user!.uid;
   }
 
-  // update user account
-  Future updateUserDetails(
-      {required String fname,
-      required String lname,
-      required String username,
-      required String imageUrl,
-      required BuildContext context,
-      String? bio}) async {
-    try {
-      final currentUser = _firebaseAuth.currentUser;
-
-      await updateUserProfile(username, currentUser!, photoURL: imageUrl);
-
-      await _firebaseFirestore.collection('users').doc(currentUser.uid).update({
-        'imageUrl': imageUrl,
-        'first_name': fname,
-        'last_name': lname,
-        'username': username,
-        'bio': bio,
-      });
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: 'Error creating account.'));
-    }
-  }
-
-  // sign out
-  Future<void> signOut({required BuildContext context}) async {
-    try {
-      if (!kIsWeb) {
-        // android and ios google sign out
-        googleSignIn.isSignedIn().then((value) async {
-          if (value) {
-            await googleSignIn.signOut();
-          }
-        });
-      }
-      // other sign out methods
-      await _firebaseAuth.signOut();
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error Signing out. Try again.'));
-    }
-  }
-
   // update username
   Future updateUserProfile(String name, User currentUser, {photoURL}) async {
     await currentUser.updateDisplayName(name);
@@ -287,48 +213,6 @@ class AuthenticationService {
     await currentUser!.linkWithCredential(credential);
     await updateUserProfile(
         googleSignIn.currentUser!.displayName!, currentUser);
-  }
-
-  Future post(
-      {required String title,
-      required List<String>? choices,
-      required DateTime createdTime,
-      required DateTime startDate,
-      required DateTime endDate,
-      required BuildContext context}) async {
-    try {
-      final currentUser = getCurrentUID();
-
-      var listOfChoices = {};
-
-      for (var i = 0; i < choices!.length; i++) {
-        listOfChoices.addAll({
-          i.toString(): {'title': choices[i], 'votes': 0}
-        });
-      }
-
-      await _firebaseFirestore.collection('polls').doc().set({
-        'uid': currentUser,
-        'creatorEmail': getCurrentUserEmail(),
-        'title': title,
-        'choices': listOfChoices,
-        'createdAt': createdTime,
-        'startDate': startDate,
-        'endDate': endDate,
-        'finished': false,
-        'voteCount': 0,
-        'voteData': [],
-        'likes': 0,
-        'dislikes': 0,
-      }, SetOptions(merge: true));
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red, content: e.message.toString()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(
-          backgroundColor: Colors.red,
-          content: 'Error creating a poll. Try again.'));
-    }
   }
 
   Future onVote(

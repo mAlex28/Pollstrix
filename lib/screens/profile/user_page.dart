@@ -1,15 +1,18 @@
 import 'dart:io' show Platform;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/users/firebase_user_functions.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/utilities/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
@@ -20,6 +23,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  final FirebaseUserFunctions _userFunctions = FirebaseUserFunctions();
   User user = User();
   bool isUpdating = false;
   String imageUrl = '';
@@ -32,12 +36,11 @@ class _UserPageState extends State<UserPage> {
   final TextEditingController _bioController = TextEditingController();
 
   _getUserProfile() async {
-    final profile =
-        await Provider.of<AuthenticationService>(context).getCurrentUser();
+    final profile = AuthService.firebase().currentUser!;
 
-    if (profile.photoURL != null) {
+    if (profile.imageUrl != null) {
       setState(() {
-        imageUrl = profile.photoURL;
+        imageUrl = profile.imageUrl!;
       });
     } else {
       imageUrl = '';
@@ -86,22 +89,28 @@ class _UserPageState extends State<UserPage> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     isUpdating = true;
                   });
-                  authData
-                      .updateUserDetails(
-                          fname: _fnameController.text,
-                          lname: _lnameController.text,
-                          username: _usernameController.text,
-                          imageUrl: imageUrl,
-                          bio: _bioController.text,
-                          context: context)
-                      .then((value) {
-                    setState(() {
-                      isUpdating = false;
-                    });
+                  try {
+                    await _userFunctions.updateUserInFirebase(
+                        documentId: AuthService.firebase().currentUser!.userId,
+                        displayName: _usernameController.text,
+                        firstName: _fnameController.text,
+                        lastName: _lnameController.text,
+                        imageUrl: imageUrl,
+                        bio: _bioController.text);
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        CustomSnackbar.customSnackbar(
+                            backgroundColor: Colors.red,
+                            content: 'Error updating account'));
+                  }
+
+                  setState(() {
+                    isUpdating = false;
+                    // });
                   });
                 },
                 icon: const Icon(
@@ -289,18 +298,15 @@ class _UserPageState extends State<UserPage> {
   }
 
   _getUserData() async {
-    final uid = Provider.of<AuthenticationService>(context).getCurrentUID();
+    final uid = AuthService.firebase().currentUser!.userId;
+
     try {
-      await Provider.of<FirebaseFirestore>(context)
-          .collection('users')
-          .doc(uid)
-          .get()
-          .then((value) {
-        user.firstName = value.data()!['first_name'];
-        user.lastName = value.data()!['last_name'];
-        user.email = value.data()!['email'];
-        user.username = value.data()!['username'];
-        user.bio = value.data()!['bio'];
+      await _userFunctions.users.doc(uid).get().then((value) {
+        user.firstName = value.data()![firstNameField];
+        user.lastName = value.data()![lastNameField];
+        user.email = value.data()![emailField];
+        user.username = value.data()![displayNameField];
+        user.bio = value.data()![bioField];
       });
     } catch (e) {
       CupertinoAlertDialog(

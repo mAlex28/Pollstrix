@@ -2,17 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 
 class CustomSearchBarDelegate extends SearchDelegate {
-  final _firebaseFirestore = FirebaseFirestore.instance;
-
-  // @override
-  // ThemeData appBarTheme(BuildContext context) {
-  //   final ThemeData theme = Theme.of(context);
-
-  //   return theme;
-  // }
+  final FirebasePollFunctions _pollService = FirebasePollFunctions();
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -54,16 +48,12 @@ class CustomSearchBarDelegate extends SearchDelegate {
       );
     }
 
-    var stream = _firebaseFirestore
-        .collection('polls')
-        .where(titleField, isGreaterThanOrEqualTo: query)
-        .where(titleField, isLessThan: query + 'z')
-        .snapshots();
+    var stream = _pollService.searchForPolls(query: query);
 
     return Column(
       children: <Widget>[
         Flexible(
-          child: StreamBuilder<QuerySnapshot>(
+          child: StreamBuilder(
             stream: stream,
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
@@ -78,7 +68,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
                         return PollTile(doc: poll);
                       },
                     );
-                  } else if (snapshot.data!.size == 0) {
+                  } else if (!snapshot.hasData) {
                     return Column(
                       children: const <Widget>[
                         Text(
@@ -109,24 +99,37 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    var stream = _firebaseFirestore
-        .collection('polls')
-        .where('title', isGreaterThanOrEqualTo: query)
-        .where('title', isLessThan: query + 'z')
-        .snapshots();
+    var stream = _pollService.searchForPolls(query: query);
 
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder(
       stream: stream,
       builder: (context, snapshot) {
         if (query.isEmpty) return buildNoSuggestions();
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError || !snapshot.hasData) {
-          return buildNoSuggestions();
-        } else {
-          return buildSuggestionsSuccess(snapshot.data!.docs);
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            if (snapshot.hasData) {
+              final allResults = snapshot.data as Iterable<CloudPoll>;
+              return buildSuggestionsSuccess(allResults);
+            } else if (!snapshot.hasData) {
+              return buildNoSuggestions();
+            } else {
+              return buildNoSuggestions();
+            }
+          default:
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
         }
+
+        // if (snapshot.connectionState == ConnectionState.waiting) {
+        //   return const Center(child: CircularProgressIndicator());
+        // } else if (snapshot.hasError || !snapshot.hasData) {
+        //   return buildNoSuggestions();
+        // } else {
+        //   return buildSuggestionsSuccess(snapshot.data!.docs);
+        // }
       },
     );
   }
@@ -138,20 +141,18 @@ class CustomSearchBarDelegate extends SearchDelegate {
         ),
       );
 
-  Widget buildSuggestionsSuccess(
-          List<QueryDocumentSnapshot<Object?>> suggestions) =>
+  Widget buildSuggestionsSuccess(Iterable<CloudPoll> suggestions) =>
       ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          final queryText = (suggestion.data() as dynamic)['title']
-              .substring(0, query.length);
-          final remainingText =
-              (suggestion.data() as dynamic)['title'].substring(query.length);
+          final suggestion = suggestions.elementAt(index);
+          final queryText = suggestion.title;
+          final remainingText = suggestion.title.substring(query.length);
 
           return ListTile(
               onTap: () {
-                query = (suggestion.data() as dynamic)['title'];
+                query = suggestion.title as dynamic;
+                // query = (suggestion.data() as dynamic)[titleField];
                 showResults(context);
               },
               title: RichText(

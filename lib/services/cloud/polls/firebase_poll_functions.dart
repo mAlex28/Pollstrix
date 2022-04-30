@@ -6,7 +6,6 @@ import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 class FirebasePollFunctions {
   final polls = FirebaseFirestore.instance.collection('polls');
   final feedbacks = FirebaseFirestore.instance.collection('feedbacks');
-  final reports = FirebaseFirestore.instance.collection('reports');
   final users = FirebaseFirestore.instance.collection('users');
 
   // create a new poll
@@ -122,21 +121,12 @@ class FirebasePollFunctions {
     }
   }
 
-  // report poll
-  Future<void> reportPoll(
-      {required String userId,
-      required String pollId,
-      required String text}) async {
-    try {
-      await reports.add({
-        userIdField: userId,
-        pollIdField: pollId,
-        reportTextField: text,
-      });
-    } catch (e) {
-      throw CouldNotReportPollException();
-    }
-  }
+  // Get polls for search
+  Stream<Iterable<CloudPoll>> searchForPolls({required String query}) => polls
+      .where(titleField, isEqualTo: query)
+      .where(titleField, isLessThan: query + 'z')
+      .snapshots()
+      .map((events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
 
   // Stream functions
   Stream<Iterable<CloudPoll>> getAllPollsOfTheUser(

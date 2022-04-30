@@ -2,9 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 
-// NOTE removed: password and uid fields
-// NOTE renamed: username into displayName and changed fields into snake case
-
 @immutable
 class CloudUser {
   final String userId;

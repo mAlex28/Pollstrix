@@ -64,10 +64,6 @@ class FirebaseUserFunctions {
     }
   }
 
-  //  TODO: retrieve user
-
-  //  TODO: retrieve all users
-
   // singleton
   static final FirebaseUserFunctions _shared =
       FirebaseUserFunctions._sharedInstance();

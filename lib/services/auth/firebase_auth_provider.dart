@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path/path.dart';
 import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_provider.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
@@ -197,6 +198,41 @@ class FirebaseAuthProvider implements AuthProvider {
       throw CouldNotSignInWithGoogle();
     } catch (e) {
       throw GenericAuthException();
+    }
+  }
+
+  @override
+  Future<AuthUser> updateUser(
+      {required String documentId,
+      required String displayName,
+      required String firstName,
+      required String lastName,
+      required String imageUrl,
+      required String bio}) async {
+    try {
+      final instance = FirebaseAuth.instance.currentUser!;
+
+      await instance.updateDisplayName(displayName);
+      await instance.updatePhotoURL(imageUrl);
+      await instance.reload();
+
+      await _userService.updateUserInFirebase(
+          documentId: documentId,
+          displayName: displayName,
+          firstName: firstName,
+          lastName: lastName,
+          imageUrl: imageUrl,
+          bio: bio);
+
+      final user = currentUser;
+
+      if (user != null) {
+        return user;
+      } else {
+        throw CouldNotUpdateUserException();
+      }
+    } catch (e) {
+      throw CouldNotUpdateUserException();
     }
   }
 }

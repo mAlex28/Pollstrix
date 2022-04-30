@@ -2,6 +2,7 @@ import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/buttons/custom_theme_button.dart';
 import 'package:pollstrix/utilities/custom/custom_menu_list_item.dart';
 import 'package:pollstrix/l10n/l10n.dart';
@@ -9,6 +10,7 @@ import 'package:pollstrix/screens/menu/faq_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 
@@ -205,9 +207,15 @@ class _MenuPageState extends State<MenuPage> {
                 CustomMenuListItem(
                   icon: Icons.logout_outlined,
                   text: AppLocalizations.of(context)!.logOut,
-                  onTap: () {
-                    Provider.of<AuthenticationService>(context, listen: false)
-                        .signOut(context: context);
+                  onTap: () async {
+                    try {
+                      await AuthService.firebase().logOut();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          CustomSnackbar.customSnackbar(
+                              backgroundColor: Colors.red,
+                              content: 'Could not logout! try again later'));
+                    }
                   },
                 ),
                 const SizedBox(height: 20),

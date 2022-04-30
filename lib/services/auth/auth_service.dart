@@ -57,4 +57,20 @@ class AuthService implements AuthProvider {
 
   @override
   Future<AuthUser> signInWithGoogle() => provider.signInWithGoogle();
+
+  @override
+  Future<AuthUser> updateUser(
+          {required String documentId,
+          required String displayName,
+          required String firstName,
+          required String lastName,
+          required String imageUrl,
+          required String bio}) =>
+      provider.updateUser(
+          documentId: documentId,
+          displayName: displayName,
+          firstName: firstName,
+          lastName: lastName,
+          imageUrl: imageUrl,
+          bio: bio);
 }

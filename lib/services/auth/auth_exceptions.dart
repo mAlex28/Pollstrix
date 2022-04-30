@@ -18,6 +18,8 @@ class GenericAuthException implements Exception {}
 
 class UserNotLoggedInAuthException implements Exception {}
 
+class CouldNotUpdateUserException implements Exception {}
+
 // google exceptions
 
 class CouldNotSignInWithGoogle implements Exception {}

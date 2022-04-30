@@ -299,28 +299,3 @@ class _FeedContentPageState extends State<FeedContentPage> {
         ));
   }
 }
-
-
-// StreamBuilder(
-//             stream: _pollService.getAllPolls(
-//                 currentUserId: AuthService.firebase().currentUser!.userId),
-//             builder: (context, snapshot) {
-//               if (snapshot.connectionState == ConnectionState.waiting) {
-//                 return const Center(
-//                   child: CircularProgressIndicator(),
-//                 );
-//               }
-//               if (snapshot.hasData) {
-//                 return ListView.builder(
-//                   itemCount: snapshot.data!.docs.length,
-//                   itemBuilder: (BuildContext context, int index) {
-//                     return PollTile(doc: snapshot.data!.docs[index]);
-//                   },
-//                 );
-//               } else {
-//                 return const Center(
-//                   child: CircularProgressIndicator(),
-//                 );
-//               }
-//             },
-//           )

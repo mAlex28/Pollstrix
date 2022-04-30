@@ -9,6 +9,7 @@ import 'package:pollstrix/screens/polls/feedback_page.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/other/firebase_other_functions.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
@@ -29,6 +30,7 @@ class PollTile extends StatefulWidget {
 
 class _PollTileState extends State<PollTile> {
   final FirebasePollFunctions _pollService = FirebasePollFunctions();
+  final FirebaseOtherFunctions _reportService = FirebaseOtherFunctions();
   String get currentUserId => AuthService.firebase().currentUser!.userId;
 
   late TextEditingController _reportTextController;
@@ -45,7 +47,7 @@ class _PollTileState extends State<PollTile> {
     _reportTextController = TextEditingController();
     _currentDate = DateTime.now();
     _showBarChart = true;
-    // _findLikedPollsOfTheUser();
+    _findLikedPollsOfTheUser();
     _checkFinishedStatus();
     _checkUserVoteStatus();
   }
@@ -56,27 +58,23 @@ class _PollTileState extends State<PollTile> {
     super.dispose();
   }
 
-  // find polls that are liked by the user and show them in blue colour
-  // _findLikedPollsOfTheUser() async {
-  //   List<dynamic> likedPolls = [];
+  //find polls that are liked by the user and show them in blue colour
+  _findLikedPollsOfTheUser() async {
+    List<dynamic> likedPolls = [];
 
-  //   await _firebaseFirestore
-  //       .collection('users')
-  //       .doc(currentUserID)
-  //       .get()
-  //       .then((value) {
-  //     likedPolls = value.data()!['likedPolls'];
-  //     if (mounted) {
-  //       setState(() {
-  //         likedPolls.map((e) {
-  //           if (e == widget.doc.id) {
-  //             isLiked = true;
-  //           }
-  //         }).toList();
-  //       });
-  //     }
-  //   });
-  // }
+    await _pollService.users.doc(currentUserId).get().then((value) {
+      likedPolls = value.data()![likedPollsField];
+      if (mounted) {
+        setState(() {
+          likedPolls.map((e) {
+            if (e == widget.doc.documentId) {
+              isLiked = true;
+            }
+          }).toList();
+        });
+      }
+    });
+  }
 
   // check if the poll has ended and update the 'finished' status of the poll
   _checkFinishedStatus() async {
@@ -194,9 +192,9 @@ class _PollTileState extends State<PollTile> {
                               content: 'Cannot submit an empty report'));
                     } else {
                       try {
-                        await _pollService.reportPoll(
-                            userId: uid,
+                        await _reportService.sendReport(
                             pollId: pid,
+                            userId: uid,
                             text: _reportTextController.text.trim());
 
                         ScaffoldMessenger.of(context).showSnackBar(
