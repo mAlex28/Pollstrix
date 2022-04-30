@@ -42,14 +42,16 @@ class _HomePageState extends State<HomePage> {
             autoPlay: true,
             autoPlayDelay: const Duration(seconds: 3),
           ),
-          ShowCaseWidget(
-              builder: Builder(builder: (_) => const ProfileContentPage()),
-              autoPlay: true,
-              autoPlayDelay: const Duration(seconds: 3)),
-          ShowCaseWidget(
-              builder: Builder(builder: (_) => const MenuPage()),
-              autoPlay: true,
-              autoPlayDelay: const Duration(seconds: 3)),
+          const ProfileContentPage(),
+          const MenuPage(),
+          // ShowCaseWidget(
+          //     builder: Builder(builder: (_) => const ProfileContentPage()),
+          //     autoPlay: true,
+          //     autoPlayDelay: const Duration(seconds: 3)),
+          // ShowCaseWidget(
+          //     builder: Builder(builder: (_) => const MenuPage()),
+          //     autoPlay: true,
+          //     autoPlayDelay: const Duration(seconds: 3)),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

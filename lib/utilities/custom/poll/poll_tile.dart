@@ -12,6 +12,7 @@ import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/charts/custom_charts.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
@@ -30,9 +31,8 @@ class PollTile extends StatefulWidget {
 
 class _PollTileState extends State<PollTile> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebasePollFunctions _pollService = FirebasePollFunctions();
   final String currentUserID = AuthenticationService().getCurrentUID();
-  final String? currentUserEmail =
-      AuthenticationService().getCurrentUserEmail();
 
   late TextEditingController _reportTextController;
   late DateTime _currentDate;
@@ -85,8 +85,7 @@ class _PollTileState extends State<PollTile> {
   _checkFinishedStatus() async {
     final DateTime endDate = widget.doc.endDate.toLocal();
     if (endDate.isBefore(_currentDate)) {
-      await _firebaseFirestore
-          .collection('polls')
+      await _pollService.polls
           .doc(widget.doc.documentId)
           .update({isFinishedField: true});
     }
@@ -258,15 +257,22 @@ class _PollTileState extends State<PollTile> {
                               backgroundColor: Colors.red,
                               content: 'Cannot submit an empty report'));
                     } else {
-                      await _firebaseFirestore.collection('reports').doc().set({
-                        'uid': uid,
-                        'pid': pid,
-                        'report': _reportTextController.text.trim(),
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          CustomSnackbar.customSnackbar(
-                              backgroundColor: Colors.green,
-                              content: 'Successfully submited'));
+                      try {
+                        await _pollService.reportPoll(
+                            userId: uid,
+                            pollId: pid,
+                            text: _reportTextController.text.trim());
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            CustomSnackbar.customSnackbar(
+                                backgroundColor: Colors.green,
+                                content: 'Successfully submited'));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            CustomSnackbar.customSnackbar(
+                                backgroundColor: Colors.red,
+                                content: 'Error! submitting report'));
+                      }
                     }
 
                     Navigator.of(context).pop();
@@ -276,7 +282,7 @@ class _PollTileState extends State<PollTile> {
         });
   }
 
-  // Show delete poll dialog if the creator is current user and delte the item
+  // Show delete poll dialog: if the creator is current user and delete the item
   _deletePollDialog({required String pid, required BuildContext context}) {
     showDialog<Widget>(
         context: context,
@@ -294,22 +300,20 @@ class _PollTileState extends State<PollTile> {
                 TextButton(
                     onPressed: () async {
                       // delete the poll after confirmation
-                      await _firebaseFirestore
-                          .collection('polls')
-                          .doc(pid)
-                          .delete()
-                          .whenComplete(() {
+                      try {
+                        await _pollService.deletePoll(documentId: pid);
                         ScaffoldMessenger.of(context).showSnackBar(
                             CustomSnackbar.customSnackbar(
                                 backgroundColor: Colors.green,
                                 content: 'Successfully deleted'));
-                        Navigator.of(context).pop();
-                      }).onError((error, stackTrace) => ScaffoldMessenger.of(
-                                  context)
-                              .showSnackBar(CustomSnackbar.customSnackbar(
-                                  backgroundColor: Colors.red,
-                                  content:
-                                      'Unkown error! Please try again later')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            CustomSnackbar.customSnackbar(
+                                backgroundColor: Colors.red,
+                                content:
+                                    'Unkown error! Please try again later'));
+                      }
+                      Navigator.of(context).pop();
                     },
                     child: const Text(
                       "Yes",
@@ -424,21 +428,21 @@ class _PollTileState extends State<PollTile> {
                           )),
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.share,
-                                color: Theme.of(context).iconTheme.color,
-                                size: ScreenUtil().setSp(kSpacingUnit.w * 1.2),
-                              ),
-                              onTap: () async {
-                                const url = "https://youtu.be/CNUBhb_cM6E";
+                          // Container(
+                          //   padding: const EdgeInsets.only(right: 8.0),
+                          //   child: GestureDetector(
+                          //     child: Icon(
+                          //       Icons.share,
+                          //       color: Theme.of(context).iconTheme.color,
+                          //       size: ScreenUtil().setSp(kSpacingUnit.w * 1.2),
+                          //     ),
+                          //     onTap: () async {
+                          //       const url = "https://youtu.be/CNUBhb_cM6E";
 
-                                await Share.share('Thedfsdfsdfs $url');
-                              },
-                            ),
-                          ),
+                          //       await Share.share('Thedfsdfsdfs $url');
+                          //     },
+                          //   ),
+                          // ),
                           Container(
                               padding: const EdgeInsets.only(left: 0.0),
                               child: GestureDetector(

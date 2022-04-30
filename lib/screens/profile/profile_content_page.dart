@@ -1,14 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/auth/auth_user.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
+import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/profile/user_page.dart';
 import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:provider/provider.dart';
 
 class ProfileContentPage extends StatefulWidget {
   const ProfileContentPage({Key? key}) : super(key: key);
@@ -18,31 +18,29 @@ class ProfileContentPage extends StatefulWidget {
 }
 
 class _ProfileContentPageState extends State<ProfileContentPage> {
-  final db = FirebaseFirestore.instance;
+  final FirebasePollFunctions _pollService = FirebasePollFunctions();
   final currentUserId = AuthService.firebase().currentUser!.userId;
   final urlImage = "assets/images/avatar.png";
 
-  // ignore: prefer_typing_uninitialized_variables
-  var userImage;
+  // var userImage;
 
-  // ignore: prefer_typing_uninitialized_variables
-  var userSelectedOption;
+  int userSelectedOption = 0;
 
   @override
   void initState() {
-    userImage = AuthenticationService().getProfileImage();
+    // userImage = AuthenticationService().getProfileImage();
     _getVoteDataOfUsers();
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    userImage = AuthenticationService().getProfileImage();
+    // userImage = AuthenticationService().getProfileImage();
     super.didChangeDependencies();
   }
 
   _getVoteDataOfUsers() async {
-    await db.collection('polls').get().then((value) {
+    await _pollService.polls.get().then((value) {
       value.docs.map((e) {
         List<dynamic> voteDataList = e.data()[voteDataField];
         for (var vote in voteDataList) {
@@ -57,6 +55,21 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         }
       }).toList();
     });
+  }
+
+  _getProfileImage() {
+    final profileImage = AuthService.firebase().currentUser!.imageUrl;
+
+    if (profileImage != null) {
+      return NetworkImage(profileImage);
+    } else {
+      return AssetImage(urlImage);
+    }
+  }
+
+  Future<AuthUser> _getCurrentUser() async {
+    final user = AuthService.firebase().currentUser!;
+    return user;
   }
 
   @override
@@ -82,7 +95,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               children: <Widget>[
                 CircleAvatar(
                   radius: kSpacingUnit.w * 5,
-                  backgroundImage: userImage,
+                  backgroundImage: _getProfileImage(),
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
@@ -133,8 +146,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       children: <Widget>[
         SizedBox(width: kSpacingUnit.w * 3),
         FutureBuilder(
-            future:
-                Provider.of<AuthenticationService>(context).getCurrentUser(),
+            future: _getCurrentUser(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return buildProfileInfo(context, snapshot);
@@ -149,11 +161,9 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
 
     var postedPolls = Column(children: [
       Flexible(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: db
-                  .collection('polls')
-                  .where(userIdField, isEqualTo: currentUserId)
-                  .snapshots(),
+          child: StreamBuilder(
+              stream: _pollService.getAllPollsOfTheUser(
+                  currentUserId: currentUserId),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
@@ -182,24 +192,15 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                       child: CircularProgressIndicator(),
                     );
                 }
-                // ListView(
-                //   scrollDirection: Axis.vertical,
-                //   children: snapshot.data!.docs.map((doc) {
-                //     return PollTile(
-                //       doc: doc,
-                //     );
-                //   }).toList(),
-                // );
               })),
     ]);
 
     var votedPolls = Column(children: [
       Flexible(
-          child: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('polls').where(voteDataField, arrayContains: {
-          userIdField: currentUserId,
-          optionField: userSelectedOption
-        }).snapshots(),
+          child: StreamBuilder(
+        stream: _pollService.getVotedPollsOfTheUser(
+            currentUserId: currentUserId,
+            userSelectedOption: userSelectedOption),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -213,16 +214,11 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                     return PollTile(doc: poll);
                   },
                 );
-              } else if (!snapshot.hasData) {
+              } else {
                 return const Center(
                   child: Text('No polls available'),
                 );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
               }
-
             default:
               return const Center(
                 child: CircularProgressIndicator(),
@@ -259,3 +255,9 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         ))));
   }
 }
+
+
+// db.collection('polls').where(voteDataField, arrayContains: {
+//           userIdField: currentUserId,
+//           optionField: userSelectedOption
+//         }).snapshots()

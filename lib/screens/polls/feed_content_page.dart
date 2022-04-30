@@ -18,18 +18,19 @@ class FeedContentPage extends StatefulWidget {
 }
 
 class _FeedContentPageState extends State<FeedContentPage> {
-  late final FirebasePollFunctions _pollService = FirebasePollFunctions();
-  late var stream =
-      _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
+  late final FirebasePollFunctions _pollService;
+  late var stream;
+
+  // global keys for showcasesd
   final GlobalKey _searchKey = GlobalKey();
   final GlobalKey _filterKey = GlobalKey();
   final GlobalKey _postPollKey = GlobalKey();
 
   @override
   void initState() {
-    // _pollService = FirebasePollFunctions();
-    // stream =
-    //     _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
+    _pollService = FirebasePollFunctions();
+    stream =
+        _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
     super.initState();
   }
 
@@ -41,6 +42,15 @@ class _FeedContentPageState extends State<FeedContentPage> {
   @override
   Widget build(BuildContext context) {
     SharedPreferences preferences;
+
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: const Size(360, 690),
+        context: context,
+        minTextAdapt: true,
+        orientation: Orientation.portrait);
 
     displayShowcase() async {
       preferences = await SharedPreferences.getInstance();
@@ -60,14 +70,6 @@ class _FeedContentPageState extends State<FeedContentPage> {
                 .startShowCase([_searchKey, _filterKey, _postPollKey]));
       }
     });
-    ScreenUtil.init(
-        BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width,
-            maxHeight: MediaQuery.of(context).size.height),
-        designSize: const Size(360, 690),
-        context: context,
-        minTextAdapt: true,
-        orientation: Orientation.portrait);
 
     return Scaffold(
         appBar: AppBar(

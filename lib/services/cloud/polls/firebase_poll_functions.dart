@@ -6,6 +6,7 @@ import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 class FirebasePollFunctions {
   final polls = FirebaseFirestore.instance.collection('polls');
   final feedbacks = FirebaseFirestore.instance.collection('feedbacks');
+  final reports = FirebaseFirestore.instance.collection('reports');
 
   // create a new poll
   Future<CloudPoll> createPoll({
@@ -134,17 +135,11 @@ class FirebasePollFunctions {
       polls.orderBy(orderBy, descending: isDescending).snapshots().map(
           (events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
 
+  // retrive all polls posted by every user with where
   Stream<Iterable<CloudPoll>> getAllPollsWithWhere(
-          {required Object fieldName, Object? object}) =>
+          {required dynamic fieldName, dynamic object}) =>
       polls.where(fieldName, isEqualTo: object).snapshots().map(
           (events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
-
-  // retrive all polls posted by the current user as a stream
-  Stream<Iterable<CloudPoll>> getAllPollsOfTheUser(
-          {required String currentUserId}) =>
-      polls.snapshots().map((events) => events.docs
-          .map((doc) => CloudPoll.fromSnapshot(doc))
-          .where((poll) => poll.creatorId == currentUserId));
 
   // retrive all polls posted by the current user as a iterable future
   Future<Iterable<CloudPoll>> getNotes({required String currentUserId}) async {
@@ -167,6 +162,40 @@ class FirebasePollFunctions {
       throw CouldNotDeletePollException();
     }
   }
+
+  // report poll
+  Future<void> reportPoll(
+      {required String userId,
+      required String pollId,
+      required String text}) async {
+    try {
+      await reports.add({
+        userIdField: userId,
+        pollIdField: pollId,
+        reportTextField: text,
+      });
+    } catch (e) {
+      throw CouldNotReportPollException();
+    }
+  }
+
+  // Stream functions
+  Stream<Iterable<CloudPoll>> getAllPollsOfTheUser(
+          {required String currentUserId}) =>
+      polls.snapshots().map((events) => events.docs
+          .map((doc) => CloudPoll.fromSnapshot(doc))
+          .where((poll) => poll.creatorId == currentUserId));
+
+  Stream<Iterable<CloudPoll>> getVotedPollsOfTheUser(
+          {required String currentUserId, required int userSelectedOption}) =>
+      polls
+          .where(voteDataField, arrayContains: {
+            userIdField: currentUserId,
+            optionField: userSelectedOption
+          })
+          .snapshots()
+          .map((events) =>
+              events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
 
   // singleton
   static final FirebasePollFunctions _shared =

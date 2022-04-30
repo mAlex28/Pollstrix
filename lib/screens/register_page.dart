@@ -134,6 +134,8 @@ class _RegisterPageState extends State<RegisterPage> {
         body: _isLoading
             ? Center(
                 child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: const [
                   CircularProgressIndicator(
                     color: kAccentColor,

@@ -28,3 +28,9 @@ const deviceIdField = 'device_id';
 const votesField = 'votes';
 const optionField = 'option';
 const feedbackField = 'feedback';
+
+// collections
+const pollsCollection = 'polls';
+const usersCollection = 'collections';
+const devicesCollection = 'devices';
+const reportsCollection = 'reports';
