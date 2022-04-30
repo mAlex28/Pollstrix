@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/comment.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:provider/provider.dart';
 
 class FeedbackPage extends StatefulWidget {
   final String pollID;
@@ -20,20 +20,22 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
-  final formKey = GlobalKey<FormState>();
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  late TextEditingController _feedbackTextController;
   late final FirebasePollFunctions _pollService;
+  String? get currentUserEmail =>
+      AuthService.firebase().currentUser!.displayName;
+  String? get currentUserImage => AuthService.firebase().currentUser!.imageUrl;
+
+  final formKey = GlobalKey<FormState>();
+  late TextEditingController _feedbackTextController;
   List<dynamic> list = [];
   List<dynamic> userProfileImageList = [];
-  late String getUser;
   final DateFormat formatter = DateFormat('EEE, MMM d');
 
   @override
   void initState() {
-    // _getFeedbackList();
-    _feedbackTextController = TextEditingController();
     _pollService = FirebasePollFunctions();
+    _feedbackTextController = TextEditingController();
+    _getFeedbackList();
     super.initState();
   }
 
@@ -43,27 +45,23 @@ class _FeedbackPageState extends State<FeedbackPage> {
     super.dispose();
   }
 
-  // _commentFeedbacks(uid, username, pid, feedback) async {
-  //   await _firebaseFirestore.collection('feedbacks').doc().set(
-  //     {
-  //       'user': uid,
-  //       'username': username,
-  //       'pid': pid,
-  //       'feedback': feedback,
-  //       'createdAt': DateTime.now().toUtc()
-  //     },
-  //   );
-  // }
+  _commentFeedbacks(username, pid, feedback) async {
+    await _pollService.feedbacks.doc().set(
+      {
+        displayNameField: username,
+        pollIdField: pid,
+        feedbackField: feedback,
+        createdAtField: DateTime.now().toUtc()
+      },
+    );
+  }
 
   _getFeedbackList() async {
-    var user = [];
-
     // get all the feedback documents
-    var snapshot = await _firebaseFirestore.collection('feedbacks').get();
+    var snapshot = await _pollService.feedbacks.get();
 
     snapshot.docs.map((doc) {
-      if (widget.pollID == doc.data()['pid']) {
-        user.add(doc.data()['user']);
+      if (widget.pollID == doc.data()[pollIdField]) {
         list.add(doc.data());
 
         setState(() {});
@@ -73,11 +71,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserEmail =
-        Provider.of<AuthenticationService>(context).getCurrentUserDisplayName();
-    final currentUserImageUrl =
-        Provider.of<AuthenticationService>(context).getCurrentUserImageUrl();
-
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
@@ -85,7 +78,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         title: const Text('Feedback'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firebaseFirestore.collection('feedbacks').snapshots(),
+        stream: _pollService.feedbacks.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData ||
               snapshot.connectionState != ConnectionState.active) {
@@ -94,7 +87,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
             );
           } else {
             return CommentBox(
-              userImage: currentUserImageUrl,
+              userImage: currentUserImage,
               child: ListView(
                 scrollDirection: Axis.vertical,
                 children: [
@@ -103,13 +96,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
                       child: ListTile(
                         trailing: Text(
-                            formatter.format(list[i]['createdAt'].toDate()),
+                            formatter.format(
+                                list[i][createdAtField].toDate().toLocal()),
                             style: kCaptionTextStyle.copyWith(fontSize: 12)),
                         title: Text(
-                          list[i]['username'],
+                          list[i][displayNameField],
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text(list[i]['feedback']),
+                        subtitle: Text(list[i][feedbackField]),
                       ),
                     )
                 ],
@@ -119,18 +113,16 @@ class _FeedbackPageState extends State<FeedbackPage> {
               errorText: 'Comment cannot be blank',
               sendButtonMethod: () async {
                 if (formKey.currentState!.validate()) {
-                  await _pollService.commentFeedbacks(
-                      currentUserId: widget.userID,
-                      displayName: currentUserEmail!,
-                      pollId: widget.pollID,
-                      feedback: _feedbackTextController.text.trim());
-                  // await _commentFeedbacks(widget.userID, currentUserEmail,
-                  //     widget.pollID, _feedbackTextController.text);
+                  await _commentFeedbacks(currentUserEmail, widget.pollID,
+                      _feedbackTextController.text.trim());
+
                   setState(() {
                     list.clear();
                     _getFeedbackList();
                   });
+
                   _feedbackTextController.clear();
+
                   FocusScope.of(context).unfocus();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

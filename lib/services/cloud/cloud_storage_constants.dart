@@ -31,6 +31,6 @@ const feedbackField = 'feedback';
 
 // collections
 const pollsCollection = 'polls';
-const usersCollection = 'collections';
+const usersCollection = 'users';
 const devicesCollection = 'devices';
 const reportsCollection = 'reports';

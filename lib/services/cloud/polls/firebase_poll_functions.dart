@@ -7,6 +7,7 @@ class FirebasePollFunctions {
   final polls = FirebaseFirestore.instance.collection('polls');
   final feedbacks = FirebaseFirestore.instance.collection('feedbacks');
   final reports = FirebaseFirestore.instance.collection('reports');
+  final users = FirebaseFirestore.instance.collection('users');
 
   // create a new poll
   Future<CloudPoll> createPoll({
@@ -85,48 +86,6 @@ class FirebasePollFunctions {
     } catch (e) {
       throw CouldNotVotePollException();
     }
-  }
-
-  //  TODO: like
-  Future<void> likePoll(
-      {required String userId,
-      required int likes,
-      required String pollId}) async {
-    try {} catch (e) {
-      throw CouldNotDeletePollException();
-    }
-  }
-
-  // leave feedback
-  Future<void> commentFeedbacks(
-      {required String currentUserId,
-      required String displayName,
-      required String pollId,
-      required String feedback}) async {
-    try {
-      await polls.add({
-        userIdField: currentUserId,
-        displayNameField: displayName,
-        pollIdField: pollId,
-        feedbackField: feedback,
-        createdAtField: DateTime.now().toUtc()
-      });
-    } catch (e) {
-      throw CouldNotLeaveFeedbackException();
-    }
-  }
-
-  //  TODO:retrive all feedbacks
-  Future getCommentedFeedbacks(
-      {required String currentUserId, required String pollId}) async {
-    var user = [];
-    final documents = await feedbacks.get();
-
-    documents.docs.map((doc) {
-      if (pollId == doc.data()[pollIdField]) {
-        user.add(doc.data()[userIdField]);
-      }
-    });
   }
 
   // retrive all polls posted by every user with order by

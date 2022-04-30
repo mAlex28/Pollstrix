@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -30,9 +28,8 @@ class PollTile extends StatefulWidget {
 }
 
 class _PollTileState extends State<PollTile> {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebasePollFunctions _pollService = FirebasePollFunctions();
-  final String currentUserID = AuthenticationService().getCurrentUID();
+  String get currentUserId => AuthService.firebase().currentUser!.userId;
 
   late TextEditingController _reportTextController;
   late DateTime _currentDate;
@@ -101,20 +98,14 @@ class _PollTileState extends State<PollTile> {
     if (isPollLiked) {
       likedPolls.clear();
 
-      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-        likedPolls = value.data()!['likedPolls'];
+      await _pollService.users.doc(uid).get().then((value) {
+        likedPolls = value.data()![likedPollsField];
         likedPolls.remove(pid);
       });
 
-      await _firebaseFirestore
-          .collection('polls')
-          .doc(pid)
-          .update({'likes': likes - 1});
+      await _pollService.polls.doc(pid).update({likesField: likes - 1});
 
-      await _firebaseFirestore
-          .collection('users')
-          .doc(uid)
-          .update({'likedPolls': likedPolls});
+      await _pollService.users.doc(uid).update({likedPollsField: likedPolls});
 
       setState(() {
         isLiked = false;
@@ -122,78 +113,23 @@ class _PollTileState extends State<PollTile> {
     } else {
       likedPolls.clear();
 
-      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-        likedPolls = value.data()!['likedPolls'];
+      await _pollService.users.doc(uid).get().then((value) {
+        likedPolls = value.data()![likedPollsField];
         likedPolls.add(pid);
       });
 
-      await _firebaseFirestore
-          .collection('polls')
-          .doc(pid)
-          .update({'likes': likes + 1});
+      await _pollService.polls.doc(pid).update({likesField: likes + 1});
 
-      await _firebaseFirestore
-          .collection('users')
+      await _pollService.users
           .doc(uid)
-          .update({'likedPolls': FieldValue.arrayUnion(likedPolls)});
+          .update({likedPollsField: FieldValue.arrayUnion(likedPolls)});
       setState(() {
         isLiked = true;
       });
     }
   }
 
-  _dislike(
-      {required int dislikes,
-      required String pid,
-      required String uid,
-      required bool isPollDisiked}) async {
-    List<dynamic> dislikedPolls = [];
-
-    if (isPollDisiked) {
-      dislikedPolls.clear();
-
-      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-        dislikedPolls = value.data()!['dislikedPolls'];
-        dislikedPolls.remove(pid);
-      });
-
-      await _firebaseFirestore
-          .collection('polls')
-          .doc(pid)
-          .update({'dislikes': dislikes - 1});
-
-      await _firebaseFirestore
-          .collection('users')
-          .doc(uid)
-          .update({'dislikedPolls': dislikedPolls});
-
-      setState(() {
-        isDisliked = false;
-      });
-    } else {
-      dislikedPolls.clear();
-
-      await _firebaseFirestore.collection('users').doc(uid).get().then((value) {
-        dislikedPolls = value.data()!['dislikedPolls'];
-        dislikedPolls.add(pid);
-      });
-
-      await _firebaseFirestore
-          .collection('polls')
-          .doc(pid)
-          .update({'dislikes': dislikes + 1});
-
-      await _firebaseFirestore
-          .collection('users')
-          .doc(uid)
-          .update({'dislikedPolls': dislikedPolls});
-      setState(() {
-        isDisliked = true;
-      });
-    }
-  }
-
-// Show report dialog to report a poll
+  // Show report dialog to report a poll
   _showReportDialog(
       {required String uid,
       required String pid,
@@ -365,7 +301,7 @@ class _PollTileState extends State<PollTile> {
     List<dynamic> votedUsers = widget.doc.voteData;
 
     votedUsers.asMap().entries.map((e) {
-      if (e.value[userIdField] == currentUserID) {
+      if (e.value[userIdField] == currentUserId) {
         setState(() {
           _hasUserVoted = true;
         });
@@ -384,18 +320,10 @@ class _PollTileState extends State<PollTile> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
-    final currentUserId = AuthService.firebase().currentUser!.userId;
     final usersWhoVoted = widget.doc.voteData.asMap();
     final creatorId = widget.doc.creatorId;
     final DateTime endDate = widget.doc.endDate.toLocal();
     final range = endDate.difference(_currentDate.toLocal()).inDays;
-
-    // final currentUser =
-    //     Provider.of<AuthenticationService>(context).getCurrentUserEmail();
-    // final usersWhoVoted = (widget.doc.data() as dynamic)['voteData'].asMap();
-    // final creater = (widget.doc.data() as dynamic)['creatorEmail'];
-    // final createrID = (widget.doc.data() as dynamic)['uid'];
-    // final DateTime endDate = (widget.doc.data() as dynamic)['endDate'].toDate();
 
     // calculate remaining time left for the poll
 
@@ -454,14 +382,14 @@ class _PollTileState extends State<PollTile> {
                                   ),
                                   onTapDown: (details) => _showPopupMenu(
                                       context, details,
-                                      uid: currentUserID,
+                                      uid: currentUserId,
                                       pid: widget.doc.documentId,
                                       creator: creatorId))),
                         ],
                       ),
                     ],
                   ),
-                  currentUserID == creatorId || _hasUserVoted
+                  currentUserId == creatorId || _hasUserVoted
                       ? Polls.viewPolls(
                           children: widget.doc.choices.entries.map((e) {
                             return Polls.options(
@@ -486,7 +414,7 @@ class _PollTileState extends State<PollTile> {
                             style: const TextStyle(fontSize: 16),
                           ),
                           voteData: usersWhoVoted,
-                          currentUser: currentUserID,
+                          currentUser: currentUserId,
                           creatorID: creatorId,
                           userChoice: usersWhoVoted[currentUserId],
                           onVote: (choice) async {
@@ -494,7 +422,7 @@ class _PollTileState extends State<PollTile> {
                                     listen: false)
                                 .onVote(
                                     context: context,
-                                    userId: currentUserID,
+                                    userId: currentUserId,
                                     choices: widget.doc.choices,
                                     selectedOption: choice,
                                     pid: widget.doc.documentId);
@@ -525,7 +453,7 @@ class _PollTileState extends State<PollTile> {
                               await _like(
                                   likes: widget.doc.likes,
                                   pid: widget.doc.documentId,
-                                  uid: currentUserID,
+                                  uid: currentUserId,
                                   isPollLiked: isLiked);
                             },
                           ),
@@ -583,7 +511,7 @@ class _PollTileState extends State<PollTile> {
                           ),
                           onTapDown: (details) => _showPopupMenu(
                               context, details,
-                              uid: currentUserID,
+                              uid: currentUserId,
                               pid: widget.doc.documentId,
                               creator: creatorId))
                     ],
@@ -669,7 +597,7 @@ class _PollTileState extends State<PollTile> {
                               await _like(
                                   likes: widget.doc.likes,
                                   pid: widget.doc.documentId,
-                                  uid: currentUserID,
+                                  uid: currentUserId,
                                   isPollLiked: isLiked);
                             },
                           ),
