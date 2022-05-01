@@ -123,7 +123,8 @@ class FirebasePollFunctions {
 
   // Get polls for search
   Stream<Iterable<CloudPoll>> searchForPolls({required String query}) => polls
-      .where(titleField, isEqualTo: query)
+      .where(titleField, isGreaterThanOrEqualTo: query)
+      .where(titleField, isLessThan: query + 'z')
       .snapshots()
       .map((events) => events.docs.map((doc) => CloudPoll.fromSnapshot(doc)));
 

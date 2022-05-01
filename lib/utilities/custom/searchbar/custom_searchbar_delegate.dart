@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
@@ -49,13 +48,6 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
     var stream = _pollService.searchForPolls(query: query);
 
-    var r = _pollService.polls
-        .where(titleField, isEqualTo: query)
-        .where(titleField, isLessThan: query + 'z')
-        .snapshots();
-
-    // print(r.t);
-
     return Column(
       children: <Widget>[
         Flexible(
@@ -67,8 +59,6 @@ class CustomSearchBarDelegate extends SearchDelegate {
                 case ConnectionState.active:
                   if (snapshot.hasData) {
                     final allPolls = snapshot.data as Iterable<CloudPoll>;
-                    print(snapshot.data);
-
                     return ListView.builder(
                       itemCount: allPolls.length,
                       itemBuilder: (context, index) {
@@ -119,8 +109,6 @@ class CustomSearchBarDelegate extends SearchDelegate {
           case ConnectionState.active:
             if (snapshot.hasData) {
               final allResults = snapshot.data as Iterable<CloudPoll>;
-              // print(allResults.length);
-
               return buildSuggestionsSuccess(allResults);
             } else {
               return buildNoSuggestions();
@@ -146,9 +134,8 @@ class CustomSearchBarDelegate extends SearchDelegate {
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
           final suggestion = suggestions.elementAt(index);
-          final queryText = suggestion.title;
+          final queryText = suggestion.title.substring(0, query.length);
           final remainingText = suggestion.title.substring(query.length);
-
           return ListTile(
               onTap: () {
                 query = suggestion.title;
