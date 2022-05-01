@@ -73,4 +73,8 @@ class AuthService implements AuthProvider {
           lastName: lastName,
           imageUrl: imageUrl,
           bio: bio);
+
+  @override
+  Future<void> deleteUser({required String email, required String password}) =>
+      provider.deleteUser(email: email, password: password);
 }

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:path/path.dart';
 import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_provider.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
@@ -233,6 +232,24 @@ class FirebaseAuthProvider implements AuthProvider {
       }
     } catch (e) {
       throw CouldNotUpdateUserException();
+    }
+  }
+
+  @override
+  Future<void> deleteUser(
+      {required String email, required String password}) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: email, password: password);
+
+      var result = await user!.reauthenticateWithCredential(credential);
+
+      await _userService.deleteUserInFirebase(documentId: result.user!.uid);
+      await result.user!.delete();
+    } catch (e) {
+      throw GenericAuthException();
     }
   }
 }

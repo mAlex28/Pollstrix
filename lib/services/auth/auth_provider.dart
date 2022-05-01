@@ -27,6 +27,8 @@ abstract class AuthProvider {
       required String imageUrl,
       required String bio});
 
+  Future<void> deleteUser({required String email, required String password});
+
   Future<void> logOut();
   Future<void> sendEmailVerification();
   Future<void> resetPassword({required String email});

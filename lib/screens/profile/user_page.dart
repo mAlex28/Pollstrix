@@ -34,6 +34,7 @@ class _UserPageState extends State<UserPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   _getUserProfile() async {
     final profile = AuthService.firebase().currentUser!;
@@ -94,7 +95,7 @@ class _UserPageState extends State<UserPage> {
                     isUpdating = true;
                   });
                   try {
-                    await _userFunctions.updateUserInFirebase(
+                    await AuthService.firebase().updateUser(
                         documentId: AuthService.firebase().currentUser!.userId,
                         displayName: _usernameController.text,
                         firstName: _fnameController.text,
@@ -199,7 +200,7 @@ class _UserPageState extends State<UserPage> {
                                                 _formFieldsValidator,
                                             textEditingController:
                                                 _usernameController,
-                                            label: 'Enter your username',
+                                            label: 'Enter your displayname',
                                             prefixIcon: const Icon(
                                                 Icons.person_rounded)),
                                         const SizedBox(
@@ -268,16 +269,54 @@ class _UserPageState extends State<UserPage> {
                                                                       (BuildContext
                                                                           builder) {
                                                                     return AlertDialog(
-                                                                        actions: [
-                                                                          TextButton(
-                                                                              onPressed: () => Navigator.pop(context),
-                                                                              child: const Text("No")),
-                                                                          TextButton(
-                                                                              onPressed: () => authData.deleteAccount(context).then((value) => Navigator.pushNamed(context, '/')),
-                                                                              child: const Text("Yes"))
-                                                                        ],
-                                                                        content:
-                                                                            const Text('Are you sure you want to delete the account?'));
+                                                                      title:
+                                                                          const Text(
+                                                                        'Please re-enter your password to delete the accont',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                14),
+                                                                      ),
+                                                                      content: TextField(
+                                                                          style: const TextStyle(fontSize: 12),
+                                                                          decoration: InputDecoration(
+                                                                              border: OutlineInputBorder(
+                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                borderSide: BorderSide.none,
+                                                                              ),
+                                                                              filled: true,
+                                                                              fillColor: Colors.grey[200],
+                                                                              labelText: 'Password'),
+                                                                          autocorrect: false,
+                                                                          controller: _passwordController),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                            onPressed: () =>
+                                                                                Navigator.pop(context),
+                                                                            child: const Text("No")),
+                                                                        TextButton(
+                                                                            onPressed:
+                                                                                () async {
+                                                                              if (_passwordController.text.isNotEmpty) {
+                                                                                try {
+                                                                                  final email = AuthService.firebase().currentUser!.email;
+                                                                                  await AuthService.firebase().deleteUser(email: email, password: _passwordController.text.trim());
+                                                                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                                                                    loginRoute,
+                                                                                    (route) => false,
+                                                                                  );
+                                                                                } catch (e) {
+                                                                                  ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(content: 'Error deleting account.', backgroundColor: Colors.red));
+                                                                                  Navigator.pop(context);
+                                                                                }
+                                                                              } else {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.customSnackbar(content: 'Enter a valid password', backgroundColor: Colors.red));
+                                                                                Navigator.pop(context);
+                                                                              }
+                                                                            },
+                                                                            child:
+                                                                                const Text("Yes"))
+                                                                      ],
+                                                                    );
                                                                   });
                                                             },
                                                             child: Text(
