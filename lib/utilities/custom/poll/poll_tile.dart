@@ -7,7 +7,6 @@ import 'package:polls/polls.dart';
 
 import 'package:pollstrix/screens/polls/feedback_page.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/other/firebase_other_functions.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
@@ -15,8 +14,6 @@ import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/charts/custom_charts.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class PollTile extends StatefulWidget {
@@ -416,14 +413,26 @@ class _PollTileState extends State<PollTile> {
                           creatorID: creatorId,
                           userChoice: usersWhoVoted[currentUserId],
                           onVote: (choice) async {
-                            await Provider.of<AuthenticationService>(context,
-                                    listen: false)
-                                .onVote(
-                                    context: context,
-                                    userId: currentUserId,
-                                    choices: widget.doc.choices,
-                                    selectedOption: choice,
-                                    pid: widget.doc.documentId);
+                            try {
+                              await _pollService.votePoll(
+                                  userId: currentUserId,
+                                  selectedOption: choice,
+                                  choices: widget.doc.choices,
+                                  pollId: widget.doc.documentId);
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  CustomSnackbar.customSnackbar(
+                                      content: 'Error voting',
+                                      backgroundColor: Colors.red));
+                            }
+                            // await Provider.of<AuthenticationService>(context,
+                            //         listen: false)
+                            //     .onVote(
+                            //         context: context,
+                            //         userId: currentUserId,
+                            //         choices: widget.doc.choices,
+                            //         selectedOption: choice,
+                            //         pid: widget.doc.documentId);
                             setState(() {
                               _hasUserVoted = true;
                             });

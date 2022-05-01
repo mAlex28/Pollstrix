@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
@@ -50,6 +49,13 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
     var stream = _pollService.searchForPolls(query: query);
 
+    var r = _pollService.polls
+        .where(titleField, isEqualTo: query)
+        .where(titleField, isLessThan: query + 'z')
+        .snapshots();
+
+    // print(r.t);
+
     return Column(
       children: <Widget>[
         Flexible(
@@ -61,6 +67,8 @@ class CustomSearchBarDelegate extends SearchDelegate {
                 case ConnectionState.active:
                   if (snapshot.hasData) {
                     final allPolls = snapshot.data as Iterable<CloudPoll>;
+                    print(snapshot.data);
+
                     return ListView.builder(
                       itemCount: allPolls.length,
                       itemBuilder: (context, index) {
@@ -111,9 +119,9 @@ class CustomSearchBarDelegate extends SearchDelegate {
           case ConnectionState.active:
             if (snapshot.hasData) {
               final allResults = snapshot.data as Iterable<CloudPoll>;
+              // print(allResults.length);
+
               return buildSuggestionsSuccess(allResults);
-            } else if (!snapshot.hasData) {
-              return buildNoSuggestions();
             } else {
               return buildNoSuggestions();
             }
@@ -122,14 +130,6 @@ class CustomSearchBarDelegate extends SearchDelegate {
               child: CircularProgressIndicator(),
             );
         }
-
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return const Center(child: CircularProgressIndicator());
-        // } else if (snapshot.hasError || !snapshot.hasData) {
-        //   return buildNoSuggestions();
-        // } else {
-        //   return buildSuggestionsSuccess(snapshot.data!.docs);
-        // }
       },
     );
   }
@@ -151,8 +151,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
 
           return ListTile(
               onTap: () {
-                query = suggestion.title as dynamic;
-                // query = (suggestion.data() as dynamic)[titleField];
+                query = suggestion.title;
                 showResults(context);
               },
               title: RichText(

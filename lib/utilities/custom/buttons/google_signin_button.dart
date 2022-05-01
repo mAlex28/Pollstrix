@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
-import 'package:pollstrix/services/auth_service.dart';
-import 'package:provider/provider.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   const GoogleSignInButton({Key? key}) : super(key: key);
@@ -12,7 +10,7 @@ class GoogleSignInButton extends StatefulWidget {
 }
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
-  bool _isSigningIn = false;
+  final bool _isSigningIn = false;
 
   @override
   Widget build(BuildContext context) {

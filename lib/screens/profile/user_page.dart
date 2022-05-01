@@ -10,10 +10,8 @@ import 'package:pollstrix/services/cloud/users/firebase_user_functions.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
 import 'package:pollstrix/utilities/custom/image_selection.dart';
 import 'package:pollstrix/models/user_model.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
-import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -71,8 +69,6 @@ class _UserPageState extends State<UserPage> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-
-    final authData = Provider.of<AuthenticationService>(context);
 
     return Scaffold(
         appBar: AppBar(

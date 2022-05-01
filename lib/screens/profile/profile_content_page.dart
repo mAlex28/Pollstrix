@@ -7,7 +7,6 @@ import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/profile/user_page.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 
 class ProfileContentPage extends StatefulWidget {
@@ -22,20 +21,16 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   final currentUserId = AuthService.firebase().currentUser!.userId;
   final urlImage = "assets/images/avatar.png";
 
-  // var userImage;
-
   int userSelectedOption = 0;
 
   @override
   void initState() {
-    // userImage = AuthenticationService().getProfileImage();
     _getVoteDataOfUsers();
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    // userImage = AuthenticationService().getProfileImage();
     super.didChangeDependencies();
   }
 
@@ -255,7 +250,6 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         ))));
   }
 }
-
 
 // db.collection('polls').where(voteDataField, arrayContains: {
 //           userIdField: currentUserId,
