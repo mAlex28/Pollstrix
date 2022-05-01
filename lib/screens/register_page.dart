@@ -256,67 +256,68 @@ class _RegisterPageState extends State<RegisterPage> {
                                     await _deviceService.saveDeviceId(
                                         deviceId: deviceId,
                                         userId: 'unknown user');
-                                  }
 
-                                  if (_formKey.currentState != null &&
-                                      _formKey.currentState!.validate()) {
-                                    final email = _emailController.text.trim();
-                                    final password =
-                                        _passwordController.text.trim();
-                                    final firstName =
-                                        _fnameController.text.trim();
-                                    final lastName =
-                                        _lnameController.text.trim();
-                                    final displayName =
-                                        _displayNameController.text.trim();
+                                    if (_formKey.currentState != null &&
+                                        _formKey.currentState!.validate()) {
+                                      final email =
+                                          _emailController.text.trim();
+                                      final password =
+                                          _passwordController.text.trim();
+                                      final firstName =
+                                          _fnameController.text.trim();
+                                      final lastName =
+                                          _lnameController.text.trim();
+                                      final displayName =
+                                          _displayNameController.text.trim();
 
-                                    try {
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      // create a new user
-                                      await AuthService.firebase().createUser(
-                                          email: email,
-                                          password: password,
-                                          displayName: displayName,
-                                          firstName: firstName,
-                                          lastName: lastName,
-                                          imageUrl: imageUrl);
+                                      try {
+                                        setState(() {
+                                          _isLoading = true;
+                                        });
+                                        // create a new user
+                                        await AuthService.firebase().createUser(
+                                            email: email,
+                                            password: password,
+                                            displayName: displayName,
+                                            firstName: firstName,
+                                            lastName: lastName,
+                                            imageUrl: imageUrl);
 
-                                      // send email veification to the user
-                                      await AuthService.firebase()
-                                          .sendEmailVerification();
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                      Navigator.of(context)
-                                          .pushNamed(verifyEmailRoute);
-                                    } on WeakPasswordAuthException {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                              CustomSnackbar.customSnackbar(
-                                                  backgroundColor: Colors.red,
-                                                  content: 'Weak password'));
-                                    } on EmailAlreadyInUseAuthException {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                              CustomSnackbar.customSnackbar(
-                                                  backgroundColor: Colors.red,
-                                                  content:
-                                                      'Email already in use'));
-                                    } on InvalidEmailAuthException {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                              CustomSnackbar.customSnackbar(
-                                                  backgroundColor: Colors.red,
-                                                  content:
-                                                      'Invalid email address'));
-                                    } on GenericAuthException {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          CustomSnackbar.customSnackbar(
-                                              backgroundColor: Colors.red,
-                                              content:
-                                                  'Oops! Something went wrong'));
+                                        // send email veification to the user
+                                        await AuthService.firebase()
+                                            .sendEmailVerification();
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                        Navigator.of(context)
+                                            .pushNamed(verifyEmailRoute);
+                                      } on WeakPasswordAuthException {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                                CustomSnackbar.customSnackbar(
+                                                    backgroundColor: Colors.red,
+                                                    content: 'Weak password'));
+                                      } on EmailAlreadyInUseAuthException {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                                CustomSnackbar.customSnackbar(
+                                                    backgroundColor: Colors.red,
+                                                    content:
+                                                        'Email already in use'));
+                                      } on InvalidEmailAuthException {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                                CustomSnackbar.customSnackbar(
+                                                    backgroundColor: Colors.red,
+                                                    content:
+                                                        'Invalid email address'));
+                                      } on GenericAuthException {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            CustomSnackbar.customSnackbar(
+                                                backgroundColor: Colors.red,
+                                                content:
+                                                    'Oops! Something went wrong'));
+                                      }
                                     }
                                   }
                                 },
