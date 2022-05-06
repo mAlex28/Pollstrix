@@ -15,31 +15,6 @@ class AuthenticationService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final urlImage = "assets/images/avatar.png";
 
-  Stream<String> get onAuthStateChanges =>
-      _firebaseAuth.authStateChanges().map((User? user) => user!.uid);
-
-  String getCurrentUID() {
-    return _firebaseAuth.currentUser!.uid;
-  }
-
-  Future getCurrentUser() async {
-    return _firebaseAuth.currentUser;
-  }
-
-  Future<String> downlaodDefaultAvatarFromStorage() async {
-    try {
-      final ref = storage.FirebaseStorage.instance
-          .ref()
-          .child('user/profile/avatar.png');
-
-      var downloadUrl = await ref.getDownloadURL();
-
-      return downloadUrl.toString();
-    } catch (e) {
-      return e.toString();
-    }
-  }
-
   Future<String> getDeviceIdentifier() async {
     String deviceIdentifier = "unknown";
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();

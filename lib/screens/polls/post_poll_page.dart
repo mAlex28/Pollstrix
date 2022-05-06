@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
@@ -77,7 +78,7 @@ class _PostPollPageState extends State<PostPollPage> {
           titleTextStyle: Theme.of(context).appBarTheme.titleTextStyle,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
-            'Add new Poll',
+            AppLocalizations.of(context)!.addNewPoll,
             style: kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
@@ -139,7 +140,7 @@ class _PostPollPageState extends State<PostPollPage> {
                             icon: const Icon(
                               Icons.calendar_today_rounded,
                             ),
-                            label: const Text('Date'),
+                            label: Text(AppLocalizations.of(context)!.date),
                           ),
                           Text(
                               '${DateFormat.yMMMEd().format(_startDate)} - ${DateFormat.yMMMEd().format(_endDate)}'),
@@ -163,7 +164,7 @@ class _PostPollPageState extends State<PostPollPage> {
                           borderSide: BorderSide(
                               color: Colors.grey.shade500, width: 1.5),
                         ),
-                        hintText: 'Write something here!'),
+                        hintText: AppLocalizations.of(context)!.wsomething),
                   ),
                 ),
                 PollFormOptions(

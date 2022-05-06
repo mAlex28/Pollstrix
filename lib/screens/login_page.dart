@@ -189,47 +189,46 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          Column(
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                          fit: FlexFit.loose,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pushNamedAndRemoveUntil(
-                                                          forgotPasswordRoute,
-                                                          (route) => false),
-                                              child: const Text(
-                                                'Forgot password',
-                                              )))
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                          fit: FlexFit.loose,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pushNamedAndRemoveUntil(
-                                                          registerRoute,
-                                                          (route) => false),
-                                              child: const Text(
-                                                'Create a new account',
-                                              )))
-                                    ],
-                                  ),
+                                  Flexible(
+                                      fit: FlexFit.loose,
+                                      child: TextButton(
+                                          onPressed: () => Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                                  registerRoute,
+                                                  (route) => false),
+                                          child: const Text(
+                                            'Create a new account',
+                                          )))
                                 ],
-                              )
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                      fit: FlexFit.loose,
+                                      child: TextButton(
+                                          onPressed: () => Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                                  forgotPasswordRoute,
+                                                  (route) => false),
+                                          child: const Text(
+                                            'Forgot password',
+                                          )))
+                                ],
+                              ),
                             ],
                           ),
                           Container(
@@ -252,8 +251,8 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                           ),
-                          const GoogleSignInButton(),
-                          SizedBox(height: kSpacingUnit.h * 3),
+                          // const GoogleSignInButton(),
+                          SizedBox(height: kSpacingUnit.h * 2),
                           const TermsOfUse(),
                         ],
                       ),

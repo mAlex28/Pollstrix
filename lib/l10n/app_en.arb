@@ -1,6 +1,6 @@
 {
     "language": "English",
-    "@language":{
+    "@language": {
       "description": "The current Language"
     },
     "faq": "FAQ",
@@ -23,13 +23,164 @@
     "@go": {
       "description": "go somewhere"
     },
-    "hello": "Hello {username}",
-    "@hello": {
-      "description": "A welcome message",
-      "placeholders": {
-         "username": {
-           "type": "String"
-         }
-      }
+    "search": "Search",
+    "@search": {
+      "description": "search something"
+    },
+    "noSuggestions": "No Suggestions",
+    "@noSuggestions": {
+      "description": "no suggestions are available"
+    },
+    "noResultsFound": "No Results Found",
+    "@noResultsFound": {
+      "description": "no results are available"
+    },
+    "longSearchTerm": "Search term must be longer than two letters",
+    "@longSearchTerm": {
+      "description": "Search term is too short"
+    },
+    "leaveAFeedback": "Leave a Feedback",
+    "@leaveAFeedback": {
+      "description": "Leave a feedback about the poll"
+    },
+    "report": "Report",
+    "@report": {
+      "description": "Report a poll"
+    },
+    "delete": "Delete",
+    "@delete": {
+      "description": "Delete a poll"
+    },
+    "endsIn": "Ends In",
+    "@endsIn": {
+      "description": "Time the poll ends"
+    },
+    "days": "Days",
+    "@days": {
+      "description": "Total lifetime of the poll"
+    },
+    "endedOn": "Ended On",
+    "@endedOn": {
+      "description": "Expired date of the poll"
+    },
+    "votes": "Votes",
+    "@votes": {
+      "description": "Total votes of the poll"
+    },
+    "date": "date",
+    "@data": {
+      "description": "Date of the poll"
+    },
+    "wsomething": "Write Something Here",
+    "@wsomething": {
+      "description": "Write the new poll question"
+    },
+    "foption": "First Option",
+    "@foption": {
+      "description": "First option of the poll"
+    },
+    "soption": "Second Option",
+    "@soption": {
+      "description": "Second option of the poll"
+    },
+    "toption": "Third Option",
+    "@toption": {
+      "description": "Third option of the poll"
+    },
+    "froption": "Fourth Option",
+    "@froption": {
+      "description": "Fourth option of the poll"
+    },
+    "addoption": "Add option",
+    "@addoption": {
+      "description": "Add a option"
+    },
+    "post": "Post",
+    "@post": {
+      "description": "Post something"
+    },
+    "addNewPoll": "Add a new poll",
+    "@addNewPoll": {
+      "description": "Publish a new poll"
+    },
+    "posted": "Posted",
+    "@posted": {
+      "description": "Posted polls"
+    },
+    "voted": "Voted",
+    "@voted": {
+      "description": "Voted polls"
+    },
+    "userProfile": "User Profile",
+    "@userProfile": {
+      "description": "Profile of the user"
+    },
+    "changePhoto": "Change Photo",
+    "@changePhoto": {
+      "description": "Change the profile photo"
+    },
+    "changePassword": "Change Password",
+    "@changePassword": {
+      "description": "Change account password"
+    },
+    "deleteAccount": "Delete Account",
+    "@deleteAccount": {
+      "description": "Delete the user account"
+    },
+    "invite": "Invite",
+    "@invite": {
+      "description": "Invite users to the app"
+    },
+    "underConstruction": "This feature is still under construction",
+    "@underConstruction": {
+      "description": "Feature is not ready to be published"
+    },
+    "enjoyingPollstrix": "Enjoying pollstrix?",
+    "@enjoyingPollstrix": {
+      "description": "Suggest to rate the app"
+    },
+    "leaveRating": "Please leave a rating",
+    "@leaveRating": {
+      "description": "Rating the pollstrix app in playstore or apple store"
+    },
+    "faqOne": "What is the purpose of this application?",
+    "@faqOne": {
+      "description": "First FAQ question"
+    },
+    "faqTwo": "What happens after a poll expired?",
+    "@faqTwo": {
+      "description": "Second FAQ question"
+    },
+    "faqThree": "Can other user see my voted polls?",
+    "@faqThree": {
+      "description": "Third FAQ question"
+    },
+    "faqFour": "How can I report a poll?",
+    "@faqFour": {
+      "description": "Fourth FAQ question"
+    },
+    "faqFive": "Can I create collection of polls?",
+    "@faqFive": {
+      "description": "Fifth FAQ question"
+    },
+    "faqAnsOne": "The old system of conducting surveys is to visit the area and meet people face to face. This process takes time and cost. Pollstrix application allows to conduct surveys online and without cost.",
+    "@faqAnsOne": {
+      "description": "First FAQ answer"
+    },
+    "faqAnsTwo": "After the poll date expired the results of the poll will be calculated. The calculated results can be view as bar charts or pie charts.",
+    "@faqAnsTwo": {
+      "description": "Second FAQ answer"
+    },
+    "faqAnsThree": "No, You are the only one who can view your polls.",
+    "@faqAnsThree": {
+      "description": "Third FAQ answer"
+    },
+    "faqAnsFour": "You can click on the menu button on the poll and choose report option. Our admins will review the poll and delete if they are considered as spam or malicious.", 
+    "@faqAnsFour": {
+      "description": "Fourth FAQ answer"
+    },
+    "faqAnsFive": "Not yet. But this is one of the upcoming features. And I hope to launch it soon.",
+    "@faqAnsFive": {
+      "description": "Fifth FAQ answer"
     }
 }

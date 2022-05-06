@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
 import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
@@ -36,11 +37,9 @@ class CustomSearchBarDelegate extends SearchDelegate {
     if (query.length < 3) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const <Widget>[
+        children: <Widget>[
           Center(
-            child: Text(
-              "Search term must be longer than two letters.",
-            ),
+            child: Text(AppLocalizations.of(context)!.longSearchTerm),
           )
         ],
       );
@@ -68,10 +67,8 @@ class CustomSearchBarDelegate extends SearchDelegate {
                     );
                   } else if (!snapshot.hasData) {
                     return Column(
-                      children: const <Widget>[
-                        Text(
-                          "No Results Found.",
-                        ),
+                      children: <Widget>[
+                        Text(AppLocalizations.of(context)!.noResultsFound),
                       ],
                     );
                   } else {
@@ -102,7 +99,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
     return StreamBuilder(
       stream: stream,
       builder: (context, snapshot) {
-        if (query.isEmpty) return buildNoSuggestions();
+        if (query.isEmpty) return buildNoSuggestions(context);
 
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
@@ -111,7 +108,7 @@ class CustomSearchBarDelegate extends SearchDelegate {
               final allResults = snapshot.data as Iterable<CloudPoll>;
               return buildSuggestionsSuccess(allResults);
             } else {
-              return buildNoSuggestions();
+              return buildNoSuggestions(context);
             }
           default:
             return const Center(
@@ -122,10 +119,10 @@ class CustomSearchBarDelegate extends SearchDelegate {
     );
   }
 
-  Widget buildNoSuggestions() => const Center(
+  Widget buildNoSuggestions(context) => Center(
         child: Text(
-          'No suggestions',
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          AppLocalizations.of(context)!.noSuggestions,
+          style: const TextStyle(fontSize: 18, color: Colors.black),
         ),
       );
 

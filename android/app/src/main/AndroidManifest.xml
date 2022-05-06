@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="site.alexthedev.pollstrix">
+ <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -43,5 +45,4 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

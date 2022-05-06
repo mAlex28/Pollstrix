@@ -28,11 +28,17 @@ class _FeedContentPageState extends State<FeedContentPage> {
 
   @override
   void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(context)!
+            .startShowCase([_searchKey, _filterKey, _postPollKey]));
     _pollService = FirebasePollFunctions();
     stream =
         _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
+
     super.initState();
   }
+
+  startShowCase() {}
 
   @override
   void dispose() {
@@ -41,8 +47,6 @@ class _FeedContentPageState extends State<FeedContentPage> {
 
   @override
   Widget build(BuildContext context) {
-    SharedPreferences preferences;
-
     ScreenUtil.init(
         BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width,
@@ -51,25 +55,6 @@ class _FeedContentPageState extends State<FeedContentPage> {
         context: context,
         minTextAdapt: true,
         orientation: Orientation.portrait);
-
-    displayShowcase() async {
-      preferences = await SharedPreferences.getInstance();
-      bool? showCaseVisibilityStatus = preferences.getBool("displayShowCase");
-
-      if (showCaseVisibilityStatus == null) {
-        preferences.setBool("displayShowCase", true);
-        return true;
-      }
-      return false;
-    }
-
-    displayShowcase().then((status) {
-      if (status) {
-        WidgetsBinding.instance!.addPostFrameCallback((_) =>
-            ShowCaseWidget.of(context)!
-                .startShowCase([_searchKey, _filterKey, _postPollKey]));
-      }
-    });
 
     return Scaffold(
         appBar: AppBar(

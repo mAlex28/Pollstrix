@@ -2,6 +2,7 @@ import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/buttons/custom_theme_button.dart';
 import 'package:pollstrix/utilities/custom/custom_menu_list_item.dart';
@@ -33,8 +34,8 @@ class _MenuPageState extends State<MenuPage> {
 
   _launchRateDialogOnClick() {
     _rateMyApp.showStarRateDialog(context,
-        title: 'Enjoying Pollstrix?',
-        message: 'Please leave a rating',
+        title: AppLocalizations.of(context)!.enjoyingPollstrix,
+        message: AppLocalizations.of(context)!.leaveRating,
         ignoreNativeDialog: false,
         actionsBuilder: (context, stars) {
           return [
@@ -67,8 +68,8 @@ class _MenuPageState extends State<MenuPage> {
     _rateMyApp.init().then((_) {
       if (_rateMyApp.shouldOpenDialog) {
         _rateMyApp.showStarRateDialog(context,
-            title: 'Enjoying Pollstrix?',
-            message: 'Please leave a rating',
+            title: AppLocalizations.of(context)!.enjoyingPollstrix,
+            message: AppLocalizations.of(context)!.leaveRating,
             ignoreNativeDialog: false,
             actionsBuilder: (context, stars) {
               return [
@@ -169,12 +170,12 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 CustomMenuListItem(
                   icon: Icons.share,
-                  text: 'Invite',
+                  text: AppLocalizations.of(context)!.invite,
                   onTap: () => showDialog(
                       context: context,
-                      builder: (BuildContext builder) => const AlertDialog(
-                            content:
-                                Text('This feature is still under contruction'),
+                      builder: (BuildContext builder) => AlertDialog(
+                            content: Text(AppLocalizations.of(context)!
+                                .underConstruction),
                           )),
                 ),
                 CustomMenuListItem(
@@ -209,6 +210,10 @@ class _MenuPageState extends State<MenuPage> {
                   onTap: () async {
                     try {
                       await AuthService.firebase().logOut();
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        loginRoute,
+                        (route) => false,
+                      );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           CustomSnackbar.customSnackbar(

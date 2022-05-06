@@ -1,10 +1,10 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
-
 import 'package:pollstrix/screens/polls/feedback_page.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
