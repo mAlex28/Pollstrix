@@ -11,27 +11,6 @@ class FAQPage extends StatefulWidget {
 }
 
 class _FAQPageState extends State<FAQPage> {
-  List<Item> items = [
-    Item(
-        header: 'What is the purpose of this application?',
-        body:
-            'The old system of conducting surveys is to visit the area and meet people face to face. This process takes time and cost. Pollstrix application allows to conduct surveys online and without cost. '),
-    Item(
-        header: 'What happens after a poll expired?',
-        body:
-            'After the poll date expired the results of the poll will be calculated. The calculated results can be view as bar charts or pie charts'),
-    Item(
-        header: 'Can other user see my voted polls?',
-        body: 'No, You are the only one who can view your polls.'),
-    Item(
-        header: 'How can I report a poll?',
-        body:
-            'You can click on the menu button on the poll and choose report option. Our admins will review the poll and delete if they are considered as spam or malicious'),
-    Item(
-        header: 'Can I create collection of polls?',
-        body: 'Not yet. But this is one of the upcoming features'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(
@@ -43,6 +22,28 @@ class _FAQPageState extends State<FAQPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
+    List<Item> items = [
+      Item(
+        header: AppLocalizations.of(context)!.faqOne,
+        body: AppLocalizations.of(context)!.faqAnsOne,
+      ),
+      Item(
+        header: AppLocalizations.of(context)!.faqTwo,
+        body: AppLocalizations.of(context)!.faqAnsTwo,
+      ),
+      Item(
+        header: AppLocalizations.of(context)!.faqThree,
+        body: AppLocalizations.of(context)!.faqAnsThree,
+      ),
+      Item(
+        header: AppLocalizations.of(context)!.faqFour,
+        body: AppLocalizations.of(context)!.faqAnsFour,
+      ),
+      Item(
+        header: AppLocalizations.of(context)!.faqFive,
+        body: AppLocalizations.of(context)!.faqAnsFive,
+      )
+    ];
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,

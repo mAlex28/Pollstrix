@@ -13,6 +13,7 @@ import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -22,6 +23,13 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  late TutorialCoachMark tutorialCoachMark;
+  List<TargetFocus> targets = <TargetFocus>[];
+
+  // global keys for showcasesd
+  final GlobalKey _changeThemeKey = GlobalKey();
+  final GlobalKey _menusKey = GlobalKey();
+
   final RateMyApp _rateMyApp = RateMyApp(
     preferencesPrefix: 'rateMyApp_',
     minDays: 3,
@@ -102,8 +110,14 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   void initState() {
-    super.initState();
     _launchDialog();
+    Future.delayed(Duration.zero, showTutorial);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -137,8 +151,10 @@ class _MenuPageState extends State<MenuPage> {
         appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            actions: const [
-              CustomThemeButtonWidget(),
+            actions: [
+              CustomThemeButtonWidget(
+                key: _changeThemeKey,
+              ),
             ]),
         body: Center(
             child: Column(
@@ -147,6 +163,7 @@ class _MenuPageState extends State<MenuPage> {
             SizedBox(height: kSpacingUnit.w * 4),
             Expanded(
                 child: ListView(
+              key: _menusKey,
               children: <Widget>[
                 CustomMenuListItem(
                   icon: Icons.translate_outlined,
@@ -233,5 +250,81 @@ class _MenuPageState extends State<MenuPage> {
             ))
           ],
         )));
+  }
+
+  void showTutorial() {
+    initTargets();
+    tutorialCoachMark = TutorialCoachMark(
+      context,
+      targets: targets,
+      colorShadow: const Color.fromARGB(255, 71, 159, 230),
+      textSkip: 'SKIP',
+      paddingFocus: 10,
+      opacityShadow: 0.9,
+    )..show();
+  }
+
+  void initTargets() {
+    targets.clear(); // clear any targets
+
+    targets.add(
+      TargetFocus(
+        identify: "_changeThemeKey",
+        keyTarget: _changeThemeKey,
+        alignSkip: Alignment.topLeft,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const <Widget>[
+                  Text(
+                    "Change theme",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Light or dark theme is available",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "_menusKey",
+        keyTarget: _menusKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const <Widget>[
+                  Text(
+                    "Menu",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

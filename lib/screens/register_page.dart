@@ -253,10 +253,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                                 'Your device is already registered',
                                             backgroundColor: Colors.red));
                                   } else {
-                                    await _deviceService.saveDeviceId(
-                                        deviceId: deviceId,
-                                        userId: 'unknown user');
-
                                     if (_formKey.currentState != null &&
                                         _formKey.currentState!.validate()) {
                                       final email =
@@ -282,6 +278,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                             firstName: firstName,
                                             lastName: lastName,
                                             imageUrl: imageUrl);
+
+                                        // add device ID to the firebase
+                                        await _deviceService.saveDeviceId(
+                                            deviceId: deviceId,
+                                            userId: 'unknown user');
 
                                         // send email veification to the user
                                         await AuthService.firebase()

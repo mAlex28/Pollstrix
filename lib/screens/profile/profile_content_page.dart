@@ -8,6 +8,7 @@ import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/profile/user_page.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class ProfileContentPage extends StatefulWidget {
   const ProfileContentPage({Key? key}) : super(key: key);
@@ -20,12 +21,20 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   final FirebasePollFunctions _pollService = FirebasePollFunctions();
   final currentUserId = AuthService.firebase().currentUser!.userId;
   final urlImage = "assets/images/avatar.png";
+  late TutorialCoachMark tutorialCoachMark;
+  List<TargetFocus> targets = <TargetFocus>[];
+
+  // global keys for showcasesd
+  final GlobalKey _editProfileKey = GlobalKey();
+  final GlobalKey _postedKey = GlobalKey();
+  final GlobalKey _votedKey = GlobalKey();
 
   int userSelectedOption = 0;
 
   @override
   void initState() {
     _getVoteDataOfUsers();
+    Future.delayed(Duration.zero, showTutorial);
     super.initState();
   }
 
@@ -87,6 +96,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
             width: kSpacingUnit.w * 10,
             margin: EdgeInsets.only(top: kSpacingUnit.w * 3),
             child: Stack(
+              key: _editProfileKey,
               children: <Widget>[
                 CircleAvatar(
                   radius: kSpacingUnit.w * 5,
@@ -231,11 +241,13 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
           children: <Widget>[
             SizedBox(height: kSpacingUnit.w * 5),
             header,
-            const TabBar(tabs: [
+            TabBar(tabs: [
               Tab(
+                key: _postedKey,
                 text: 'Posted',
               ),
               Tab(
+                key: _votedKey,
                 text: 'Voted',
               ),
             ]),
@@ -248,6 +260,121 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
             )
           ],
         ))));
+  }
+
+  void showTutorial() {
+    initTargets();
+    tutorialCoachMark = TutorialCoachMark(
+      context,
+      targets: targets,
+      colorShadow: const Color.fromARGB(255, 71, 159, 230),
+      textSkip: 'SKIP',
+      paddingFocus: 10,
+      opacityShadow: 0.9,
+    )..show();
+  }
+
+  void initTargets() {
+    targets.clear();
+    targets.add(
+      TargetFocus(
+        identify: "_editProfileKey",
+        keyTarget: _editProfileKey,
+        alignSkip: Alignment.bottomLeft,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const <Widget>[
+                  Text(
+                    "Edit Profile",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click the button to edit the profile information.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "_postedKey",
+        keyTarget: _postedKey,
+        alignSkip: Alignment.topLeft,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const <Widget>[
+                  Text(
+                    "Posted",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "This tab shows all the posted polls by you",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "_votedKey",
+        keyTarget: _votedKey,
+        alignSkip: Alignment.topLeft,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const <Widget>[
+                  Text(
+                    "Voted polls",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "This tab shows all the voted polls by you",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 

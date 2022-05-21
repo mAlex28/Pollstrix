@@ -4,7 +4,6 @@ import 'package:pollstrix/screens/polls/feed_content_page.dart';
 import 'package:pollstrix/screens/menu/menu_page.dart';
 import 'package:pollstrix/screens/profile/profile_content_page.dart';
 import 'package:pollstrix/services/theme_service.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,8 +17,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    super.initState();
     _pageController = PageController();
+    super.initState();
   }
 
   @override
@@ -36,23 +35,7 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: [
-          ShowCaseWidget(
-            builder: Builder(builder: (_) => const FeedContentPage()),
-            autoPlay: true,
-            autoPlayDelay: const Duration(seconds: 3),
-          ),
-          const ProfileContentPage(),
-          const MenuPage(),
-          // ShowCaseWidget(
-          //     builder: Builder(builder: (_) => const ProfileContentPage()),
-          //     autoPlay: true,
-          //     autoPlayDelay: const Duration(seconds: 3)),
-          // ShowCaseWidget(
-          //     builder: Builder(builder: (_) => const MenuPage()),
-          //     autoPlay: true,
-          //     autoPlayDelay: const Duration(seconds: 3)),
-        ],
+        children: const [FeedContentPage(), ProfileContentPage(), MenuPage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: kAccentColor,
