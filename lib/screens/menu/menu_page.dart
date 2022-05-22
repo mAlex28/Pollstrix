@@ -56,7 +56,7 @@ class _MenuPageState extends State<MenuPage> {
     _rateMyApp.showStarRateDialog(context,
         title: AppLocalizations.of(context)!.enjoyingPollstrix,
         message: AppLocalizations.of(context)!.leaveRating,
-        ignoreNativeDialog: false,
+        ignoreNativeDialog: true,
         actionsBuilder: (context, stars) {
           return [
             TextButton(
@@ -123,8 +123,10 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     storeTutorial();
-    _launchDialog();
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _launchDialog();
+    });
   }
 
   @override
