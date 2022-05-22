@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                   if (user?.isEmailVerified ?? false) {
                                     Navigator.of(context)
                                         .pushNamedAndRemoveUntil(
-                                      feedContentRoute,
+                                      homeRoute,
                                       (route) => false,
                                     );
                                   } else {

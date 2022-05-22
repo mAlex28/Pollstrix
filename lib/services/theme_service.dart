@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const kSpacingUnit = 10;
 
@@ -28,18 +29,41 @@ final kButtonTextStyle = TextStyle(
 );
 
 class ThemeProvider extends ChangeNotifier {
-  String currentTheme = 'light';
+  late SharedPreferences _preferences;
+  ThemeMode currentTheme = ThemeMode.system;
+
+  ThemeProvider(bool? darkThemeOn) {
+    currentTheme = darkThemeOn == null
+        ? ThemeMode.system
+        : darkThemeOn == true
+            ? ThemeMode.dark
+            : ThemeMode.light;
+  }
 
   ThemeMode get themeMode {
-    if (currentTheme == 'light') {
+    if (currentTheme == ThemeMode.light) {
       return ThemeMode.light;
-    } else {
+    } else if (currentTheme == ThemeMode.dark) {
       return ThemeMode.dark;
+    } else {
+      return ThemeMode.system;
     }
   }
 
-  changeTheme(String theme) {
-    currentTheme = theme;
+  changeTheme(ThemeMode theme) async {
+    _preferences = await SharedPreferences.getInstance();
+
+    if (theme == ThemeMode.dark) {
+      currentTheme = theme;
+      await _preferences.setBool("darkTheme", true);
+    } else if (theme == ThemeMode.light) {
+      currentTheme = theme;
+      await _preferences.setBool("darkTheme", false);
+    } else {
+      currentTheme = theme;
+      await _preferences.setBool("darkTheme", false);
+    }
+
     notifyListeners();
   }
 }
@@ -95,26 +119,3 @@ class MyTheme {
         .copyWith(secondary: kAccentColor, brightness: Brightness.light),
   );
 }
-// ThemeMode _selectedTheme = ThemeMode.system;
-
-// late SharedPreferences prefs;
-
-// ThemeProvider(bool darkThemeOn) {
-//   _selectedTheme = darkThemeOn ? ThemeMode.dark : ThemeMode.light;
-// }
-
-// Future<void> toggleTheme() async {
-//   prefs = await SharedPreferences.getInstance();
-
-//   if (_selectedTheme == ThemeMode.dark) {
-//     _selectedTheme = ThemeMode.light;
-//     await prefs.setBool("darkTheme", false);
-//   } else {
-//     _selectedTheme == ThemeMode.dark;
-//     await prefs.setBool("darkTheme", true);
-//   }
-
-//   notifyListeners();
-// }
-
-// ThemeMode? getTheme() => _selectedTheme;

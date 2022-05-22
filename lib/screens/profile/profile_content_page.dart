@@ -8,6 +8,7 @@ import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/screens/profile/user_page.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class ProfileContentPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class ProfileContentPage extends StatefulWidget {
 }
 
 class _ProfileContentPageState extends State<ProfileContentPage> {
+  late SharedPreferences _preferences;
   final FirebasePollFunctions _pollService = FirebasePollFunctions();
   final currentUserId = AuthService.firebase().currentUser!.userId;
   final urlImage = "assets/images/avatar.png";
@@ -31,10 +33,20 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
 
   int userSelectedOption = 0;
 
+  void storeTutorial() async {
+    _preferences = await SharedPreferences.getInstance();
+
+    var prefVal = _preferences.getBool("didShowProfileTutorial");
+
+    if (prefVal == false || prefVal == null) {
+      Future.delayed(Duration.zero, showTutorial);
+    }
+  }
+
   @override
   void initState() {
+    storeTutorial();
     _getVoteDataOfUsers();
-    Future.delayed(Duration.zero, showTutorial);
     super.initState();
   }
 
@@ -262,7 +274,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         ))));
   }
 
-  void showTutorial() {
+  void showTutorial() async {
     initTargets();
     tutorialCoachMark = TutorialCoachMark(
       context,
@@ -272,6 +284,8 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       paddingFocus: 10,
       opacityShadow: 0.9,
     )..show();
+
+    await _preferences.setBool("didShowProfileTutorial", true);
   }
 
   void initTargets() {

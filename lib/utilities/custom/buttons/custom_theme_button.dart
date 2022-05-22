@@ -17,7 +17,7 @@ class _CustomThemeButtonWidgetState extends State<CustomThemeButtonWidget> {
     final currentTheme = Provider.of<ThemeProvider>(context).currentTheme;
 
     return IconButton(
-      icon: currentTheme == 'dark'
+      icon: currentTheme == ThemeMode.dark
           ? Icon(
               Icons.dark_mode_outlined,
               color: Theme.of(context).iconTheme.color,
@@ -28,10 +28,12 @@ class _CustomThemeButtonWidgetState extends State<CustomThemeButtonWidget> {
             ),
       onPressed: () {
         setState(() {
-          if (currentTheme == 'dark') {
-            themeProvider.changeTheme('light');
+          if (currentTheme == ThemeMode.dark) {
+            themeProvider.changeTheme(ThemeMode.light);
+          } else if (currentTheme == ThemeMode.light) {
+            themeProvider.changeTheme(ThemeMode.dark);
           } else {
-            themeProvider.changeTheme('dark');
+            themeProvider.changeTheme(ThemeMode.system);
           }
         });
       },

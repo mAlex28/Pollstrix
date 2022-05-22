@@ -21,6 +21,7 @@ import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -45,14 +46,18 @@ void main() async {
 
   FlutterNativeSplash.remove();
 
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+
   return runApp(ChangeNotifierProvider<ThemeProvider>(
-    create: (_) => ThemeProvider(),
-    child: const MyApp(),
+    create: (_) => ThemeProvider(preferences.getBool("darkTheme")),
+    child: MyApp(preferences.getString("language")),
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp(this.languageChange, {Key? key}) : super(key: key);
+
+  final String? languageChange;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +66,7 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
         ChangeNotifierProvider<LocaleProvider>(
-            create: (context) => LocaleProvider()),
+            create: (context) => LocaleProvider(languageChange)),
       ],
       child: Consumer<ThemeProvider>(builder: (context, provider, child) {
         final localeProvider = Provider.of<LocaleProvider>(context);

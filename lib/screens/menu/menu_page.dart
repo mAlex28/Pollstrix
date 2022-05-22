@@ -13,6 +13,7 @@ import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class MenuPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  late SharedPreferences _preferences;
   late TutorialCoachMark tutorialCoachMark;
   List<TargetFocus> targets = <TargetFocus>[];
 
@@ -39,6 +41,16 @@ class _MenuPageState extends State<MenuPage> {
     appStoreIdentifier: 'site.alexthedev.pollstrix',
     googlePlayIdentifier: 'site.alexthedev.pollstrix',
   );
+
+  void storeTutorial() async {
+    _preferences = await SharedPreferences.getInstance();
+
+    var prefVal = _preferences.getBool("didShowMenuTutorial");
+
+    if (prefVal == false || prefVal == null) {
+      Future.delayed(Duration.zero, showTutorial);
+    }
+  }
 
   _launchRateDialogOnClick() {
     _rateMyApp.showStarRateDialog(context,
@@ -110,8 +122,8 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   void initState() {
+    storeTutorial();
     _launchDialog();
-    Future.delayed(Duration.zero, showTutorial);
     super.initState();
   }
 
@@ -252,7 +264,7 @@ class _MenuPageState extends State<MenuPage> {
         )));
   }
 
-  void showTutorial() {
+  void showTutorial() async {
     initTargets();
     tutorialCoachMark = TutorialCoachMark(
       context,
@@ -262,6 +274,8 @@ class _MenuPageState extends State<MenuPage> {
       paddingFocus: 10,
       opacityShadow: 0.9,
     )..show();
+
+    await _preferences.setBool("didShowMenuTutorial", true);
   }
 
   void initTargets() {

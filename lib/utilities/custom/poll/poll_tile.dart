@@ -61,15 +61,13 @@ class _PollTileState extends State<PollTile> {
 
     await _pollService.users.doc(currentUserId).get().then((value) {
       likedPolls = value.data()![likedPollsField];
-      if (mounted) {
-        setState(() {
-          likedPolls.map((e) {
-            if (e == widget.doc.documentId) {
-              isLiked = true;
-            }
-          }).toList();
-        });
-      }
+      setState(() {
+        likedPolls.map((e) {
+          if (e == widget.doc.documentId) {
+            isLiked = true;
+          }
+        }).toList();
+      });
     });
   }
 
@@ -425,14 +423,6 @@ class _PollTileState extends State<PollTile> {
                                       content: 'Error voting',
                                       backgroundColor: Colors.red));
                             }
-                            // await Provider.of<AuthenticationService>(context,
-                            //         listen: false)
-                            //     .onVote(
-                            //         context: context,
-                            //         userId: currentUserId,
-                            //         choices: widget.doc.choices,
-                            //         selectedOption: choice,
-                            //         pid: widget.doc.documentId);
                             setState(() {
                               _hasUserVoted = true;
                             });
@@ -598,7 +588,7 @@ class _PollTileState extends State<PollTile> {
                             ),
                             iconSize: 20,
                             color:
-                                isLiked ? Colors.lightBlue[600] : Colors.grey,
+                                isLiked ? kAccentColor : Colors.blueGrey[100],
                             tooltip: 'Thumbs up',
                             onPressed: () async {
                               await _like(

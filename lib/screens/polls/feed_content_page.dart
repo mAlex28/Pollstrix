@@ -7,6 +7,7 @@ import 'package:pollstrix/services/cloud/polls/firebase_poll_functions.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/poll/poll_tile.dart';
 import 'package:pollstrix/utilities/custom/searchbar/custom_searchbar_delegate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class FeedContentPage extends StatefulWidget {
@@ -17,6 +18,7 @@ class FeedContentPage extends StatefulWidget {
 }
 
 class _FeedContentPageState extends State<FeedContentPage> {
+  late SharedPreferences _preferences;
   late final FirebasePollFunctions _pollService;
   late var stream;
 
@@ -28,12 +30,22 @@ class _FeedContentPageState extends State<FeedContentPage> {
   final GlobalKey _sortKey = GlobalKey();
   final GlobalKey _postPollKey = GlobalKey();
 
+  void storeTutorial() async {
+    _preferences = await SharedPreferences.getInstance();
+
+    var prefVal = _preferences.getBool("didShowHomeTutorial");
+
+    if (prefVal == false || prefVal == null) {
+      Future.delayed(Duration.zero, showTutorial);
+    }
+  }
+
   @override
   void initState() {
+    storeTutorial();
     _pollService = FirebasePollFunctions();
     stream =
         _pollService.getAllPolls(orderBy: createdAtField, isDescending: true);
-    Future.delayed(Duration.zero, showTutorial);
 
     super.initState();
   }
@@ -244,7 +256,7 @@ class _FeedContentPageState extends State<FeedContentPage> {
     );
   }
 
-  void showTutorial() {
+  void showTutorial() async {
     initTargets();
     tutorialCoachMark = TutorialCoachMark(
       context,
@@ -254,6 +266,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
       paddingFocus: 10,
       opacityShadow: 0.9,
     )..show();
+
+    await _preferences.setBool("didShowHomeTutorial", true);
   }
 
   void initTargets() {
