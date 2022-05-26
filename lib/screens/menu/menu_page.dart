@@ -34,12 +34,12 @@ class _MenuPageState extends State<MenuPage> {
 
   final RateMyApp _rateMyApp = RateMyApp(
     preferencesPrefix: 'rateMyApp_',
-    minDays: 3,
+    minDays: 2,
     minLaunches: 7,
-    remindDays: 2,
-    remindLaunches: 5,
+    remindDays: 5,
+    remindLaunches: 10,
     appStoreIdentifier: 'site.alexthedev.pollstrix',
-    googlePlayIdentifier: 'site.alexthedev.pollstrix',
+    googlePlayIdentifier: 'com.alexdev.pollstrix',
   );
 
   void storeTutorial() async {
@@ -61,11 +61,17 @@ class _MenuPageState extends State<MenuPage> {
           return [
             TextButton(
                 onPressed: () async {
-                  if (stars != null) {
-                    await _rateMyApp
-                        .callEvent(RateMyAppEventType.rateButtonPressed);
+                  if (stars != null || stars! > 0) {
                     Navigator.pop<RateMyAppDialogButton>(
                         context, RateMyAppDialogButton.rate);
+                    await _rateMyApp
+                        .callEvent(RateMyAppEventType.rateButtonPressed);
+
+                    if ((await _rateMyApp.isNativeReviewDialogSupported) ?? false) {
+                      await _rateMyApp.launchNativeReviewDialog();
+                    }
+                   await _rateMyApp.save();
+                   await _rateMyApp.launchStore();
                   } else {
                     Navigator.pop(context);
                   }
@@ -76,7 +82,6 @@ class _MenuPageState extends State<MenuPage> {
         starRatingOptions: const StarRatingOptions(initialRating: 3),
         onDismissed: () =>
             _rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed),
-        // Called when the user dismisse
         dialogStyle: const DialogStyle(
           titleAlign: TextAlign.center,
           messageAlign: TextAlign.center,
@@ -90,16 +95,22 @@ class _MenuPageState extends State<MenuPage> {
         _rateMyApp.showStarRateDialog(context,
             title: AppLocalizations.of(context)!.enjoyingPollstrix,
             message: AppLocalizations.of(context)!.leaveRating,
-            ignoreNativeDialog: false,
+            ignoreNativeDialog: true,
             actionsBuilder: (context, stars) {
               return [
                 TextButton(
                     onPressed: () async {
-                      if (stars != null) {
+                      if (stars != null || stars! > 0) {
                         await _rateMyApp
                             .callEvent(RateMyAppEventType.rateButtonPressed);
                         Navigator.pop<RateMyAppDialogButton>(
                             context, RateMyAppDialogButton.rate);
+
+                        if ((await _rateMyApp.isNativeReviewDialogSupported) ?? false) {
+                          await _rateMyApp.launchNativeReviewDialog();
+                        }
+                        await _rateMyApp.save();
+                        await _rateMyApp.launchStore();
                       } else {
                         Navigator.pop(context);
                       }
@@ -124,6 +135,7 @@ class _MenuPageState extends State<MenuPage> {
   void initState() {
     storeTutorial();
     super.initState();
+
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _launchDialog();
     });

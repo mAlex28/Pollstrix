@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "site.alexthedev.pollstrix"
+        applicationId "com.alexdev.pollstrix"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
@@ -62,14 +62,13 @@ android {
             keyPassword keystoreProperties['keyPassword']
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
-        }
+       }
     }
-
     buildTypes {
         release {
             signingConfig signingConfigs.release
         }
-    }
+   }
 }
 
 flutter {
@@ -78,4 +77,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation platform('com.google.firebase:firebase-bom:30.0.1')
 }

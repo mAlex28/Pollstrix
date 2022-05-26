@@ -1,4 +1,4 @@
-package site.alexthedev.pollstrix
+package com.alexdev.pollstrix
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -7,6 +7,50 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:630918106032:android:eb93873fcbcc7a5e4d2475",
+        "android_client_info": {
+          "package_name": "com.alexdev.pollstrix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630918106032-k7v3vlfviv5qqq2dmbouhp2kq1fastlc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alexdev.pollstrix",
+            "certificate_hash": "89527aaceb24b957cb211e6aad8c92f18d8d6cc1"
+          }
+        },
+        {
+          "client_id": "630918106032-pnmd55pptciothev96i14n1j31i2i6t6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAjF_3jLC8yKTKRatF9wJm_icQ3p2Mfu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630918106032-pnmd55pptciothev96i14n1j31i2i6t6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "630918106032-bpmc11ujaovt905il86cqnvhsu40bgpq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pollstrix"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:630918106032:android:dede36533b1187344d2475",
         "android_client_info": {
           "package_name": "site.alexthedev.pollstrix"
