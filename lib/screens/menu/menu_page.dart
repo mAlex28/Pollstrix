@@ -2,6 +2,7 @@ import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/buttons/custom_theme_button.dart';
@@ -13,7 +14,9 @@ import 'package:pollstrix/services/theme_service.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class MenuPage extends StatefulWidget {
@@ -67,11 +70,12 @@ class _MenuPageState extends State<MenuPage> {
                     await _rateMyApp
                         .callEvent(RateMyAppEventType.rateButtonPressed);
 
-                    if ((await _rateMyApp.isNativeReviewDialogSupported) ?? false) {
+                    if ((await _rateMyApp.isNativeReviewDialogSupported) ??
+                        false) {
                       await _rateMyApp.launchNativeReviewDialog();
                     }
-                   await _rateMyApp.save();
-                   await _rateMyApp.launchStore();
+                    await _rateMyApp.save();
+                    await _rateMyApp.launchStore();
                   } else {
                     Navigator.pop(context);
                   }
@@ -106,7 +110,8 @@ class _MenuPageState extends State<MenuPage> {
                         Navigator.pop<RateMyAppDialogButton>(
                             context, RateMyAppDialogButton.rate);
 
-                        if ((await _rateMyApp.isNativeReviewDialogSupported) ?? false) {
+                        if ((await _rateMyApp.isNativeReviewDialogSupported) ??
+                            false) {
                           await _rateMyApp.launchNativeReviewDialog();
                         }
                         await _rateMyApp.save();
@@ -214,12 +219,11 @@ class _MenuPageState extends State<MenuPage> {
                 CustomMenuListItem(
                   icon: Icons.share,
                   text: AppLocalizations.of(context)!.invite,
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext builder) => AlertDialog(
-                            content: Text(AppLocalizations.of(context)!
-                                .underConstruction),
-                          )),
+                  onTap: () {
+                    Share.share(
+                        'https://play.google.com/store/apps/details?id=com.alexdev.pollstrix',
+                        subject: 'Invite friends');
+                  },
                 ),
                 CustomMenuListItem(
                   icon: Icons.question_answer_outlined,

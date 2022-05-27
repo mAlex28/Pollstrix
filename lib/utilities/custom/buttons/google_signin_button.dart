@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class GoogleSignInButton extends StatefulWidget {
   const GoogleSignInButton({Key? key}) : super(key: key);
@@ -55,7 +56,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   children: <Widget>[
                     const Image(
                       image: AssetImage("assets/images/google_logo.png"),
-                      height: 30.0,
+                      height: kIsWeb ? 20 : 30.0,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
