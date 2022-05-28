@@ -17,7 +17,6 @@ import 'package:pollstrix/screens/register_page.dart';
 import 'package:pollstrix/screens/profile/reset_password_page.dart';
 import 'package:pollstrix/screens/verify_email_page.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
-import 'package:pollstrix/services/auth_service.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
 import 'package:provider/provider.dart';
@@ -63,7 +62,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AuthenticationService>(create: (_) => AuthenticationService()),
         Provider(create: (_) => FirebaseFirestore.instance),
         ChangeNotifierProvider<LocaleProvider>(
             create: (context) => LocaleProvider(languageChange)),

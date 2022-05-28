@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
-  final bool _isLoading = false;
+  bool _isLoading = false;
   bool _isPassword = true;
 
   @override
@@ -53,7 +53,17 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(
+                    color: kAccentColor,
+                  ),
+                  Text('Logging user. Please wait...')
+                ],
+              ))
             : kIsWeb
                 ? buildForWeb()
                 : Center(
@@ -147,9 +157,14 @@ class _LoginPageState extends State<LoginPage> {
                                         _passwordController.text.trim();
 
                                     try {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
                                       await AuthService.firebase().logIn(
                                           email: email, password: password);
-
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
                                       final user =
                                           AuthService.firebase().currentUser;
 
@@ -277,7 +292,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Center(
       child: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           width: 400,
           child: Padding(
             padding: const EdgeInsets.only(top: 35),

@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class MenuPage extends StatefulWidget {
