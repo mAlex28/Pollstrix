@@ -317,8 +317,6 @@ class _PollTileState extends State<PollTile> {
     final DateTime endDate = widget.doc.endDate.toLocal();
     final range = endDate.difference(_currentDate.toLocal()).inDays;
 
-    // calculate remaining time left for the poll
-
     return endDate.isAfter(_currentDate)
         ? Card(
             child: Container(
@@ -380,6 +378,12 @@ class _PollTileState extends State<PollTile> {
                         ],
                       ),
                     ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                    child: Text(widget.doc.voteCount.toString() + ' votes',
+                        style:
+                            TextStyle(fontSize: 12.0, color: Colors.grey[800])),
                   ),
                   currentUserId == creatorId || _hasUserVoted
                       ? Polls.viewPolls(

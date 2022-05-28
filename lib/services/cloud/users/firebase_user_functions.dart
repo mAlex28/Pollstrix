@@ -8,11 +8,11 @@ class FirebaseUserFunctions {
   // create user
   Future<void> createUserInFirebase({
     required String userId,
-    required String email,
-    required String displayName,
+    required String? email,
+    required String? displayName,
     required String firstName,
     required String lastName,
-    required String imageUrl,
+    required String? imageUrl,
   }) async {
     try {
       const bio = 'Hey there';

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pollstrix/extensions/string/string_extension.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_exceptions.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
@@ -28,7 +29,7 @@ class FirebasePollFunctions {
 
       final document = await polls.add({
         creatorIdField: currentUserId,
-        titleField: title,
+        titleField: title.capitalize(),
         createdAtField: createdTime.toUtc(),
         startDateField: startDate.toUtc(),
         endDateField: endDate.toUtc(),
@@ -56,7 +57,7 @@ class FirebasePollFunctions {
     }
   }
 
-  // vote
+  // vote a poll
   Future<void> votePoll(
       {required String userId,
       required int selectedOption,

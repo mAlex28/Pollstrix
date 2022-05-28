@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,6 +7,9 @@ import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_provider.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
+import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
+import 'package:pollstrix/services/cloud/users/cloud_user.dart';
 import 'package:pollstrix/services/cloud/users/firebase_user_functions.dart';
 
 class FirebaseAuthProvider implements AuthProvider {
@@ -163,39 +168,59 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<AuthUser> signInWithGoogle() async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+          await GoogleSignIn().signIn();
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-            accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken);
+      final GoogleSignInAuthentication? googleSignInAuthentication =
+          await googleSignInAccount?.authentication;
 
-        final UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+      final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication?.accessToken,
+          idToken: googleSignInAuthentication?.idToken);
 
-        var displayName = userCredential.user!.displayName;
-        var photoURL = userCredential.user!.photoURL;
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-        await userCredential.user!.updateDisplayName(displayName);
-        await userCredential.user!.updatePhotoURL(photoURL);
-        // await userCredential.user!.reload();
+      var displayName = userCredential.user!.displayName;
+      var photoURL = userCredential.user!.photoURL;
 
-        final user = currentUser;
-        if (user != null) {
-          return user;
-        } else {
-          throw UserNotLoggedInAuthException();
-        }
-      } else {
-        throw GenericAuthException();
+      await userCredential.user!.updateDisplayName(displayName);
+      await userCredential.user!.updatePhotoURL(photoURL);
+
+      // check if the user is already created an account using google
+      var userExists =
+          await _userService.users.doc(userCredential.user!.uid).get();
+
+      if (!userExists.exists) {
+        await _userService.createUserInFirebase(
+            userId: userCredential.user!.uid,
+            email: userCredential.user!.email,
+            displayName: displayName,
+            firstName: '',
+            lastName: '',
+            imageUrl: photoURL);
       }
-    } on FirebaseAuthException catch (_) {
-      throw CouldNotSignInWithGoogle();
+
+      final user = currentUser;
+
+      if (user != null) {
+        return user;
+      } else {
+        throw UserNotLoggedInAuthException();
+      }
+      // } else {
+      //   throw GenericAuthException();
+      // }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        throw AccountExistsWithDifferentCredentialsException();
+      } else if (e.code == 'invalid-credential') {
+        throw InvalidCredentialsException();
+      } else {
+        throw CouldNotSignInWithGoogleException();
+      }
     } catch (e) {
+      print(e);
       throw GenericAuthException();
     }
   }

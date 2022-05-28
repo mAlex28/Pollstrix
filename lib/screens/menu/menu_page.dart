@@ -220,9 +220,12 @@ class _MenuPageState extends State<MenuPage> {
                   icon: Icons.share,
                   text: AppLocalizations.of(context)!.invite,
                   onTap: () {
-                    Share.share(
-                        'https://play.google.com/store/apps/details?id=com.alexdev.pollstrix',
-                        subject: 'Invite friends');
+                    !kIsWeb
+                        ? Share.share(
+                            'https://play.google.com/store/apps/details?id=com.alexdev.pollstrix',
+                            subject: 'Invite friends')
+                        : Share.share('https://pollstrix-ec795.web.app',
+                            subject: 'Invite friends');
                   },
                 ),
                 CustomMenuListItem(

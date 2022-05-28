@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pollstrix/constants/routes.dart';
+import 'package:pollstrix/services/auth/auth_exceptions.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   const GoogleSignInButton({Key? key}) : super(key: key);
@@ -41,12 +44,31 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 ),
               ),
               onPressed: () async {
-                await AuthService.firebase().signInWithGoogle();
-                // if (user != null) {
-                //   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //     builder: (context) => const HomePage(),
-                //   ));
-                // }
+                try {
+                  await AuthService.firebase().signInWithGoogle();
+
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyEmailRoute,
+                    (route) => false,
+                  );
+                } on AccountExistsWithDifferentCredentialsException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      CustomSnackbar.customSnackbar(
+                          backgroundColor: Colors.red,
+                          content:
+                              'This account already exists with a different credential.'));
+                } on InvalidCredentialsException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      CustomSnackbar.customSnackbar(
+                          backgroundColor: Colors.red,
+                          content:
+                              'Error occurred while accessing credentials. Try again.'));
+                } on GenericAuthException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      CustomSnackbar.customSnackbar(
+                          backgroundColor: Colors.red,
+                          content: 'Oops! something went wrong'));
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),

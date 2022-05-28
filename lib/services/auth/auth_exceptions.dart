@@ -22,4 +22,8 @@ class CouldNotUpdateUserException implements Exception {}
 
 // google exceptions
 
-class CouldNotSignInWithGoogle implements Exception {}
+class CouldNotSignInWithGoogleException implements Exception {}
+
+class AccountExistsWithDifferentCredentialsException implements Exception {}
+
+class InvalidCredentialsException implements Exception {}
