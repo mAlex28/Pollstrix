@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pollstrix/services/theme_service.dart';
 
@@ -102,8 +103,14 @@ class _PollFormOptionsState extends State<PollFormOptions> {
             ),
             label: Text(
               'Add option',
-              style: kCaptionTextStyle.copyWith(
-                  fontWeight: FontWeight.w500, color: kAccentColor),
+              style: kIsWeb
+                  ? const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: kAccentColor,
+                    )
+                  : kCaptionTextStyle.copyWith(
+                      fontWeight: FontWeight.w500, color: kAccentColor),
             ),
             onPressed: () => setState(_addController),
           ),

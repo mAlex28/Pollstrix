@@ -288,8 +288,6 @@ class _LoginPageState extends State<LoginPage> {
 
 // for website
   Widget buildForWeb() {
-    final size = MediaQuery.of(context).size;
-
     return Center(
       child: SingleChildScrollView(
         child: SizedBox(
@@ -465,26 +463,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: size.height * 0.02),
-                    width: size.width * 0.8,
-                    child: Row(
-                      children: <Widget>[
-                        buildDivider(),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "OR",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        buildDivider(),
-                      ],
-                    ),
-                  ),
-                  const GoogleSignInButton(),
                   SizedBox(height: kSpacingUnit.h * 2),
                   const TermsOfUse(),
                 ],

@@ -30,7 +30,7 @@ class _MenuPageState extends State<MenuPage> {
   late TutorialCoachMark tutorialCoachMark;
   List<TargetFocus> targets = <TargetFocus>[];
 
-  // global keys for showcasesd
+  // global keys for showcases
   final GlobalKey _changeThemeKey = GlobalKey();
   final GlobalKey _menusKey = GlobalKey();
 
@@ -44,6 +44,7 @@ class _MenuPageState extends State<MenuPage> {
     googlePlayIdentifier: 'com.alexdev.pollstrix',
   );
 
+  // store the showcase status
   void storeTutorial() async {
     _preferences = await SharedPreferences.getInstance();
 
@@ -54,6 +55,7 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
+  // redirect the user to rate on playstore
   _launchRateDialogOnClick() {
     _rateMyApp.showStarRateDialog(context,
         title: AppLocalizations.of(context)!.enjoyingPollstrix,
@@ -92,6 +94,7 @@ class _MenuPageState extends State<MenuPage> {
         ));
   }
 
+  // show rating diaglog automatically according to '_rateMyApp' variable setttings
   _launchDialog() {
     _rateMyApp.init().then((_) {
       if (_rateMyApp.shouldOpenDialog) {
@@ -141,7 +144,9 @@ class _MenuPageState extends State<MenuPage> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _launchDialog();
+      if (!kIsWeb) {
+        _launchDialog(); // only show if ratings on mobile applications (iOS, android)
+      }
     });
   }
 
@@ -161,6 +166,7 @@ class _MenuPageState extends State<MenuPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
+    // show application logo on the top
     var header = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,96 +196,194 @@ class _MenuPageState extends State<MenuPage> {
             child: Column(
           children: <Widget>[
             header,
-            SizedBox(height: kSpacingUnit.w * 4),
-            Expanded(
-                child: ListView(
-              key: _menusKey,
-              children: <Widget>[
-                CustomMenuListItem(
-                  icon: Icons.translate_outlined,
-                  text: AppLocalizations.of(context)!.language,
-                  onTap: () => showAdaptiveActionSheet(
-                      context: context,
-                      cancelAction: CancelAction(title: const Text('Cancel')),
-                      actions: L10n.all.map((locale) {
-                        final flag = L10n.getLanguage(locale.languageCode);
-                        return BottomSheetAction(
-                            title: Text(
-                              flag,
+            SizedBox(height: kIsWeb ? 20 : kSpacingUnit.w * 4),
+            kIsWeb
+                ? Expanded(
+                    child: SizedBox(
+                    width: 500,
+                    child: ListView(
+                      key: _menusKey,
+                      children: <Widget>[
+                        CustomMenuListItem(
+                          icon: Icons.translate_outlined,
+                          text: AppLocalizations.of(context)!.language,
+                          onTap: () => showAdaptiveActionSheet(
+                              context: context,
+                              cancelAction:
+                                  CancelAction(title: const Text('Cancel')),
+                              actions: L10n.all.map((locale) {
+                                final flag =
+                                    L10n.getLanguage(locale.languageCode);
+                                // show available languages
+                                return BottomSheetAction(
+                                    title: Text(
+                                      flag,
+                                    ),
+                                    onPressed: () {
+                                      final provider =
+                                          Provider.of<LocaleProvider>(context,
+                                              listen: false);
+                                      provider.setLocale(locale);
+                                    });
+                              }).toList()),
+                        ),
+                        CustomMenuListItem(
+                          icon: Icons.share,
+                          text: AppLocalizations.of(context)!.invite,
+                          onTap: () async {
+                            // will open email with the stated sublject
+                            await Share.share('https://pollstrix-ec795.web.app',
+                                subject: 'Download pollstrix');
+                          },
+                        ),
+                        CustomMenuListItem(
+                          icon: Icons.question_answer_outlined,
+                          text: AppLocalizations.of(context)!.faq,
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const FAQPage())),
+                        ),
+                        CustomMenuListItem(
+                          icon: Icons.info_outline_rounded,
+                          text: AppLocalizations.of(context)!.about,
+                          onTap: () => showAboutDialog(
+                            context: context,
+                            applicationName: 'Pollstrix',
+                            applicationVersion: '1.0.0',
+                            applicationIcon: SizedBox(
+                              height: kToolbarHeight * 0.6,
+                              child: Image.asset(
+                                "assets/images/icon.png",
+                              ),
                             ),
-                            onPressed: () {
-                              final provider = Provider.of<LocaleProvider>(
-                                  context,
-                                  listen: false);
-                              provider.setLocale(locale);
-                            });
-                      }).toList()),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.share,
-                  text: AppLocalizations.of(context)!.invite,
-                  onTap: () {
-                    !kIsWeb
-                        ? Share.share(
-                            'https://play.google.com/store/apps/details?id=com.alexdev.pollstrix',
-                            subject: 'Invite friends')
-                        : Share.share('https://pollstrix-ec795.web.app',
-                            subject: 'Invite friends');
-                  },
-                ),
-                CustomMenuListItem(
-                  icon: Icons.question_answer_outlined,
-                  text: AppLocalizations.of(context)!.faq,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const FAQPage())),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.info_outline_rounded,
-                  text: AppLocalizations.of(context)!.about,
-                  onTap: () => showAboutDialog(
-                    context: context,
-                    applicationName: 'Pollstrix',
-                    applicationVersion: '1.0.0',
-                    applicationIcon: SizedBox(
-                      height: kToolbarHeight * 0.6,
-                      child: Image.asset(
-                        "assets/images/icon.png",
-                      ),
+                          ),
+                        ),
+                        CustomMenuListItem(
+                          icon: Icons.logout_outlined,
+                          text: AppLocalizations.of(context)!.logOut,
+                          onTap: () async {
+                            try {
+                              // logout and redirect user to the login page
+
+                              await AuthService.firebase().logOut();
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                loginRoute,
+                                (route) => false,
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  CustomSnackbar.customSnackbar(
+                                      backgroundColor: Colors.red,
+                                      content:
+                                          'Could not logout! try again later'));
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        const Center(
+                          child: Text(
+                            'Developed by Alex',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.star_rate_outlined,
-                  text: AppLocalizations.of(context)!.rateUs,
-                  onTap: () => _launchRateDialogOnClick(),
-                ),
-                CustomMenuListItem(
-                  icon: Icons.logout_outlined,
-                  text: AppLocalizations.of(context)!.logOut,
-                  onTap: () async {
-                    try {
-                      await AuthService.firebase().logOut();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (route) => false,
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          CustomSnackbar.customSnackbar(
-                              backgroundColor: Colors.red,
-                              content: 'Could not logout! try again later'));
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Center(
-                  child: Text(
-                    'Developed by Alex',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                )
-              ],
-            ))
+                  ))
+                : Expanded(
+                    child: ListView(
+                    key: _menusKey,
+                    children: <Widget>[
+                      CustomMenuListItem(
+                        icon: Icons.translate_outlined,
+                        text: AppLocalizations.of(context)!.language,
+                        onTap: () => showAdaptiveActionSheet(
+                            context: context,
+                            cancelAction:
+                                CancelAction(title: const Text('Cancel')),
+                            actions: L10n.all.map((locale) {
+                              final flag =
+                                  L10n.getLanguage(locale.languageCode);
+                              // show available languages
+                              return BottomSheetAction(
+                                  title: Text(
+                                    flag,
+                                  ),
+                                  onPressed: () {
+                                    final provider =
+                                        Provider.of<LocaleProvider>(context,
+                                            listen: false);
+                                    provider.setLocale(locale);
+                                  });
+                            }).toList()),
+                      ),
+                      CustomMenuListItem(
+                        icon: Icons.share,
+                        text: AppLocalizations.of(context)!.invite,
+                        onTap: () {
+                          // opens a bottomsheet with sharable options
+                          Share.share(
+                              'https://play.google.com/store/apps/details?id=com.alexdev.pollstrix',
+                              subject: 'Invite friends');
+                        },
+                      ),
+                      CustomMenuListItem(
+                        icon: Icons.question_answer_outlined,
+                        text: AppLocalizations.of(context)!.faq,
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const FAQPage())),
+                      ),
+                      CustomMenuListItem(
+                        icon: Icons.info_outline_rounded,
+                        text: AppLocalizations.of(context)!.about,
+                        onTap: () => showAboutDialog(
+                          context: context,
+                          applicationName: 'Pollstrix',
+                          applicationVersion: '1.0.0',
+                          applicationIcon: SizedBox(
+                            height: kToolbarHeight * 0.6,
+                            child: Image.asset(
+                              "assets/images/icon.png",
+                            ),
+                          ),
+                        ),
+                      ),
+                      CustomMenuListItem(
+                        icon: Icons.star_rate_outlined,
+                        text: AppLocalizations.of(context)!.rateUs,
+                        onTap: () => _launchRateDialogOnClick(),
+                      ),
+                      CustomMenuListItem(
+                        icon: Icons.logout_outlined,
+                        text: AppLocalizations.of(context)!.logOut,
+                        onTap: () async {
+                          try {
+                            // logout and redirect user to the login page
+                            await AuthService.firebase().logOut();
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              loginRoute,
+                              (route) => false,
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                CustomSnackbar.customSnackbar(
+                                    backgroundColor: Colors.red,
+                                    content:
+                                        'Could not logout! try again later'));
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      const Center(
+                        child: Text(
+                          'Developed by Alex',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      )
+                    ],
+                  ))
           ],
         )));
   }

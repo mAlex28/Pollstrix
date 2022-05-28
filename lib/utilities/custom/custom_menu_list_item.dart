@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/theme_service.dart';
 
@@ -21,37 +22,42 @@ class CustomMenuListItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: kSpacingUnit.w * 5.5,
+        height: kIsWeb ? 50 : kSpacingUnit.w * 5.5,
         margin: EdgeInsets.symmetric(
-          horizontal: kSpacingUnit.w * 4,
+          horizontal: kIsWeb ? 40 : kSpacingUnit.w * 4,
         ).copyWith(
-          bottom: kSpacingUnit.w * 2,
+          bottom: kIsWeb ? 20 : kSpacingUnit.w * 2,
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: kSpacingUnit.w * 2,
+          horizontal: kIsWeb ? 20 : kSpacingUnit.w * 2,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(kSpacingUnit.w * 3),
+          borderRadius: BorderRadius.circular(kIsWeb ? 30 : kSpacingUnit.w * 3),
           color: Theme.of(context).backgroundColor,
         ),
         child: Row(
           children: <Widget>[
             Icon(
               icon,
-              size: kSpacingUnit.w * 2.5,
+              size: kIsWeb ? 20 : kSpacingUnit.w * 2.5,
             ),
-            SizedBox(width: kSpacingUnit.w * 1.5),
+            SizedBox(width: kIsWeb ? 15 : kSpacingUnit.w * 1.5),
             Text(
               text,
-              style: kTitleTextStyle.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: kIsWeb
+                  ? kTitleTextStyle.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                    )
+                  : kTitleTextStyle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
             ),
             const Spacer(),
             if (hasNavigation)
               Icon(
                 Icons.arrow_right,
-                size: kSpacingUnit.w * 2.5,
+                size: kIsWeb ? 20 : kSpacingUnit.w * 2.5,
               ),
           ],
         ),

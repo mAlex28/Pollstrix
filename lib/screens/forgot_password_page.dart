@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/utilities/custom/custom_textfield.dart';
@@ -23,126 +24,254 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     return Scaffold(
         body: Center(
             child: SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        verticalDirection: VerticalDirection.down,
-                        children: <Widget>[
-                          SizedBox(
-                            height: kToolbarHeight * 0.7,
-                            child: Image.asset(
-                              "assets/images/logo_inapp.png",
-                              color: kAccentColor,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          CustomTextField(
-                            fieldValidator: (value) {
-                              String pattern =
-                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-                              RegExp regExp = RegExp(pattern);
+                child: kIsWeb
+                    ? buildForWeb()
+                    : Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            verticalDirection: VerticalDirection.down,
+                            children: <Widget>[
+                              SizedBox(
+                                height: kToolbarHeight * 0.7,
+                                child: Image.asset(
+                                  "assets/images/logo_inapp.png",
+                                  color: kAccentColor,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              CustomTextField(
+                                fieldValidator: (value) {
+                                  String pattern =
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                                  RegExp regExp = RegExp(pattern);
 
-                              if (value == null || value.trim().isEmpty) {
-                                return 'This field is required';
-                              } else if (!regExp.hasMatch(value.trim())) {
-                                return 'Invalid email address';
-                              }
-                              return null;
-                            },
-                            textEditingController: _emailController,
-                            label: 'Enter your email here',
-                            prefixIcon: const Icon(Icons.email_rounded),
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(kAccentColor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50))),
-                              elevation: MaterialStateProperty.all(8),
-                              padding: MaterialStateProperty.all(
-                                  const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 40)),
-                            ),
-                            onPressed: () async {
-                              try {
-                                await AuthService.firebase().forgotPassword(
-                                    email: _emailController.text.trim());
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'This field is required';
+                                  } else if (!regExp.hasMatch(value.trim())) {
+                                    return 'Invalid email address';
+                                  }
+                                  return null;
+                                },
+                                textEditingController: _emailController,
+                                label: 'Enter your email here',
+                                prefixIcon: const Icon(Icons.email_rounded),
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(kAccentColor),
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50))),
+                                  elevation: MaterialStateProperty.all(8),
+                                  padding: MaterialStateProperty.all(
+                                      const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 40)),
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    await AuthService.firebase().forgotPassword(
+                                        email: _emailController.text.trim());
 
-                                await showChangePasswordDialog(context,
-                                    'Check your inbox and follow the link to verify the password');
-                              } on Exception catch (_) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    CustomSnackbar.customSnackbar(
-                                        backgroundColor: Colors.red,
-                                        content:
-                                            'Too many request! Try agian later'));
-                              }
-                            },
-                            child: Text(
-                              "Send Email",
-                              textAlign: TextAlign.center,
-                              style: kButtonTextStyle,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    await showChangePasswordDialog(context,
+                                        'Check your inbox and follow the link to verify the password');
+                                  } on Exception catch (_) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        CustomSnackbar.customSnackbar(
+                                            backgroundColor: Colors.red,
+                                            content:
+                                                'Too many request! Try agian later'));
+                                  }
+                                },
+                                child: Text(
+                                  "Send Email",
+                                  textAlign: TextAlign.center,
+                                  style: kButtonTextStyle,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Column(
                                 children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Flexible(
-                                          fit: FlexFit.loose,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                              fit: FlexFit.loose,
+                                              child: TextButton(
+                                                  onPressed: () => Navigator.of(
+                                                          context)
                                                       .pushNamedAndRemoveUntil(
                                                           loginRoute,
                                                           (route) => false),
-                                              child: const Text(
-                                                'Have an account?',
-                                              )))
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                          fit: FlexFit.loose,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
+                                                  child: const Text(
+                                                    'Have an account?',
+                                                  )))
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                              fit: FlexFit.loose,
+                                              child: TextButton(
+                                                  onPressed: () => Navigator.of(
+                                                          context)
                                                       .pushNamedAndRemoveUntil(
                                                           registerRoute,
                                                           (route) => false),
-                                              child: const Text(
-                                                'Create a new account',
-                                              )))
+                                                  child: const Text(
+                                                    'Create a new account',
+                                                  )))
+                                        ],
+                                      ),
                                     ],
-                                  ),
+                                  )
                                 ],
-                              )
+                              ),
                             ],
                           ),
-                        ],
-                      ),
-                    )))));
+                        )))));
+  }
+
+  Widget buildForWeb() {
+    return SizedBox(
+      width: 400,
+      child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              verticalDirection: VerticalDirection.down,
+              children: <Widget>[
+                SizedBox(
+                  height: kToolbarHeight * 0.7,
+                  child: Image.asset(
+                    "assets/images/logo_inapp.png",
+                    color: kAccentColor,
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                CustomTextField(
+                  fieldValidator: (value) {
+                    String pattern =
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                    RegExp regExp = RegExp(pattern);
+
+                    if (value == null || value.trim().isEmpty) {
+                      return 'This field is required';
+                    } else if (!regExp.hasMatch(value.trim())) {
+                      return 'Invalid email address';
+                    }
+                    return null;
+                  },
+                  textEditingController: _emailController,
+                  label: 'Enter your email here',
+                  prefixIcon: const Icon(Icons.email_rounded),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: kLightPrimaryColor,
+                    )),
+                    backgroundColor: MaterialStateProperty.all(kAccentColor),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50))),
+                    elevation: MaterialStateProperty.all(8),
+                    padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(
+                            vertical: 18, horizontal: 40)),
+                  ),
+                  onPressed: () async {
+                    try {
+                      // send password reset link to the user
+                      await AuthService.firebase()
+                          .forgotPassword(email: _emailController.text.trim());
+
+                      await showChangePasswordDialog(context,
+                          'Check your inbox and follow the link to update the password');
+                    } on Exception catch (_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          CustomSnackbar.customSnackbar(
+                              backgroundColor: Colors.red,
+                              content: 'Too many request! Try agian later'));
+                    }
+                  },
+                  child: const Text(
+                    "Send Email",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child: TextButton(
+                                    onPressed: () => Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            loginRoute, (route) => false),
+                                    child: const Text(
+                                      'Have an account?',
+                                    )))
+                          ],
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child: TextButton(
+                                    onPressed: () => Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            registerRoute, (route) => false),
+                                    child: const Text(
+                                      'Create a new account',
+                                    )))
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }

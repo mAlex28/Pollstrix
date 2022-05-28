@@ -6,6 +6,7 @@ const String english = 'en';
 const String tamil = 'ta';
 const String sinhala = 'si';
 
+// change the language of the app (Support : Sinhala, Tamil, Engilsh)
 class LocaleProvider extends ChangeNotifier {
   late SharedPreferences _preferences;
   Locale _locale = const Locale('en');

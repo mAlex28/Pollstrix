@@ -28,6 +28,7 @@ final kButtonTextStyle = TextStyle(
   color: kLightPrimaryColor,
 );
 
+// change light, dark and system theme mods
 class ThemeProvider extends ChangeNotifier {
   late SharedPreferences _preferences;
   ThemeMode currentTheme = ThemeMode.system;
@@ -68,6 +69,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 }
 
+// create custom light and dark themes
 class MyTheme {
   static final darkTheme = ThemeData(
     scaffoldBackgroundColor: kDarkPrimaryColor,

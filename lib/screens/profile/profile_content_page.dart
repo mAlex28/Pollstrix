@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/auth/auth_service.dart';
 import 'package:pollstrix/services/auth/auth_user.dart';
@@ -26,13 +27,14 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
   late TutorialCoachMark tutorialCoachMark;
   List<TargetFocus> targets = <TargetFocus>[];
 
-  // global keys for showcasesd
+  // global keys for showcases
   final GlobalKey _editProfileKey = GlobalKey();
   final GlobalKey _postedKey = GlobalKey();
   final GlobalKey _votedKey = GlobalKey();
 
   int userSelectedOption = 0;
 
+  /// Store and check if the show case tutorial is showsn
   void storeTutorial() async {
     _preferences = await SharedPreferences.getInstance();
 
@@ -55,6 +57,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     super.didChangeDependencies();
   }
 
+  /// Get all the polls current user has voted
   _getVoteDataOfUsers() async {
     await _pollService.polls.get().then((value) {
       value.docs.map((e) {
@@ -73,6 +76,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     });
   }
 
+  /// Get profile image of the current user (if there's no user image, a default assest image is shown)
   _getProfileImage() {
     final profileImage = AuthService.firebase().currentUser!.imageUrl;
 
@@ -83,6 +87,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     }
   }
 
+  /// Get current logged in user
   Future<AuthUser> _getCurrentUser() async {
     final user = AuthService.firebase().currentUser!;
     return user;
@@ -99,19 +104,20 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
+    // fetch current user's email, display name and photo form firebase
     Widget buildProfileInfo(context, snapshot) {
       return Expanded(
           child: Column(
         children: <Widget>[
           Container(
-            height: kSpacingUnit.w * 10,
-            width: kSpacingUnit.w * 10,
-            margin: EdgeInsets.only(top: kSpacingUnit.w * 3),
+            height: kIsWeb ? 100 : kSpacingUnit.w * 10,
+            width: kIsWeb ? 100 : kSpacingUnit.w * 10,
+            margin: EdgeInsets.only(top: kIsWeb ? 20 : kSpacingUnit.w * 3),
             child: Stack(
               key: _editProfileKey,
               children: <Widget>[
                 CircleAvatar(
-                  radius: kSpacingUnit.w * 5,
+                  radius: kIsWeb ? 70 : kSpacingUnit.w * 5,
                   backgroundImage: _getProfileImage(),
                 ),
                 Align(
@@ -121,19 +127,21 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                       builder: (context) => const UserPage(),
                     )),
                     child: Container(
-                      height: kSpacingUnit.w * 2.5,
-                      width: kSpacingUnit.w * 2.5,
+                      height: kIsWeb ? 30 : kSpacingUnit.w * 2.5,
+                      width: kIsWeb ? 30 : kSpacingUnit.w * 2.5,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondary,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
-                        heightFactor: kSpacingUnit.w * 1.5,
-                        widthFactor: kSpacingUnit.w * 1.5,
+                        heightFactor: kIsWeb ? 20 : kSpacingUnit.w * 1.5,
+                        widthFactor: kIsWeb ? 20 : kSpacingUnit.w * 1.5,
                         child: Icon(
                           Icons.edit,
                           color: kLightPrimaryColor,
-                          size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
+                          size: kIsWeb
+                              ? 18
+                              : ScreenUtil().setSp(kSpacingUnit.w * 1.5),
                         ),
                       ),
                     ),
@@ -142,21 +150,32 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               ],
             ),
           ),
-          SizedBox(height: kSpacingUnit.w * 2),
+          SizedBox(height: kIsWeb ? 15 : kSpacingUnit.w * 2),
           Text(
             '${snapshot.data.displayName ?? "Unkown"}',
-            style: kTitleTextStyle,
+            style: kIsWeb
+                ? const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  )
+                : kTitleTextStyle,
           ),
           SizedBox(height: kSpacingUnit.w * 0.5),
           Text(
             '${snapshot.data.email ?? "Anonymous"}',
-            style: kCaptionTextStyle,
+            style: kIsWeb
+                ? const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w100,
+                  )
+                : kCaptionTextStyle,
           ),
           SizedBox(height: kSpacingUnit.w * 2),
         ],
       ));
     }
 
+    // header contains the fetched data of the current user
     var header = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,6 +195,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
       ],
     );
 
+    // all the posted polls by the current user
     var postedPolls = Column(children: [
       Flexible(
           child: StreamBuilder(
@@ -186,7 +206,8 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
                   case ConnectionState.waiting:
                   case ConnectionState.active:
                     if (snapshot.hasData) {
-                      final allPolls = snapshot.data as Iterable<CloudPoll>;
+                      final allPolls = snapshot.data as Iterable<
+                          CloudPoll>; // get all the polls and assign to the poll structure
                       return ListView.builder(
                         itemCount: allPolls.length,
                         itemBuilder: (context, index) {
@@ -212,6 +233,7 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
               })),
     ]);
 
+    // all the voted data by the user
     var votedPolls = Column(children: [
       Flexible(
           child: StreamBuilder(
@@ -223,7 +245,8 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
             case ConnectionState.waiting:
             case ConnectionState.active:
               if (snapshot.hasData) {
-                final allPolls = snapshot.data as Iterable<CloudPoll>;
+                final allPolls = snapshot.data as Iterable<
+                    CloudPoll>; // get all the polls and assign to the poll structure
                 return ListView.builder(
                   itemCount: allPolls.length,
                   itemBuilder: (context, index) {
@@ -249,29 +272,57 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
         length: 2,
         child: Scaffold(
             body: SingleChildScrollView(
-                child: Column(
-          children: <Widget>[
-            SizedBox(height: kSpacingUnit.w * 5),
-            header,
-            TabBar(tabs: [
-              Tab(
-                key: _postedKey,
-                text: 'Posted',
-              ),
-              Tab(
-                key: _votedKey,
-                text: 'Voted',
-              ),
-            ]),
-            SizedBox(
-              height: 400,
-              child: TabBarView(children: [
-                postedPolls,
-                votedPolls,
-              ]),
-            )
-          ],
-        ))));
+                child: kIsWeb
+                    ? Center(
+                        child: SizedBox(
+                        width: 700,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: kIsWeb ? 20 : kSpacingUnit.w * 5),
+                            header,
+                            TabBar(tabs: [
+                              Tab(
+                                key: _postedKey,
+                                text: 'Posted',
+                              ),
+                              Tab(
+                                key: _votedKey,
+                                text: 'Voted',
+                              ),
+                            ]),
+                            SizedBox(
+                              height: 400,
+                              child: TabBarView(children: [
+                                postedPolls,
+                                votedPolls,
+                              ]),
+                            )
+                          ],
+                        ),
+                      ))
+                    : Column(
+                        children: <Widget>[
+                          SizedBox(height: kIsWeb ? 20 : kSpacingUnit.w * 5),
+                          header,
+                          TabBar(tabs: [
+                            Tab(
+                              key: _postedKey,
+                              text: 'Posted',
+                            ),
+                            Tab(
+                              key: _votedKey,
+                              text: 'Voted',
+                            ),
+                          ]),
+                          SizedBox(
+                            height: 400,
+                            child: TabBarView(children: [
+                              postedPolls,
+                              votedPolls,
+                            ]),
+                          )
+                        ],
+                      ))));
   }
 
   void showTutorial() async {
@@ -391,8 +442,3 @@ class _ProfileContentPageState extends State<ProfileContentPage> {
     );
   }
 }
-
-// db.collection('polls').where(voteDataField, arrayContains: {
-//           userIdField: currentUserId,
-//           optionField: userSelectedOption
-//         }).snapshots()

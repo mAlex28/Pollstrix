@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/services/theme_service.dart';
@@ -22,6 +23,7 @@ class _FAQPageState extends State<FAQPage> {
         minTextAdapt: true,
         orientation: Orientation.portrait);
 
+    // tranlatable faq Q&As
     List<Item> items = [
       Item(
         header: AppLocalizations.of(context)!.faqOne,
@@ -44,13 +46,17 @@ class _FAQPageState extends State<FAQPage> {
         body: AppLocalizations.of(context)!.faqAnsFive,
       )
     ];
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.faq,
-          style: kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
+          style: kIsWeb
+              ? kTitleTextStyle.copyWith(
+                  fontWeight: FontWeight.w700, fontSize: 20)
+              : kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
@@ -65,16 +71,21 @@ class _FAQPageState extends State<FAQPage> {
                       headerBuilder: (context, isExpanded) => ListTile(
                         title: Text(
                           item.header,
-                          style: kTitleTextStyle,
+                          style: kIsWeb
+                              ? kTitleTextStyle.copyWith(fontSize: 15)
+                              : kTitleTextStyle,
                         ),
                       ),
                       body: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           item.body,
-                          style: kCaptionTextStyle.copyWith(
-                            fontSize: ScreenUtil().setSp(kSpacingUnit.w * 1.15),
-                          ),
+                          style: kIsWeb
+                              ? kCaptionTextStyle.copyWith(fontSize: 15)
+                              : kCaptionTextStyle.copyWith(
+                                  fontSize:
+                                      ScreenUtil().setSp(kSpacingUnit.w * 1.15),
+                                ),
                         ),
                       ),
                     ))

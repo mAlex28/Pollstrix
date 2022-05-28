@@ -1,6 +1,7 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:polls/polls.dart';
@@ -367,8 +368,10 @@ class _PollTileState extends State<PollTile> {
                                   child: Icon(
                                     Icons.more_vert_rounded,
                                     color: Theme.of(context).iconTheme.color,
-                                    size: ScreenUtil()
-                                        .setSp(kSpacingUnit.w * 1.2),
+                                    size: kIsWeb
+                                        ? 20.0
+                                        : ScreenUtil()
+                                            .setSp(kSpacingUnit.w * 1.2),
                                   ),
                                   onTapDown: (details) => _showPopupMenu(
                                       context, details,
@@ -380,10 +383,10 @@ class _PollTileState extends State<PollTile> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                    padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text(widget.doc.voteCount.toString() + ' votes',
-                        style:
-                            TextStyle(fontSize: 12.0, color: Colors.grey[800])),
+                        style: const TextStyle(
+                            fontSize: 12.0, color: Colors.grey)),
                   ),
                   currentUserId == creatorId || _hasUserVoted
                       ? Polls.viewPolls(
@@ -392,8 +395,13 @@ class _PollTileState extends State<PollTile> {
                                 title: '${e.value[titleField]}',
                                 value: (e.value[votesField]).toDouble());
                           }).toList(),
-                          question:
-                              Text(widget.doc.title, style: kTitleTextStyle),
+                          question: Text(widget.doc.title,
+                              style: kIsWeb
+                                  ? const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    )
+                                  : kTitleTextStyle),
                           userChoice: usersWhoVoted[currentUserId],
                           onVoteBackgroundColor: Colors.blueGrey,
                           leadingBackgroundColor: kAccentColor,
@@ -405,10 +413,13 @@ class _PollTileState extends State<PollTile> {
                                 title: '${choice.value['title']}',
                                 value: (choice.value['votes']).toDouble());
                           }).toList(),
-                          question: Text(
-                            widget.doc.title,
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          question: Text(widget.doc.title,
+                              style: kIsWeb
+                                  ? const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    )
+                                  : kTitleTextStyle),
                           voteData: usersWhoVoted,
                           currentUser: currentUserId,
                           creatorID: creatorId,
@@ -505,9 +516,11 @@ class _PollTileState extends State<PollTile> {
                             ),
                           )),
                       GestureDetector(
-                          child: const Icon(
+                          child: Icon(
                             Icons.more_vert_rounded,
-                            size: 16.0,
+                            size: kIsWeb
+                                ? 20.0
+                                : ScreenUtil().setSp(kSpacingUnit.w * 1.2),
                           ),
                           onTapDown: (details) => _showPopupMenu(
                               context, details,
@@ -518,7 +531,13 @@ class _PollTileState extends State<PollTile> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 8),
-                    child: Text(widget.doc.title, style: kTitleTextStyle),
+                    child: Text(widget.doc.title,
+                        style: kIsWeb
+                            ? const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              )
+                            : kTitleTextStyle),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -526,8 +545,8 @@ class _PollTileState extends State<PollTile> {
                       Padding(
                         padding: const EdgeInsets.only(left: 5.0),
                         child: Text(widget.doc.voteCount.toString() + ' votes',
-                            style: TextStyle(
-                                fontSize: 12.0, color: Colors.grey[800])),
+                            style: const TextStyle(
+                                fontSize: 12.0, color: Colors.grey)),
                       ),
                       ToggleSwitch(
                         borderColor: const [Colors.blue],

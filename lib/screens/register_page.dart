@@ -131,218 +131,417 @@ class _RegisterPageState extends State<RegisterPage> {
         orientation: Orientation.portrait);
 
     return Scaffold(
-        body: _isLoading
-            ? Center(
-                child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(
-                    color: kAccentColor,
-                  ),
-                  Text('Registering user. Please wait...')
-                ],
-              ))
-            : Center(
-                child: SingleChildScrollView(
+      body: _isLoading
+          ? Center(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                  color: kAccentColor,
+                ),
+                Text('Registering user. Please wait...')
+              ],
+            ))
+          : kIsWeb
+              ? buildForWeb()
+              : Center(
+                  child: SingleChildScrollView(
                     child: Padding(
-                        padding: const EdgeInsets.all(30),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: kToolbarHeight * 0.7,
-                                child: Image.asset(
-                                  "assets/images/logo_inapp.png",
-                                  color: kAccentColor,
-                                ),
+                      padding: const EdgeInsets.all(30),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: kToolbarHeight * 0.7,
+                              child: Image.asset(
+                                "assets/images/logo_inapp.png",
+                                color: kAccentColor,
                               ),
-                              SizedBox(height: kSpacingUnit.h * 3),
-                              UserImage(
-                                onFileChanged: (imageUrl) {
-                                  setState(() {
-                                    this.imageUrl = imageUrl;
-                                  });
-                                },
-                                isProfile: false,
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              CustomTextField(
+                            ),
+                            SizedBox(height: kSpacingUnit.h * 3),
+                            UserImage(
+                              onFileChanged: (imageUrl) {
+                                setState(() {
+                                  this.imageUrl = imageUrl;
+                                });
+                              },
+                              isProfile: false,
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            CustomTextField(
+                              fieldValidator: _formFieldsValidator,
+                              textEditingController: _fnameController,
+                              keyboardType: TextInputType.name,
+                              label: 'Enter your first name',
+                              prefixIcon: const Icon(Icons.person_rounded),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            CustomTextField(
                                 fieldValidator: _formFieldsValidator,
-                                textEditingController: _fnameController,
+                                textEditingController: _lnameController,
                                 keyboardType: TextInputType.name,
-                                label: 'Enter your first name',
-                                prefixIcon: const Icon(Icons.person_rounded),
+                                label: 'Enter your last name',
+                                prefixIcon: const Icon(Icons.person_rounded)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            CustomTextField(
+                                fieldValidator: _formFieldsValidator,
+                                textEditingController: _displayNameController,
+                                label: 'Enter your displayname',
+                                prefixIcon: const Icon(Icons.person_rounded)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            CustomTextField(
+                                fieldValidator: _emailFieldValidator,
+                                textEditingController: _emailController,
+                                label: 'Enter your email',
+                                keyboardType: TextInputType.emailAddress,
+                                prefixIcon: const Icon(Icons.email_rounded)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            CustomTextField(
+                                fieldValidator: _passwordFieldValidator,
+                                password: _isPassword,
+                                suffixIcon: IconButton(
+                                    iconSize: 18.0,
+                                    onPressed: () {
+                                      setState(() {
+                                        _isPassword = !_isPassword;
+                                      });
+                                    },
+                                    icon: Icon(_isPassword
+                                        ? Icons.visibility_rounded
+                                        : Icons.visibility_off_rounded)),
+                                textEditingController: _passwordController,
+                                label: 'Enter your password',
+                                prefixIcon: const Icon(Icons.password_rounded)),
+                            SizedBox(height: kSpacingUnit.h * 3),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(kAccentColor),
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50))),
+                                elevation: MaterialStateProperty.all(5),
+                                padding: MaterialStateProperty.all(
+                                    const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 40)),
                               ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomTextField(
-                                  fieldValidator: _formFieldsValidator,
-                                  textEditingController: _lnameController,
-                                  keyboardType: TextInputType.name,
-                                  label: 'Enter your last name',
-                                  prefixIcon: const Icon(Icons.person_rounded)),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomTextField(
-                                  fieldValidator: _formFieldsValidator,
-                                  textEditingController: _displayNameController,
-                                  label: 'Enter your displayname',
-                                  prefixIcon: const Icon(Icons.person_rounded)),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomTextField(
-                                  fieldValidator: _emailFieldValidator,
-                                  textEditingController: _emailController,
-                                  label: 'Enter your email',
-                                  keyboardType: TextInputType.emailAddress,
-                                  prefixIcon: const Icon(Icons.email_rounded)),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomTextField(
-                                  fieldValidator: _passwordFieldValidator,
-                                  password: _isPassword,
-                                  suffixIcon: IconButton(
-                                      iconSize: 18.0,
-                                      onPressed: () {
-                                        setState(() {
-                                          _isPassword = !_isPassword;
-                                        });
-                                      },
-                                      icon: Icon(_isPassword
-                                          ? Icons.visibility_rounded
-                                          : Icons.visibility_off_rounded)),
-                                  textEditingController: _passwordController,
-                                  label: 'Enter your password',
-                                  prefixIcon:
-                                      const Icon(Icons.password_rounded)),
-                              SizedBox(height: kSpacingUnit.h * 3),
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(kAccentColor),
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(50))),
-                                  elevation: MaterialStateProperty.all(5),
-                                  padding: MaterialStateProperty.all(
-                                      const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 40)),
-                                ),
-                                onPressed: () async {
-                                  final deviceId = await _getDeviceIdentifier();
+                              onPressed: () async {
+                                final deviceId = await _getDeviceIdentifier();
 
-                                  final isDeviceRegistered =
-                                      await _deviceService
-                                          .checkIfTheCurrentDeviceIsRegistered(
-                                              deviceId: deviceId);
+                                final isDeviceRegistered = await _deviceService
+                                    .checkIfTheCurrentDeviceIsRegistered(
+                                        deviceId: deviceId);
 
-                                  // check if the device registered and register is it hasn't
-                                  if (isDeviceRegistered) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        CustomSnackbar.customSnackbar(
-                                            content:
-                                                'Your device is already registered',
-                                            backgroundColor: Colors.red));
-                                  } else {
-                                    if (_formKey.currentState != null &&
-                                        _formKey.currentState!.validate()) {
-                                      final email =
-                                          _emailController.text.trim();
-                                      final password =
-                                          _passwordController.text.trim();
-                                      final firstName =
-                                          _fnameController.text.trim();
-                                      final lastName =
-                                          _lnameController.text.trim();
-                                      final displayName =
-                                          _displayNameController.text.trim();
+                                // check if the device registered and register is it hasn't
+                                if (isDeviceRegistered) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      CustomSnackbar.customSnackbar(
+                                          content:
+                                              'Your device is already registered',
+                                          backgroundColor: Colors.red));
+                                } else {
+                                  if (_formKey.currentState != null &&
+                                      _formKey.currentState!.validate()) {
+                                    final email = _emailController.text.trim();
+                                    final password =
+                                        _passwordController.text.trim();
+                                    final firstName =
+                                        _fnameController.text.trim();
+                                    final lastName =
+                                        _lnameController.text.trim();
+                                    final displayName =
+                                        _displayNameController.text.trim();
 
-                                      try {
-                                        setState(() {
-                                          _isLoading = true;
-                                        });
-                                        // create a new user
-                                        await AuthService.firebase().createUser(
-                                            email: email,
-                                            password: password,
-                                            displayName: displayName,
-                                            firstName: firstName,
-                                            lastName: lastName,
-                                            imageUrl: imageUrl);
+                                    try {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      // create a new user
+                                      await AuthService.firebase().createUser(
+                                          email: email,
+                                          password: password,
+                                          displayName: displayName,
+                                          firstName: firstName,
+                                          lastName: lastName,
+                                          imageUrl: imageUrl);
 
-                                        // add device ID to the firebase
-                                        await _deviceService.saveDeviceId(
-                                            deviceId: deviceId,
-                                            userId: 'unknown user');
+                                      // add device ID to the firebase
+                                      await _deviceService.saveDeviceId(
+                                          deviceId: deviceId,
+                                          userId: 'unknown user');
 
-                                        // send email veification to the user
-                                        await AuthService.firebase()
-                                            .sendEmailVerification();
-                                        setState(() {
-                                          _isLoading = false;
-                                        });
-                                        Navigator.of(context)
-                                            .pushNamed(verifyEmailRoute);
-                                      } on WeakPasswordAuthException {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                                CustomSnackbar.customSnackbar(
-                                                    backgroundColor: Colors.red,
-                                                    content: 'Weak password'));
-                                      } on EmailAlreadyInUseAuthException {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                                CustomSnackbar.customSnackbar(
-                                                    backgroundColor: Colors.red,
-                                                    content:
-                                                        'Email already in use'));
-                                      } on InvalidEmailAuthException {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                                CustomSnackbar.customSnackbar(
-                                                    backgroundColor: Colors.red,
-                                                    content:
-                                                        'Invalid email address'));
-                                      } on GenericAuthException {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            CustomSnackbar.customSnackbar(
-                                                backgroundColor: Colors.red,
-                                                content:
-                                                    'Oops! Something went wrong'));
-                                      }
+                                      // send email veification to the user
+                                      await AuthService.firebase()
+                                          .sendEmailVerification();
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      Navigator.of(context)
+                                          .pushNamed(verifyEmailRoute);
+                                    } on WeakPasswordAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content: 'Weak password'));
+                                    } on EmailAlreadyInUseAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content:
+                                                      'Email already in use'));
+                                    } on InvalidEmailAuthException {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              CustomSnackbar.customSnackbar(
+                                                  backgroundColor: Colors.red,
+                                                  content:
+                                                      'Invalid email address'));
+                                    } on GenericAuthException {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          CustomSnackbar.customSnackbar(
+                                              backgroundColor: Colors.red,
+                                              content:
+                                                  'Oops! Something went wrong'));
                                     }
                                   }
-                                },
-                                child: Text(
-                                  "Create Account",
-                                  textAlign: TextAlign.center,
-                                  style: kButtonTextStyle,
-                                ),
+                                }
+                              },
+                              child: Text(
+                                "Create Account",
+                                textAlign: TextAlign.center,
+                                style: kButtonTextStyle,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                      onPressed: () => Navigator.of(context)
-                                          .pushNamedAndRemoveUntil(
-                                              loginRoute, (route) => false),
-                                      child: const Text(
-                                        'Have an account? Login',
-                                      )),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )))));
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                TextButton(
+                                    onPressed: () => Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            loginRoute, (route) => false),
+                                    child: const Text(
+                                      'Have an account? Login',
+                                    )),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+    );
+  }
+
+  Widget buildForWeb() {
+    return Center(
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: 400,
+          child: Padding(
+            padding: const EdgeInsets.all(30),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: kToolbarHeight * 0.7,
+                    child: Image.asset(
+                      "assets/images/logo_inapp.png",
+                      color: kAccentColor,
+                    ),
+                  ),
+                  SizedBox(height: kSpacingUnit.h * 3),
+                  UserImage(
+                    onFileChanged: (imageUrl) {
+                      setState(() {
+                        this.imageUrl = imageUrl;
+                      });
+                    },
+                    isProfile: false,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  CustomTextField(
+                    fieldValidator: _formFieldsValidator,
+                    textEditingController: _fnameController,
+                    keyboardType: TextInputType.name,
+                    label: 'Enter your first name',
+                    prefixIcon: const Icon(Icons.person_rounded),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomTextField(
+                      fieldValidator: _formFieldsValidator,
+                      textEditingController: _lnameController,
+                      keyboardType: TextInputType.name,
+                      label: 'Enter your last name',
+                      prefixIcon: const Icon(Icons.person_rounded)),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomTextField(
+                      fieldValidator: _formFieldsValidator,
+                      textEditingController: _displayNameController,
+                      label: 'Enter your displayname',
+                      prefixIcon: const Icon(Icons.person_rounded)),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomTextField(
+                      fieldValidator: _emailFieldValidator,
+                      textEditingController: _emailController,
+                      label: 'Enter your email',
+                      keyboardType: TextInputType.emailAddress,
+                      prefixIcon: const Icon(Icons.email_rounded)),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomTextField(
+                      fieldValidator: _passwordFieldValidator,
+                      password: _isPassword,
+                      suffixIcon: IconButton(
+                          iconSize: 18.0,
+                          onPressed: () {
+                            setState(() {
+                              _isPassword = !_isPassword;
+                            });
+                          },
+                          icon: Icon(_isPassword
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded)),
+                      textEditingController: _passwordController,
+                      label: 'Enter your password',
+                      prefixIcon: const Icon(Icons.password_rounded)),
+                  SizedBox(height: kSpacingUnit.h * 3),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: kLightPrimaryColor,
+                      )),
+                      backgroundColor: MaterialStateProperty.all(kAccentColor),
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50))),
+                      elevation: MaterialStateProperty.all(5),
+                      padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              vertical: 18, horizontal: 40)),
+                    ),
+                    onPressed: () async {
+                      final deviceId = await _getDeviceIdentifier();
+
+                      final isDeviceRegistered = await _deviceService
+                          .checkIfTheCurrentDeviceIsRegistered(
+                              deviceId: deviceId);
+
+                      // check if the device registered and register is it hasn't
+                      if (isDeviceRegistered) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            CustomSnackbar.customSnackbar(
+                                content: 'Your device is already registered',
+                                backgroundColor: Colors.red));
+                      } else {
+                        if (_formKey.currentState != null &&
+                            _formKey.currentState!.validate()) {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+                          final firstName = _fnameController.text.trim();
+                          final lastName = _lnameController.text.trim();
+                          final displayName =
+                              _displayNameController.text.trim();
+
+                          try {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            // create a new user
+                            await AuthService.firebase().createUser(
+                                email: email,
+                                password: password,
+                                displayName: displayName,
+                                firstName: firstName,
+                                lastName: lastName,
+                                imageUrl: imageUrl);
+
+                            // add device ID to the firebase
+                            await _deviceService.saveDeviceId(
+                                deviceId: deviceId, userId: 'unknown user');
+
+                            // send email veification to the user
+                            await AuthService.firebase()
+                                .sendEmailVerification();
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            Navigator.of(context).pushNamed(verifyEmailRoute);
+                          } on WeakPasswordAuthException {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                CustomSnackbar.customSnackbar(
+                                    backgroundColor: Colors.red,
+                                    content: 'Weak password'));
+                          } on EmailAlreadyInUseAuthException {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                CustomSnackbar.customSnackbar(
+                                    backgroundColor: Colors.red,
+                                    content: 'Email already in use'));
+                          } on InvalidEmailAuthException {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                CustomSnackbar.customSnackbar(
+                                    backgroundColor: Colors.red,
+                                    content: 'Invalid email address'));
+                          } on GenericAuthException {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                CustomSnackbar.customSnackbar(
+                                    backgroundColor: Colors.red,
+                                    content: 'Oops! Something went wrong'));
+                          }
+                        }
+                      }
+                    },
+                    child: const Text(
+                      "Create Account",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.of(context)
+                              .pushNamedAndRemoveUntil(
+                                  loginRoute, (route) => false),
+                          child: const Text(
+                            'Have an account? Login',
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

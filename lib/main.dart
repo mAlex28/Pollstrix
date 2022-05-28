@@ -25,8 +25,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
+  // keep the splash screen until widgets are completely blinded
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  // configurations for web
   const firebaseConfig = FirebaseOptions(
     apiKey: 'AIzaSyBNEhcwHGg4XoSrWrPWg1LwZpYgfmoMPMo',
     appId: '1:630918106032:web:a36cc8f6d094035f4d2475',

@@ -45,6 +45,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     super.dispose();
   }
 
+  // add new feedback
   _commentFeedbacks(username, pid, feedback) async {
     await _pollService.feedbacks.doc().set(
       {

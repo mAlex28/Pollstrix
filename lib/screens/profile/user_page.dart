@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pollstrix/constants/routes.dart';
@@ -34,6 +35,7 @@ class _UserPageState extends State<UserPage> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // get the profile url / image url of current user
   _getUserProfile() async {
     final profile = AuthService.firebase().currentUser!;
 
@@ -46,6 +48,7 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
+  // validate fields
   String? _formFieldsValidator(String? text) {
     if (text == null || text.trim().isEmpty) {
       return 'This field is required';
@@ -82,7 +85,10 @@ class _UserPageState extends State<UserPage> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'User Profile',
-            style: kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
+            style: kIsWeb
+                ? kTitleTextStyle.copyWith(
+                    fontSize: 18, fontWeight: FontWeight.w700)
+                : kTitleTextStyle.copyWith(fontWeight: FontWeight.w700),
           ),
           actions: [
             IconButton(
@@ -332,6 +338,7 @@ class _UserPageState extends State<UserPage> {
                         }))));
   }
 
+  // get user profile data and assign them to text fileds
   _getUserData() async {
     final uid = AuthService.firebase().currentUser!.userId;
 

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:paginate_firestore/bloc/pagination_listeners.dart';
 import 'package:pollstrix/constants/routes.dart';
 import 'package:pollstrix/services/cloud/cloud_storage_constants.dart';
 import 'package:pollstrix/services/cloud/polls/cloud_poll.dart';
@@ -18,6 +20,8 @@ class FeedContentPage extends StatefulWidget {
 }
 
 class _FeedContentPageState extends State<FeedContentPage> {
+  PaginateRefreshedChangeListener refreshedChangeListener =
+      PaginateRefreshedChangeListener();
   late SharedPreferences _preferences;
   late final FirebasePollFunctions _pollService;
   late var stream;
@@ -211,47 +215,92 @@ class _FeedContentPageState extends State<FeedContentPage> {
                   ]),
         ],
       ),
-      body: Column(children: [
-        Flexible(
-            child: StreamBuilder(
-          stream: stream,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-              case ConnectionState.active:
-                if (snapshot.hasData) {
-                  final allPolls = snapshot.data as Iterable<CloudPoll>;
-                  return ListView.builder(
-                    itemCount: allPolls.length,
-                    itemBuilder: (context, index) {
-                      final poll = allPolls.elementAt(index);
-                      return PollTile(doc: poll);
-                    },
-                  );
-                } else if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+      body: kIsWeb
+          ? buildForWeb()
+          : Column(children: [
+              Flexible(
+                  child: StreamBuilder(
+                stream: stream,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.active:
+                      if (snapshot.hasData) {
+                        final allPolls = snapshot.data as Iterable<CloudPoll>;
+                        return ListView.builder(
+                          itemCount: allPolls.length,
+                          itemBuilder: (context, index) {
+                            final poll = allPolls.elementAt(index);
+                            return PollTile(doc: poll);
+                          },
+                        );
+                      } else if (!snapshot.hasData) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-              default:
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-            }
-          },
-        )),
-      ]),
+                    default:
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                  }
+                },
+              )),
+            ]),
       floatingActionButton: FloatingActionButton(
         key: _postPollKey,
         backgroundColor: kAccentColor,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add_rounded),
         onPressed: () => Navigator.of(context).pushNamed(postNewPollRoute),
+      ),
+    );
+  }
+
+  Widget buildForWeb() {
+    return Center(
+      child: Container(
+        width: 600,
+        child: Column(children: [
+          Flexible(
+              child: StreamBuilder(
+            stream: stream,
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                case ConnectionState.active:
+                  if (snapshot.hasData) {
+                    final allPolls = snapshot.data as Iterable<CloudPoll>;
+                    return ListView.builder(
+                      itemCount: allPolls.length,
+                      itemBuilder: (context, index) {
+                        final poll = allPolls.elementAt(index);
+                        return PollTile(doc: poll);
+                      },
+                    );
+                  } else if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                default:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+              }
+            },
+          )),
+        ]),
       ),
     );
   }

@@ -75,6 +75,7 @@ class _UserImageState extends State<UserImage> {
                   child: Text(
                     imageUrl != null ? 'Change photo' : 'Select photo',
                     style: kCaptionTextStyle.copyWith(
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
