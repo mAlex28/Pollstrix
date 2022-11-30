@@ -11,6 +11,7 @@ import 'package:pollstrix/l10n/l10n.dart';
 import 'package:pollstrix/screens/menu/faq_page.dart';
 import 'package:pollstrix/services/locale_service.dart';
 import 'package:pollstrix/services/theme_service.dart';
+import 'package:pollstrix/utilities/custom/dialogs/logout_dialog.dart';
 import 'package:pollstrix/utilities/custom/snackbar/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rate_my_app/rate_my_app.dart';
@@ -212,8 +213,8 @@ class _MenuPageState extends State<MenuPage> {
                               cancelAction:
                                   CancelAction(title: const Text('Cancel')),
                               actions: L10n.all.map((locale) {
-                                final flag =
-                                    L10n.getLanguage(locale.languageCode);
+                                final flag = L10n.getLanguage(
+                                    locale.languageCode, context);
                                 // show available languages
                                 return BottomSheetAction(
                                     title: Text(
@@ -267,10 +268,14 @@ class _MenuPageState extends State<MenuPage> {
                               // logout and redirect user to the login page
 
                               await AuthService.firebase().logOut();
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                loginRoute,
-                                (route) => false,
-                              );
+                              await showLogoutDialog(context).then((value) =>
+                                  value
+                                      ? Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                          loginRoute,
+                                          (route) => false,
+                                        )
+                                      : Navigator.of(context).pop());
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   CustomSnackbar.customSnackbar(
@@ -302,8 +307,8 @@ class _MenuPageState extends State<MenuPage> {
                             cancelAction:
                                 CancelAction(title: const Text('Cancel')),
                             actions: L10n.all.map((locale) {
-                              final flag =
-                                  L10n.getLanguage(locale.languageCode);
+                              final flag = L10n.getLanguage(
+                                  locale.languageCode, context);
                               // show available languages
                               return BottomSheetAction(
                                   title: Text(
@@ -362,10 +367,15 @@ class _MenuPageState extends State<MenuPage> {
                           try {
                             // logout and redirect user to the login page
                             await AuthService.firebase().logOut();
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              loginRoute,
-                              (route) => false,
-                            );
+
+                            await showLogoutDialog(context).then((value) =>
+                                value
+                                    ? Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                        loginRoute,
+                                        (route) => false,
+                                      )
+                                    : Navigator.of(context).pop());
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 CustomSnackbar.customSnackbar(

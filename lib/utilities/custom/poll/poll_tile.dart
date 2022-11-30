@@ -18,8 +18,15 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 class PollTile extends StatefulWidget {
   final CloudPoll doc;
+  final List<CloudPoll> pollList;
+  final int index;
 
-  const PollTile({Key? key, required this.doc}) : super(key: key);
+  const PollTile(
+      {Key? key,
+      required this.doc,
+      required this.pollList,
+      required this.index})
+      : super(key: key);
 
   @override
   _PollTileState createState() => _PollTileState();
@@ -126,8 +133,8 @@ class _PollTileState extends State<PollTile> {
   _showReportDialog(
       {required String uid,
       required String pid,
-      required BuildContext context}) {
-    showDialog<Widget>(
+      required BuildContext context}) async {
+    await showDialog<Widget>(
         context: context,
         builder: (BuildContext builder) {
           return AlertDialog(
@@ -212,8 +219,9 @@ class _PollTileState extends State<PollTile> {
   }
 
   // Show delete poll dialog: if the creator is current user and delete the item
-  _deletePollDialog({required String pid, required BuildContext context}) {
-    showDialog<Widget>(
+  _deletePollDialog(
+      {required String pid, required BuildContext context}) async {
+    await showDialog<Widget>(
         context: context,
         builder: (BuildContext builder) {
           return AlertDialog(
@@ -231,6 +239,9 @@ class _PollTileState extends State<PollTile> {
                       // delete the poll after confirmation
                       try {
                         await _pollService.deletePoll(documentId: pid);
+                        setState(() {
+                          widget.pollList.removeAt(widget.index);
+                        });
                         ScaffoldMessenger.of(context).showSnackBar(
                             CustomSnackbar.customSnackbar(
                                 backgroundColor: Colors.green,
@@ -371,7 +382,7 @@ class _PollTileState extends State<PollTile> {
                                     size: kIsWeb
                                         ? 20.0
                                         : ScreenUtil()
-                                            .setSp(kSpacingUnit.w * 1.2),
+                                            .setSp(kSpacingUnit.w * 1.4),
                                   ),
                                   onTapDown: (details) => _showPopupMenu(
                                       context, details,

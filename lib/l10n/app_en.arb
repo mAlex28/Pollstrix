@@ -182,5 +182,33 @@
     "faqAnsFive": "Not yet. But this is one of the upcoming features. And I hope to launch it soon.",
     "@faqAnsFive": {
       "description": "Fifth FAQ answer"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+      "description": "Cancel a dialog"
+    },
+    "downloadPollstrix": "Downlaod Pollstrix",
+    "@downloadPollstrix": {
+      "description": "Link to playstore"
+    },
+    "cannotLogout": "Could not logout! Try agian later",
+    "@cannotLogout": {
+      "description": "Could not logou"
+    },
+    "developedBy": "Developed by Alex",
+    "@developedBy": {
+      "description": "Developer name"
+    },
+    "inviteFriends": "Invite friends",
+    "@inviteFriends": {
+      "description": "Invite for new firends"
+    },
+    "changeTheme": "Change Theme",
+    "@changeTheme": {
+      "description": "Change theme light or dark or system"
+    },
+    "lightOrDark": "Light or Dark theme is available",
+    "@lightOrDark": {
+      "description": "Light or dark theme"
     }
 }

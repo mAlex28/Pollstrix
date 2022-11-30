@@ -96,7 +96,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                         CustomSnackbar.customSnackbar(
                                             backgroundColor: Colors.red,
                                             content:
-                                                'Too many request! Try agian later'));
+                                                'Too many request! Try again later'));
                                   }
                                 },
                                 child: Text(

@@ -194,7 +194,7 @@ class _PostPollPageState extends State<PostPollPage> {
                                     createdTime: DateTime.now(),
                                     startDate: _startDate,
                                     endDate: _endDate);
-                                Navigator.of(context).pop();
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     CustomSnackbar.customSnackbar(
                                         content: 'Poll posted',
@@ -345,6 +345,7 @@ class _PostPollPageState extends State<PostPollPage> {
                                       createdTime: DateTime.now(),
                                       startDate: _startDate,
                                       endDate: _endDate);
+
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       CustomSnackbar.customSnackbar(

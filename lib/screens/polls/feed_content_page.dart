@@ -26,6 +26,9 @@ class _FeedContentPageState extends State<FeedContentPage> {
   late final FirebasePollFunctions _pollService;
   late var stream;
 
+  bool isLoadingPolls = false;
+  late List<CloudPoll> polldatalist;
+
   late TutorialCoachMark tutorialCoachMark;
   List<TargetFocus> targets = <TargetFocus>[];
 
@@ -217,41 +220,60 @@ class _FeedContentPageState extends State<FeedContentPage> {
       ),
       body: kIsWeb
           ? buildForWeb()
-          : Column(children: [
-              Flexible(
-                  child: StreamBuilder(
-                stream: stream,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (snapshot.hasData) {
-                        final allPolls = snapshot.data as Iterable<CloudPoll>;
-                        return ListView.builder(
-                          itemCount: allPolls.length,
-                          itemBuilder: (context, index) {
-                            final poll = allPolls.elementAt(index);
-                            return PollTile(doc: poll);
-                          },
-                        );
-                      } else if (!snapshot.hasData) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
+          : isLoadingPolls
+              ? const Center(
+                  child: const CircularProgressIndicator(),
+                )
+              : Column(children: [
+                  Flexible(
+                      child: StreamBuilder(
+                    stream: stream,
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.active:
+                          if (snapshot == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
 
-                    default:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                  }
-                },
-              )),
-            ]),
+                          if (!snapshot.hasData) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasData) {
+                            final allPolls =
+                                snapshot.data as Iterable<CloudPoll>;
+                            polldatalist =
+                                allPolls.toList(); // assign iterable to a list
+                            return ListView.builder(
+                              itemCount: allPolls.length,
+                              itemBuilder: (context, index) {
+                                return PollTile(
+                                    doc: polldatalist.elementAt(index),
+                                    pollList: polldatalist,
+                                    index: index);
+                              },
+                            );
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                        default:
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                      }
+                    },
+                  )),
+                ]),
       floatingActionButton: FloatingActionButton(
         key: _postPollKey,
         backgroundColor: kAccentColor,
@@ -280,7 +302,8 @@ class _FeedContentPageState extends State<FeedContentPage> {
                       itemCount: allPolls.length,
                       itemBuilder: (context, index) {
                         final poll = allPolls.elementAt(index);
-                        return PollTile(doc: poll);
+                        return PollTile(
+                            doc: poll, pollList: polldatalist, index: index);
                       },
                     );
                   } else if (!snapshot.hasData) {

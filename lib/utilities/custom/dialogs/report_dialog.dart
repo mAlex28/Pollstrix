@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pollstrix/utilities/custom/dialogs/custom_dialog.dart';
 
-Future<bool> showLogoutDialog(BuildContext context) {
+Future<bool> showReportDialog(BuildContext context) {
   return showGenericDialog(
       context: context,
       title: 'Report',

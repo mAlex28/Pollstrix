@@ -62,7 +62,10 @@ class CustomSearchBarDelegate extends SearchDelegate {
                       itemCount: allPolls.length,
                       itemBuilder: (context, index) {
                         final poll = allPolls.elementAt(index);
-                        return PollTile(doc: poll);
+                        return PollTile(
+                            doc: poll,
+                            index: index,
+                            pollList: allPolls.toList());
                       },
                     );
                   } else if (!snapshot.hasData) {

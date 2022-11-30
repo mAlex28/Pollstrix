@@ -368,14 +368,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   SizedBox(height: kSpacingUnit.h * 3),
-                  UserImage(
-                    onFileChanged: (imageUrl) {
-                      setState(() {
-                        this.imageUrl = imageUrl;
-                      });
-                    },
-                    isProfile: false,
-                  ),
                   const SizedBox(
                     height: 30,
                   ),

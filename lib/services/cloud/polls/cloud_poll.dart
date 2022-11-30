@@ -50,4 +50,21 @@ class CloudPoll {
         isFinished = snapshot.data()[isFinishedField] as bool,
         choices = snapshot.data()[choicesField],
         voteData = snapshot.data()[voteDataField];
+
+  CloudPoll.fromJson(DocumentSnapshot<Map<String, dynamic>> snapshot)
+      : documentId = snapshot.id,
+        creatorId = snapshot.data()![creatorIdField] as String,
+        title = snapshot.data()![titleField] as String,
+        createdAt = DateTime.parse(
+            snapshot.data()![createdAtField].toDate().toString()),
+        startDate = DateTime.parse(
+            snapshot.data()![startDateField].toDate().toString()),
+        endDate =
+            DateTime.parse(snapshot.data()![endDateField].toDate().toString()),
+        voteCount = snapshot.data()![voteCountField] as int,
+        likes = snapshot.data()![likesField] as int,
+        dislikes = snapshot.data()![dislikesField] as int,
+        isFinished = snapshot.data()![isFinishedField] as bool,
+        choices = snapshot.data()![choicesField],
+        voteData = snapshot.data()![voteDataField];
 }
